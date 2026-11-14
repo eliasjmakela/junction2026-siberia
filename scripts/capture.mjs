@@ -43,7 +43,7 @@ const s2 = async p => {
   await p.locator('#field-title input').fill('Backend developer')
   await p.locator('#field-purpose textarea').fill('our field technicians get the right job details on their phones before every visit.')
   await ch(p, 'type', 'Full-time')
-  await p.getByRole('button', { name: 'More' }).click(); await p.getByRole('button', { name: 'More' }).click()
+  await p.getByRole('button', { name: /^More/ }).click(); await p.getByRole('button', { name: /^More/ }).click()
   await ch(p, 'start', 'Within 3 months')
 }
 const s3 = async p => {
@@ -53,7 +53,7 @@ const s3 = async p => {
   await ch(p, 'hours', 'Flexible')
   await p.getByLabel('Lowest monthly salary').fill('3800'); await p.getByLabel('Highest monthly salary').fill('4600')
 }
-const s4 = async p => { await ch(p, 'with', 'Engineers'); await ch(p, 'with', 'Customers'); await ch(p, 'solo', 'Leaning mostly team'); await ch(p, 'teamsize', '4–10 people') }
+const s4 = async p => { await ch(p, 'with', 'Engineers'); await ch(p, 'with', 'Customers'); await ch(p, 'solo', 'Mostly team, some solo'); await ch(p, 'teamsize', '4–10 people') }
 const s5 = async p => {
   const i = p.locator('#field-skills input')
   await i.fill('Kotlin'); await i.press('Enter')

@@ -70,7 +70,7 @@ export function SetView({ set, onRemove }: { set: QuestionSet; onRemove?: (id: s
   return (
     <>
       <h3 className="cq-h3">What applicants are scored on</h3>
-      <p className="cq-sub">Each attribute quotes your answers. Staff see these quotes next to every score.</p>
+      <p className="cq-sub">Each attribute quotes your answers. City of Espoo staff see these quotes next to every score.</p>
       <AttributeList attributes={set.attributes} />
       <h3 className="cq-h3">Questions for applicants</h3>
       <QuestionList set={set} onRemove={onRemove} />
@@ -145,14 +145,14 @@ export function CompanyQuestions({ values, seed }: { values: Values; seed: strin
 
   function withdraw() {
     unpublishListing(listingId)
-    setStatus('Withdrawn from the event.')
+    setStatus('Role withdrawn from the event.')
   }
 
   return (
     <section className="cq" id="application-questions" aria-labelledby="cq-title">
       <h2 id="cq-title" className="cq__title">Application questions</h2>
       <p className="cq__lede">
-        Job seekers apply to meet up to {MAX_PICKS} companies at {EVENT.name} by answering their questions. From your role texts, AI drafts what
+        Job seekers apply to meet up to {MAX_PICKS} companies at {EVENT.name} by answering their questions. From your written answers, AI drafts what
         the role needs and a few open questions about it. You review every question before it is published.
       </p>
 
@@ -191,13 +191,13 @@ export function CompanyQuestions({ values, seed }: { values: Values; seed: strin
           <SetView set={published.set} />
           <div className="cq__actions">
             <button type="button" className="btn" data-cq-primary onClick={() => setDraft(published.set)}>
-              Edit questions
+              Remove questions
             </button>
             <button type="button" className="btn-quiet" onClick={generate} disabled={busy}>
               {busy ? 'Drafting…' : 'Draft again'}
             </button>
             <button type="button" className="btn-quiet" onClick={withdraw}>
-              Withdraw from the event
+              Withdraw role from the event
             </button>
           </div>
         </div>
@@ -214,9 +214,9 @@ export function CompanyQuestions({ values, seed }: { values: Values; seed: strin
       </p>
 
       <p className="cq__privacy">
-        Attributes and questions come only from your role texts, and every attribute quotes them. Anything about age, gender, family, health,
+        Attributes and questions come only from your written answers, and every attribute quotes them. Anything about age, gender, family, health,
         origin, nationality, beliefs or other protected grounds is removed automatically. City of Espoo staff review the answers and decide
-        whom to invite; AI-drafted scores support that review and never decide it.
+        who to invite. AI-drafted scores support that review and never decide it.
       </p>
     </section>
   )

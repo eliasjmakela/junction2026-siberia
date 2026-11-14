@@ -30,7 +30,7 @@ function RoleCardFlip({ seed, values }: { seed: string; values: Values }) {
   }
 
   return (
-    <article className={`browse-card${flipped ? ' is-flipped' : ''}`} aria-label={`${title} role card`}>
+    <article className={`browse-card${flipped ? ' is-flipped' : ''}`} aria-label={`Role card: ${title}`}>
       <div className="browse-card__turn">
         <div className="browse-card__face browse-card__front" aria-hidden={flipped}>
           <RolePreview values={values} part="summary" />
@@ -38,13 +38,13 @@ function RoleCardFlip({ seed, values }: { seed: string; values: Values }) {
             <Sky thumb seed={seed} goal={goalOf(values)} fingerprint={roleFingerprint(values)} step={8} {...stars} complete />
           </div>
           <button ref={frontButton} className="browse-card__action" type="button" disabled={flipped} onClick={showDetails}>
-            View role details <span aria-hidden="true">→</span>
+            View role page <span aria-hidden="true">→</span>
           </button>
         </div>
         <div className="browse-card__face browse-card__back" aria-hidden={!flipped}>
           <div className="browse-card__backbar">
             <button ref={backButton} className="browse-card__back-button" type="button" disabled={!flipped} onClick={showCard}>
-              <span aria-hidden="true">←</span> Role card
+              <span aria-hidden="true">←</span> Back to role card
             </button>
           </div>
           <div className="browse-card__details">

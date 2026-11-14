@@ -284,7 +284,7 @@ export default function App() {
         } else if (field.kind === 'multi' && answer.choices) {
           for (const optionId of answer.choices) await choose(field, optionId)
         } else if (field.kind === 'number' && typeof answer.number === 'number') {
-          const more = root.querySelector<HTMLButtonElement>('button[aria-label="More"]')
+          const more = root.querySelector<HTMLButtonElement>('button[aria-label^="More"]')
           if (more && await glide(more)) {
             for (let count = 0; count < answer.number; count += 1) {
               if (demoRun.current !== run) return
@@ -381,7 +381,7 @@ export default function App() {
         : screen.title
     : screen.title
   const screenHint = screen.id === 'role' && goal === 'pipeline'
-    ? 'Describe a specific kind of work to discuss. Headcount and start timing can remain undecided.'
+    ? 'Describe a specific kind of work to discuss. Number of positions and start date show as Not decided yet.'
     : screen.hint
 
   if (viewed) return <CompanyRole listing={viewed} view={wantsQuestions ? 'questions' : 'profile'} />
@@ -440,7 +440,7 @@ export default function App() {
               Role submitted
             </h1>
             <p className="hint">
-              {values.title?.text?.trim() || 'The role'} is submitted for {EVENT.name}, {formatTime(savedAt!)}.
+              {values.title?.text?.trim() || 'The role'} was submitted for {EVENT.name} on {formatTime(savedAt!)}.
             </p>
             <div className="submitted__body">
               <RoleCard values={values} seed={seed} fingerprint={roleFingerprint(values)} event={EVENT} />
@@ -451,6 +451,7 @@ export default function App() {
                     Draft application questions <Arrow />
                   </button>
                 )}
+                {!questionsPublished && <p className="submitted__note">Job seekers can apply once the role’s application questions are published.</p>}
                 <button type="button" className="btn-quiet" onClick={addAnotherRole}>
                   Submit another role
                 </button>
@@ -468,7 +469,7 @@ export default function App() {
               Review your role page
             </h1>
             <p className="hint">
-              This is how the role appears to attendees of {EVENT.name}. You can change any step before submitting.
+              This is how the role appears to job seekers applying to {EVENT.name}. You can change any step before submitting.
             </p>
             <RolePreview values={values} />
             <div className="actions actions--review">
@@ -556,8 +557,8 @@ export default function App() {
                       <td className="ledger__n">{i + 1}</td>
                       <td className="ledger__q">{s.name}</td>
                       <td className="ledger__a">
-                        <span className="ledger__clamp">{summary || 'Not answered yet'}</span>
-                        {changed.has(s.id) && <span className="tag">changed</span>}
+                        <span className="ledger__clamp">{summary || 'Not answered'}</span>
+                        {changed.has(s.id) && <span className="tag">Changed</span>}
                       </td>
                       <td className="ledger__edit">
                         <button type="button" onClick={() => goTo(i)} aria-label={`Change: ${s.name}`}>

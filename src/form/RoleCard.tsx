@@ -16,7 +16,7 @@ export function RoleCard({ values, seed, fingerprint, event }: Props) {
   const company = hasValue(FIELD_BY_ID.company, values.company) ? values.company!.text!.trim() : null
   const must = values.skills?.undecided ? null : values.skills?.skills?.must ?? []
   const facts: [string, string][] = [
-    ['Type', 'type'],
+    ['Employment type', 'type'],
     ...(goal === 'pipeline'
       ? [['Before hiring', 'hiringCondition'] as [string, string]]
       : goal === 'soon'

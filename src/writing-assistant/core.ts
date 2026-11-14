@@ -73,13 +73,13 @@ export function promptForWriting(input: SanitizedWritingInput) {
 }
 
 const QUESTION_GUIDES: Record<string, string[]> = {
-  title: ['Which specialty or level makes this role distinct?', 'What title would a candidate recognize in a search?'],
+  title: ['Which specialty or level makes this role distinct?', 'What title would a job seeker recognise in a search?'],
   purpose: ['What outcome should this role make possible?', 'Who benefits from that outcome?'],
   hiringCondition: ['What decision or change would make hiring possible?', 'Who or what determines that it has happened?'],
   month1: ['What should the person complete, learn, or take responsibility for in the first month?'],
   problem: ['What happened recently?', 'Who or what was affected, and what made it difficult?'],
   tuesday: ['What usually happens during a normal workday?', 'Which people, tools, or tasks take most of the day?'],
-  office: ['Which Espoo area or work site should candidates know about?'],
+  office: ['Which area or work site should job seekers know about?'],
   thrive: ['What work habits help someone do well in this team?'],
   career: ['What role or responsibility could this position lead to?'],
 }

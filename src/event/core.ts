@@ -263,7 +263,7 @@ export function rulesQuestionSet(brief: CompanyBrief): Omit<QuestionSet, 'source
   const problem = get('problem')
   if (problem) {
     const quote = firstSentence(problem.text)
-    attributes.push({ id: 'p', name: 'Approach to the real problem', looks_like: 'A specific, realistic first approach to the problem the company described.', sources: [{ field: 'problem', quote }] })
+    attributes.push({ id: 'p', name: 'Approach to the problem', looks_like: 'A specific, realistic first approach to the problem the company described.', sources: [{ field: 'problem', quote }] })
     questions.push({ text: `This role helps with a problem like this: "${quote}." How would you approach it in your first weeks?`, attributes: ['p'] })
   }
 
@@ -278,7 +278,7 @@ export function rulesQuestionSet(brief: CompanyBrief): Omit<QuestionSet, 'source
   if (thrive) {
     const quote = firstSentence(thrive.text)
     attributes.push({ id: 't', name: 'Working style', looks_like: 'A real situation where the person worked the way the company describes.', sources: [{ field: 'thrive', quote }] })
-    questions.push({ text: `People who do well here tend to ${quote}. Describe a situation where you worked this way.`, attributes: ['t'] })
+    questions.push({ text: `People who thrive here tend to ${quote}. Describe a situation where you worked this way.`, attributes: ['t'] })
   }
 
   return validateQuestionSet({ attributes, questions }, brief)
@@ -397,7 +397,7 @@ export function rulesScores(input: AssessmentInput): Score[] {
       score,
       evidence: best.sentence.slice(0, 300),
       question: best.question,
-      rationale: 'Fixed-rule estimate from answer length, concrete details and overlap with the company wording.',
+      rationale: 'Fixed-rule estimate from answer length, concrete details and overlap with the company’s wording.',
     }
   })
 }

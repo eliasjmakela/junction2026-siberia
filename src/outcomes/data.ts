@@ -394,7 +394,7 @@ function previousOf(event: FollowEvent, cp: Checkpoint): Previous | null {
 function previousText(s: Summary): string {
   const p = s.previous
   if (!p) return ''
-  return ` Previous event at ${s.checkpoint} months: ${p.picked} of ${p.matched}${p.share ? ` · ${p.share}` : ''}.`
+  return ` Previous event at ${s.checkpoint} months: ${p.picked} of ${p.matched}${p.share ? ` (${p.share})` : ''}.`
 }
 
 export function sortedCompanies(s: Summary): CompanyRow[] {
@@ -413,11 +413,11 @@ function reportText(s: Summary): string {
     return `${e.name}, ${e.date}: the ${cp}-month profile check is scheduled for ${s.checkDate}.`
   }
   const a = s.attendance
-  const prefix = s.state === 'running' ? 'Provisional, the profile check is still running. ' : ''
+  const prefix = s.state === 'running' ? 'Provisional: the profile check is still running. ' : ''
   return (
     `${prefix}${e.name}, ${e.date}: ${a.attended} of ${a.invited} invited applicants attended and met ${COMPANIES.length} companies. ` +
     `The ${cp}-month profile check matched ${a.matched} of ${a.attended} attendee profiles. ` +
-    `${s.shown.picked} work at a company they applied to meet (${shareText(s)}), ` +
+    `${s.shown.picked} now work at a company they applied to meet (${shareText(s)}), ` +
     `${s.shown.elsewhere} have a new employer elsewhere and ${s.shown.none} show no employer change. ` +
     `Companies confirmed ${s.shown.confirmed} of ${s.shown.picked} hires.${previousText(s)}`
   )

@@ -1,5 +1,6 @@
 import { Fragment, useRef, useState } from 'react'
 import { SiteHeader } from '../components/SiteHeader'
+import { MAX_PICKS } from '../event/core'
 import {
   COMPANIES,
   DEFAULT_EVENT,
@@ -34,7 +35,7 @@ const eventLabel = (e: { name: string; date: string }) => `${e.name} · ${e.date
 function statusLine(s: Summary): string {
   if (s.state === 'done') return `Checked ${s.checkDate} · ${s.total} attendee profiles and ${COMPANY_PAGES} company pages in ${s.minutes} min`
   if (s.state === 'running') return `Running since ${s.checkDate}, ${RUNNING_START} · ${s.checked} of ${s.total} profiles · ${RUNNING_LEFT}`
-  return `The profile check is scheduled for ${s.checkDate}. ${s.attendance.attended} attended of ${s.attendance.invited} invited.`
+  return `The profile check is scheduled for ${s.checkDate}. ${s.attendance.attended} of ${s.attendance.invited} invited applicants attended.`
 }
 
 function Provisional({ s }: { s: Summary }) {
@@ -119,7 +120,7 @@ function Details({ c, s, id }: { c: CompanyRow; s: Summary; id: string }) {
 
 function Toggle({ open, onClick, controls, name }: { open: boolean; onClick: () => void; controls: string; name: string }) {
   return (
-    <button type="button" className="out-toggle" aria-expanded={open} aria-controls={controls} aria-label={`Details, ${name}`} onClick={onClick}>
+    <button type="button" className="out-toggle" aria-expanded={open} aria-controls={controls} aria-label={`Details for ${name}`} onClick={onClick}>
       Details
     </button>
   )
@@ -211,7 +212,7 @@ export function Outcomes() {
       <section className="out-intro" aria-labelledby="out-title">
         <h1 id="out-title">Event follow-up</h1>
         <p className="out-lede">
-          3 and 6 months after an event, LinkedIn shows which attendees now work at a company they applied to meet.
+          Three and six months after an event, a LinkedIn profile check counts how many attendees now work at a company they applied to meet.
         </p>
       </section>
 
@@ -245,11 +246,11 @@ export function Outcomes() {
           </button>
         </div>
       </div>
-      <p className="out-sr" role="status">{copied === 'ok' ? 'Summary copied' : copied === 'fail' ? 'Copy not available in this browser' : ''}</p>
+      <p className="out-sr" role="status">{copied === 'ok' ? 'Summary copied' : copied === 'fail' ? 'Could not copy the summary.' : ''}</p>
 
       <section className="out-section" aria-labelledby="out-h-check">
         <h2 id="out-h-check" className="out-h2">
-          LinkedIn check at {cp} months <Provisional s={s} />
+          LinkedIn profile check at {cp} months <Provisional s={s} />
         </h2>
         <p className="out-status" role="status">{statusLine(s)}</p>
         {live && (
@@ -262,7 +263,7 @@ export function Outcomes() {
                   {sh.picked} of {a.matched}
                   {sh.pickedExact && <> · {pct(s.pickedShare.value)}</>}
                 </p>
-                <p className="out-hero__note">{sh.pickedExact ? `${sh.confirmed} of ${sh.picked} confirmed by the company` : TOO_FEW}</p>
+                <p className="out-hero__note">{sh.pickedExact ? `${sh.confirmed} of ${sh.picked} confirmed by the companies` : TOO_FEW}</p>
               </div>
               <ol className="out-steps">
                 {steps.map(([label, value], i) => (
@@ -290,9 +291,9 @@ export function Outcomes() {
               <ul>
                 <li>Shares are of matched profiles; with groups this small, treat them as rough.</li>
                 <li>Profiles are often updated weeks after a job starts.</li>
-                <li>Outcome counts of 1–2 are shown as "1–2".</li>
-                <li>Attendees meet up to three companies, so company counts add up to more than the attendee total.</li>
-                <li>Attendees agree to the follow-up when they apply and can withdraw. Results are counts per event and company, never a list of people; employer and start month are deleted after the 6-month check.</li>
+                <li>Counts of 1 or 2 are shown as “1–2”.</li>
+                <li>Attendees meet up to {MAX_PICKS} companies, so company counts add up to more than the attendee total.</li>
+                <li>Results are counts per event and company, never a list of people; employer and start month are deleted after the 6-month check.</li>
               </ul>
             </details>
           </>
@@ -376,7 +377,7 @@ export function Outcomes() {
                 {scheduled ? (
                   <p className="out-card__line">Invited {c.invited} · Attended {c.attended}</p>
                 ) : (
-                  <p className="out-card__line">Hires <HiresOther c={c} k={cp} s={s} /> · <Report c={c} s={s} /></p>
+                  <p className="out-card__line">Hires found <HiresOther c={c} k={cp} s={s} /> · <Report c={c} s={s} /></p>
                 )}
                 <Toggle open={isOpen} onClick={() => toggle(c.id)} controls={id} name={c.company} />
                 {isOpen && <Details c={c} s={s} id={id} />}

@@ -33,17 +33,17 @@ export function RolePreview({ values, part = 'all' }: { values: Values; part?: '
   const company = hasValue(FIELD_BY_ID.company, values.company) ? values.company!.text!.trim() : 'Your company'
 
   const allFacts: [string, string][] = [
-    ['Type', 'type'],
+    ['Employment type', 'type'],
     ['Positions', 'positions'],
     ...(goal === 'soon' ? [['Expected opening', 'openingWindow'] as [string, string]] : [['Start', 'start'] as [string, string]]),
     ['Work mode', 'mode'],
     ['Office', 'office'],
-    ['Working language', 'worklang'],
+    ['Working languages', 'worklang'],
     ['Finnish', 'finnish'],
     ['Hours', 'hours'],
     ['Salary', 'salary'],
   ]
-  const summaryFacts = allFacts.filter(([label]) => ['Type', 'Positions', 'Expected opening', 'Start', 'Work mode', 'Office', 'Working language', 'Salary'].includes(label))
+  const summaryFacts = allFacts.filter(([label]) => ['Employment type', 'Positions', 'Expected opening', 'Start', 'Work mode', 'Office', 'Working languages', 'Salary'].includes(label))
   const facts = part === 'summary' ? summaryFacts : allFacts
 
   return (
@@ -120,9 +120,11 @@ export function RolePreview({ values, part = 'all' }: { values: Values; part?: '
         ) : null}
         <section>
           <h3>The team</h3>
-          <p>
-            Works most with <Val id="with" values={values} />. <Val id="solo" values={values} />. Team size: <Val id="teamsize" values={values} />.
-          </p>
+          <dl className="preview__pairs">
+            <div><dt>Works most with</dt><dd><Val id="with" values={values} /></dd></div>
+            <div><dt>Solo or team</dt><dd><Val id="solo" values={values} /></dd></div>
+            <div><dt>Team size</dt><dd><Val id="teamsize" values={values} /></dd></div>
+          </dl>
         </section>
         <section>
           <h3>Skills</h3>
@@ -132,7 +134,7 @@ export function RolePreview({ values, part = 'all' }: { values: Values; part?: '
             <div className="preview__skills">
               {(['must', 'teach', 'nice'] as const).map((k) => (
                 <div key={k}>
-                  <h4>{k === 'must' ? 'Must-have' : k === 'teach' ? 'We teach on the job' : 'Nice to have'}</h4>
+                  <h4>{k === 'must' ? 'Must-have' : k === 'teach' ? 'We can teach' : 'Nice to have'}</h4>
                   <p>{skills?.[k].length ? skills[k].join(', ') : '—'}</p>
                 </div>
               ))}
@@ -145,7 +147,7 @@ export function RolePreview({ values, part = 'all' }: { values: Values; part?: '
         <section>
           <h3>Moving here</h3>
           <dl className="preview__pairs">
-            <div><dt>Candidates from abroad</dt><dd><Val id="fromAbroad" values={values} /></dd></div>
+            <div><dt>Applicants from abroad</dt><dd><Val id="fromAbroad" values={values} /></dd></div>
             <div><dt>Work from abroad at first</dt><dd><Val id="abroadFirst" values={values} /></dd></div>
             <div><dt>Visa support</dt><dd><Val id="visa" values={values} /></dd></div>
             <div><dt>Relocation help</dt><dd><Val id="relocation" values={values} /></dd></div>

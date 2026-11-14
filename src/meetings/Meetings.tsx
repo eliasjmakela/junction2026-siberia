@@ -31,7 +31,7 @@ type Candidate = { app: Application; assessment?: Assessment; booking?: Booking;
 const NEXT: { id: NextStep; label: string }[] = [
   { id: 'interview', label: 'Interview' },
   { id: 'keep', label: 'Keep in touch' },
-  { id: 'none', label: 'No further steps' },
+  { id: 'none', label: 'No next step' },
 ]
 const NEXT_LABEL = Object.fromEntries(NEXT.map((n) => [n.id, n.label])) as Record<NextStep, string>
 
@@ -114,7 +114,7 @@ function ScoresAndAnswers({ listing, c }: { listing: Listing; c: Candidate }) {
   return (
     <details className="meet-answers">
       <summary>Scores and answers</summary>
-      <p className="staff-label">AI-drafted scores</p>
+      <p className="staff-label">{c.assessment?.source === 'rules' ? 'Fixed-rule estimate' : 'AI-drafted scores'}</p>
       <p className="meet-overall">{c.assessment?.overall != null ? <><b>{c.assessment.overall.toFixed(1)}</b> of 10</> : 'Not scored'}</p>
       <Scores listing={listing} c={c} />
       <ol className="staff-qa">
@@ -238,11 +238,11 @@ function RatingBox({ listing, c, announce }: { listing: Listing; c: Candidate; a
   const focusEdit = () => setTimeout(() => edit.current?.focus())
 
   function save() {
-    if (!score || !next) return setError('Choose a score and a next step.')
+    if (!score || !next) return setError('Choose a rating and a next step.')
     if (touchesForbidden(note)) return setError('Remove personal characteristics from the note.')
     if (!rateMeeting({ applicationId: c.app.id, listingId: listing.id, score, next, note: note.trim() })) {
-      setError('Could not save in this browser.')
-      return announce('Could not save in this browser.')
+      setError('Could not save the rating. Try again.')
+      return announce('Could not save the rating. Try again.')
     }
     setError('')
     setEditing(false)
@@ -283,7 +283,7 @@ function RatingBox({ listing, c, announce }: { listing: Listing; c: Candidate; a
       }}
     >
       <fieldset className="meet-field">
-        <legend className="staff-label">How good did the candidate seem?</legend>
+        <legend className="staff-label">How well does the candidate fit the role?</legend>
         <div className="chips">
           {([1, 2, 3, 4, 5] as const).map((n) => (
             <label key={n} className="chip meet-chip--num">
@@ -293,7 +293,7 @@ function RatingBox({ listing, c, announce }: { listing: Listing; c: Candidate; a
           ))}
         </div>
         <p className="meet-hint" id={`${id}-scale`}>
-          1 Not a fit · 5 Strong
+          1 Not a fit · 5 Strong fit
         </p>
       </fieldset>
       <fieldset className="meet-field">
@@ -365,7 +365,7 @@ export function Meetings() {
 
   const rail: Record<Stage, { step: string; task: string; meta: string }> = {
     before: { step: 'Before the event', task: 'Book meetings', meta: `${candidates.length} invited · ${booked.length} booked` },
-    day: { step: `Event day · ${EVENT.date}`, task: 'Meet at your stand', meta: `${held.length} meetings` },
+    day: { step: `Event day · ${EVENT.date}`, task: 'Meet at your stand', meta: `${held.length} ${held.length === 1 ? 'meeting' : 'meetings'}` },
     after: { step: 'After the event', task: 'Rate the meetings', meta: `${rated} of ${held.length} rated` },
   }
 
@@ -381,8 +381,8 @@ export function Meetings() {
     const r = bookMeeting(c.app.id, listing.id, start, place)
     if (r === 'taken') return setGridError('That time is taken. Choose another time.')
     if (r === 'storage') {
-      setGridError('Could not save in this browser.')
-      return setMessage('Could not save in this browser.')
+      setGridError('Could not book the meeting. Try again.')
+      return setMessage('Could not book the meeting. Try again.')
     }
     setMessage(`Meeting booked for ${c.app.code} at ${start}.`)
     close(c.app.id)
@@ -390,7 +390,7 @@ export function Meetings() {
 
   function cancel(c: Candidate) {
     if (!listing) return
-    if (!cancelMeeting(c.app.id, listing.id)) return setMessage('Could not save in this browser.')
+    if (!cancelMeeting(c.app.id, listing.id)) return setMessage('Could not cancel the meeting. Try again.')
     setMessage(`Meeting cancelled for ${c.app.code}.`)
     setOpen(null)
     setRefocus({ id: c.app.id, n: Date.now() })
@@ -411,7 +411,7 @@ export function Meetings() {
       <section className="staff-intro" aria-labelledby="meet-title">
         <h1 id="meet-title">Your meetings at {EVENT.name}</h1>
         <p className="hint">
-          Book 20-minute meetings with the candidates City of Espoo invited for your role, meet them at your stand on {EVENT.date}, then rate each meeting.
+          Book 20-minute meetings with the candidates City of Espoo staff invited for your role, meet them at your stand on {EVENT.date}, then rate each meeting.
         </p>
       </section>
 
@@ -436,7 +436,7 @@ export function Meetings() {
           </dl>
         </section>
       ) : (
-        <p className="staff-empty">Your role is not published for this event yet. Meetings open once City of Espoo has invited candidates for it.</p>
+        <p className="staff-empty">Your role is not published for this event yet. Meetings open once City of Espoo staff have invited candidates for it.</p>
       )}
 
       {listing && (
@@ -465,7 +465,7 @@ export function Meetings() {
             </h2>
             <p className="meet-head__meta">{rail.before.meta}</p>
           </div>
-          <p className="staff-lede">City of Espoo staff invited these candidates for your role and send each meeting time to the candidate. Candidates are shown by application code.</p>
+          <p className="staff-lede">City of Espoo staff invited these candidates for your role and send each candidate their meeting time. Candidates are shown by application code.</p>
           {candidates.length ? (
             <ul className="meet-cards">
               {candidates.map((c) => {
@@ -493,7 +493,7 @@ export function Meetings() {
                           <>
                             <p className="meet-notbooked">Not booked</p>
                             <button type="button" className="btn meet-book" data-trigger={c.app.id} aria-expanded={isOpen} onClick={() => toggle(c)}>
-                              Book a meeting
+                              Book meeting
                             </button>
                           </>
                         )}
@@ -519,7 +519,7 @@ export function Meetings() {
             </ul>
           ) : (
             <p className="staff-empty">
-              No candidates are invited for this role yet. City of Espoo staff decide invitations in <a href="#/staff">Staff review</a>.
+              No candidates are invited for this role yet. City of Espoo staff decide invitations after applications close.
             </p>
           )}
         </section>
@@ -532,7 +532,7 @@ export function Meetings() {
               Your schedule on {EVENT.date}
             </h2>
             <p className="meet-head__meta">
-              {held.length} meetings · {place}
+              {held.length} {held.length === 1 ? 'meeting' : 'meetings'} · {place}
             </p>
           </div>
           {held.length ? (
@@ -583,7 +583,7 @@ export function Meetings() {
               ))}
             </ul>
           ) : (
-            <p className="staff-empty">No meetings to rate. Meetings you book appear here after the event.</p>
+            <p className="staff-empty">No meetings to rate. Meetings you book appear here.</p>
           )}
         </section>
       )}

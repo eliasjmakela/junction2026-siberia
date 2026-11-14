@@ -50,7 +50,7 @@ function ProducerTag({ a }: { a: Pick<Assessment, 'source' | 'model'> }) {
       {a.model && <> · {a.model}</>}
     </span>
   ) : (
-    <span className="staff-tag">Rules estimate</span>
+    <span className="staff-tag">Fixed-rule estimate</span>
   )
 }
 
@@ -320,10 +320,10 @@ function SlotStepper({ listingId, slots }: { listingId: string; slots: number })
   return (
     <div className="staff-slots">
       <label htmlFor="staff-slots-input" className="staff-slots__label">
-        Event slots
+        Invitation slots
       </label>
       <div className="stepper">
-        <button type="button" aria-label="Fewer slots" disabled={slots <= 1} onClick={() => setSlots(listingId, slots - 1)}>
+        <button type="button" aria-label="Fewer invitation slots" disabled={slots <= 1} onClick={() => setSlots(listingId, slots - 1)}>
           <svg viewBox="0 0 16 16" aria-hidden="true">
             <rect x="3" y="7" width="10" height="2" />
           </svg>
@@ -337,7 +337,7 @@ function SlotStepper({ listingId, slots }: { listingId: string; slots: number })
           value={slots}
           onChange={(e) => e.target.value !== '' && setSlots(listingId, Number(e.target.value))}
         />
-        <button type="button" aria-label="More slots" disabled={slots >= 50} onClick={() => setSlots(listingId, slots + 1)}>
+        <button type="button" aria-label="More invitation slots" disabled={slots >= 50} onClick={() => setSlots(listingId, slots + 1)}>
           <svg viewBox="0 0 16 16" aria-hidden="true">
             <rect x="3" y="7" width="10" height="2" />
             <rect x="7" y="3" width="2" height="10" />
@@ -473,7 +473,7 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
       <div className="staff-toolbar">
         <SlotStepper listingId={listing.id} slots={slots} />
         <p className="staff-toolbar__count">
-          {invites > slots ? <strong>{invites} invited · {slots} slots</strong> : `${invites} of ${slots} invited`} · {scored} of {ranked.length} scored
+          {invites > slots ? <strong>{invites} invited · {slots} {slots === 1 ? 'slot' : 'slots'}</strong> : `${invites} of ${slots} invited`} · {scored} of {ranked.length} scored
         </p>
       </div>
       <div className="staff-table-wrap">
@@ -537,7 +537,7 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
                         </span>
                       ) : (
                         <span className="staff-gap">
-                          {answeredEarlier(row.app, listing) ? 'Answered earlier questions' : scoring || isScoring(row.app.id, listing.id) ? 'Scoring…' : 'Not scored'}
+                          {answeredEarlier(row.app, listing) ? 'Answered an earlier version' : scoring || isScoring(row.app.id, listing.id) ? 'Scoring…' : 'Not scored'}
                         </span>
                       )}
                     </td>
@@ -653,7 +653,7 @@ function Invitations({ state }: { state: EventState }) {
               <thead>
                 <tr>
                   <th scope="col">Applicant</th>
-                  <th scope="col">Invited by</th>
+                  <th scope="col">Invited to meet</th>
                   <th scope="col">E-mail</th>
                 </tr>
               </thead>
@@ -714,19 +714,19 @@ export function Staff() {
       <section className="staff-intro" aria-labelledby="staff-title">
         <h1 id="staff-title">Applications</h1>
         <p className="hint">
-          Rank applicants within each company role, check the evidence behind each score, and decide who is invited to {EVENT.name}. Applications
-          close {EVENT.applyBy}.
+          Applicants are ranked within each company’s role. Check the evidence behind each score and decide who is invited to {EVENT.name}. Applications
+          close on {EVENT.applyBy}.
         </p>
       </section>
 
       <details className="staff-notice">
         <summary>
-          <span className="staff-label">Before you decide</span> A person decides every invitation. How scores work
+          <span className="staff-label">Before you decide</span> How scores work and who decides
         </summary>
         <ul>
           <li>Scores are drafted by AI from the applicant’s answers to that company’s questions, or estimated by fixed rules when AI is unavailable. Select a score to see the quote it is based on.</li>
           <li>A person decides every invitation. Check the evidence before deciding: a score is a suggestion, never a decision.</li>
-          <li>Questions come from the company’s own recent problem, and scores reward concrete examples of the applicant’s own work, so generic or AI-polished answers score low.</li>
+          <li>Questions come from the company’s own description of the role. Scores reward concrete examples of the applicant’s own work, so generic or AI-polished answers score low.</li>
           <li>Scoring never sees e-mail addresses or application codes. Attributes come only from the company’s own description of the role.</li>
           <li>An attribute without evidence counts as 0 in the overall score. When the topic filter withholds the evidence, the attribute is left out of the overall score and shown as “Read the answers”.</li>
         </ul>
@@ -774,11 +774,11 @@ export function Staff() {
                 <span>{listing.company}</span>
                 {listing.set.source === 'sample' ? null : listing.set.source === 'ai' ? (
                   <span className="staff-tag staff-tag--ai">
-                    <b>Questions generated by AI</b>
+                    <b>AI-drafted questions</b>
                     {listing.set.model && <> · {listing.set.model}</>}
                   </span>
                 ) : (
-                  <span className="staff-tag">Questions from fixed rules</span>
+                  <span className="staff-tag">Questions from fixed templates</span>
                 )}
                 <span>
                   {listing.set.attributes.length} attributes · {listing.set.questions.length} questions

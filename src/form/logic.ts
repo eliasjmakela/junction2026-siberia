@@ -76,7 +76,7 @@ export function display(fieldId: string, values: Values): string | null {
     }
     case 'skills': {
       const s = v.skills!
-      return [s.must.length && `${s.must.length} must-have`, s.teach.length && `${s.teach.length} we teach`, s.nice.length && `${s.nice.length} nice to have`]
+      return [s.must.length && `${s.must.length} must-have`, s.teach.length && `${s.teach.length} we can teach`, s.nice.length && `${s.nice.length} nice to have`]
         .filter(Boolean)
         .join(', ')
     }
@@ -120,9 +120,9 @@ export function fitLists(values: Values): { fit: string[]; not: string[] } {
   if (c('finnish') === 'fluent') not.push('You do not speak fluent Finnish')
   if (c('finnish') === 'basic') not.push('You do not speak any Finnish')
   if (c('mode') === 'onsite') not.push('You need to work remotely')
-  if (c('mode') === 'hybrid') not.push('You need fully remote work')
-  if (c('fromAbroad') === 'no') not.push('You are applying from outside Finland')
-  else if (c('visa') === 'no') not.push('You need visa sponsorship')
+  if (c('mode') === 'hybrid') not.push('You need to work fully remotely')
+  if (c('fromAbroad') === 'no') not.push('You are applying from abroad')
+  else if (c('visa') === 'no') not.push('You need visa support')
   if (c('abroadFirst') === 'no' && c('fromAbroad') !== 'no') not.push('You need to work from abroad at first')
   if (c('education') === 'required') not.push('You do not have a relevant degree')
   const type = c('type')

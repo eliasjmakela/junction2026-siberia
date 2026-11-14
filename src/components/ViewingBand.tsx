@@ -97,7 +97,7 @@ export function ViewingBand({
                           }}
                         >
                           <span className="band__menu-co">{own || 'New company'}</span>
-                          <span className="band__menu-role">{own ? 'Your role form' : 'Your role form, blank to start'}</span>
+                          <span className="band__menu-role">{own ? 'Your role profile' : 'Your role profile, not started'}</span>
                         </button>
                       </li>
                       {events.map((l) => (
@@ -120,7 +120,7 @@ export function ViewingBand({
                     <div className="band__menu-foot">
                       {confirming ? (
                         <>
-                          <p>Clear all event data in this browser? Published roles, applications, scores and decisions are removed. Built-in records are restored.</p>
+                          <p>Clear all event data in this browser? Your published role, applications, scores, decisions, meetings and ratings are removed. The five event companies and their applications stay.</p>
                           <div className="band__menu-confirm">
                             <button
                               type="button"
@@ -130,7 +130,7 @@ export function ViewingBand({
                                 close(true)
                               }}
                             >
-                              Clear
+                              Clear event data
                             </button>
                             <button type="button" onClick={() => setConfirming(false)}>
                               Cancel

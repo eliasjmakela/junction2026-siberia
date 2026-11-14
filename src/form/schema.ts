@@ -61,7 +61,7 @@ export type Screen = { id: string; name: string; title: string; hint?: string; f
 export const SCREENS: Screen[] = [
   {
     id: 'goal',
-    name: 'Vacancy',
+    name: 'Status',
     title: 'What is the status of this role?',
     hint: 'Choose Open now for an active vacancy, Opening within 3 months for a planned hire, or Talent pipeline for exploratory conversations.',
     fields: [
@@ -87,7 +87,7 @@ export const SCREENS: Screen[] = [
         id: 'openingWindow',
         kind: 'single',
         label: 'When do you expect to open this role?',
-        hint: 'The hiring plan is for the next three months.',
+        hint: 'A best estimate is enough.',
         short: 'Expected opening',
         onlyFor: ['soon'],
         options: [
@@ -101,7 +101,7 @@ export const SCREENS: Screen[] = [
         kind: 'text',
         multiline: true,
         label: 'What would need to happen before hiring?',
-        hint: 'For example, a project is approved or the team has capacity to grow.',
+        hint: 'The decision, funding or change that would open the role.',
         short: 'Hiring condition',
         onlyFor: ['pipeline'],
         placeholder: 'e.g. a project is approved or the team has capacity to grow.',
@@ -118,7 +118,7 @@ export const SCREENS: Screen[] = [
       {
         id: 'type',
         kind: 'single',
-        label: 'Type',
+        label: 'Employment type',
         options: [
           { id: 'full', label: 'Full-time' },
           { id: 'part', label: 'Part-time' },
@@ -162,7 +162,7 @@ export const SCREENS: Screen[] = [
         multiline: true,
         label: 'A real problem',
         lead: 'A recent problem this person would help solve:',
-        hint: 'One specific problem from the last few months, not a list of duties.',
+        hint: 'One specific problem from the last few months.',
         placeholder: 'e.g. our scheduling service went down twice during the spring rush and technicians missed visits.',
       },
       {
@@ -209,6 +209,7 @@ export const SCREENS: Screen[] = [
           { id: 'engineers', label: 'Engineers' },
           { id: 'suppliers', label: 'Suppliers' },
           { id: 'management', label: 'Management' },
+          { id: 'other', label: 'Other teams' },
         ],
       },
       { id: 'solo', kind: 'scale', label: 'Solo or team-based?', left: 'Mostly solo', right: 'Mostly team' },
@@ -257,7 +258,7 @@ export const SCREENS: Screen[] = [
       {
         id: 'worklang',
         kind: 'multi',
-        label: 'Working language',
+        label: 'Working languages',
         hint: 'Choose all that are used day to day.',
         options: [
           { id: 'fi', label: 'Finnish' },
@@ -310,7 +311,7 @@ export const SCREENS: Screen[] = [
       {
         id: 'fromAbroad',
         kind: 'single',
-        label: 'Open to candidates from abroad?',
+        label: 'Open to applicants from abroad?',
         short: 'From abroad',
         options: [
           { id: 'yes', label: 'Yes' },
@@ -347,7 +348,7 @@ export const SCREENS: Screen[] = [
     id: 'company',
     name: 'Company',
     title: 'About the company',
-    hint: 'These answers are shared by all of your roles.',
+    hint: 'Company name, size and who does well here are shared by all of your roles.',
     fields: [
       { id: 'company', kind: 'text', label: 'Company name', placeholder: 'e.g. Example Oy', company: true, noUndecided: true },
       {
