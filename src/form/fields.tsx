@@ -188,6 +188,11 @@ export function FieldView({ field, value, onChange, invalid, roleTitle = '' }: P
             rows={field.multiline ? 2 : undefined}
             aria-describedby={describedBy}
             aria-invalid={invalid || undefined}
+            autoComplete="off"
+            data-1p-ignore
+            data-lpignore="true"
+            data-bwignore
+            data-form-type="other"
             onChange={(e) => onChange({ text: e.target.value })}
           />
           {!field.noUndecided && !field.optional && (
