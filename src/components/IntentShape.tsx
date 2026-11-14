@@ -99,7 +99,7 @@ export function Emblem({ goal, size = 16 }: { goal: Goal; size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" aria-hidden="true" focusable="false" className="emblem">
       {goal === 'now' && <path d="M1 2 L15 8 L1 14 Z" />}
-      {goal === 'soon' && <path d="M1 2 L15 6 L15 10 L1 14 Z" />}
+      {goal === 'soon' && <path d="M1 2 L15 5 L15 11 L1 14 Z" />}
       {goal === 'pipeline' && <rect x="1" y="5" width="14" height="6" />}
     </svg>
   )

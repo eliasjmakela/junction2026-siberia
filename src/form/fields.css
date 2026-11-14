@@ -420,7 +420,7 @@
 }
 
 .skills__lists {
-  margin-top: var(--s-3);
+  margin-top: var(--s-4);
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--s-3);
@@ -464,6 +464,38 @@
   border-radius: var(--radius);
   font-size: var(--type-small);
   font-weight: 600;
+}
+
+.tag-skill__move {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-left: 4px;
+  fill: var(--spruce);
+}
+
+.tag-skill__move select {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.tag-skill__move svg {
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+}
+
+.tag-skill__move:hover {
+  background: var(--granite-light);
+}
+
+.tag-skill__move:has(select:focus-visible) {
+  outline: var(--focus);
+  outline-offset: 1px;
 }
 
 .tag-skill button {

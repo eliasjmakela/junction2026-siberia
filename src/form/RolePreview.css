@@ -2,19 +2,23 @@
 .preview {
   margin-top: var(--s-5);
   max-width: 880px;
-  background: var(--white);
+  background: var(--granite-light);
   border-radius: var(--radius);
   padding: var(--s-6) var(--s-6) var(--s-5);
 }
 
-.preview__company {
+.preview__byline {
+  margin-top: var(--s-2);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1) var(--s-3);
   font-size: var(--type-small);
   font-weight: 600;
   color: var(--ink-soft);
 }
 
 .preview__title {
-  margin-top: var(--s-1);
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--type-display-l);
@@ -26,19 +30,13 @@
   display: inline-flex;
   align-items: center;
   gap: var(--s-2);
-  margin-top: 12px;
-  padding: var(--s-1) 10px;
-  background: var(--spruce);
-  color: var(--on-spruce);
-  font-size: var(--type-label);
-  font-weight: 600;
-  border-radius: var(--radius);
+  color: var(--spruce);
 }
 
 .preview__status .emblem {
-  fill: var(--lichen);
-  width: 12px;
-  height: 12px;
+  fill: var(--spruce);
+  width: 16px;
+  height: 16px;
 }
 
 .preview__purpose {
@@ -75,12 +73,11 @@
   margin-top: var(--s-5);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--s-2);
+  gap: var(--s-5);
 }
 
 .fit {
-  padding: var(--s-4);
-  border-radius: var(--radius);
+  padding-top: var(--s-3);
 }
 
 .fit h3 {
@@ -113,20 +110,16 @@
 }
 
 .fit--yes {
-  background: var(--spruce);
-  color: var(--on-spruce);
-}
-
-.fit--yes h3 {
-  color: var(--lichen);
+  box-shadow: inset 0 4px 0 var(--spruce);
 }
 
 .fit--yes li::before {
   background: var(--lichen);
+  border: 2px solid var(--spruce);
 }
 
 .fit--no {
-  background: var(--granite-light);
+  box-shadow: inset 0 4px 0 var(--granite-line);
 }
 
 .fit--no li::before {

@@ -102,9 +102,16 @@ export function display(fieldId: string, values: Values): string | null {
   }
 }
 
+const BARE = new Set(['Yes', 'No', 'Depends', 'Case by case', 'Required', 'Preferred', 'Not important', 'Basic', 'Fluent', 'Fixed', 'Flexible', UNDECIDED])
+
 export function screenSummary(screen: Screen, values: Values): string {
   return screen.fields
-    .map((f) => display(f.id, values))
+    .map((f) => {
+      const text = display(f.id, values)
+      if (!text) return null
+      const bare = BARE.has(text) || f.kind === 'number'
+      return bare ? `${f.short ?? f.label}: ${text}` : text
+    })
     .filter(Boolean)
     .join(' · ')
 }
@@ -132,7 +139,7 @@ export function fitLists(values: Values): { fit: string[]; not: string[] } {
   const c = (id: string) => (values[id]?.undecided ? undefined : values[id]?.choice)
   const skills = values.skills?.undecided ? undefined : values.skills?.skills
 
-  for (const s of skills?.must.slice(0, 3) ?? []) fit.push(`You have ${s}`)
+  for (const s of skills?.must.slice(0, 2) ?? []) fit.push(`You have worked with ${s}`)
   if (skills?.teach.length) fit.push(`You want to learn ${skills.teach.slice(0, 2).join(' or ')} on the job`)
   const thrive = hasValue(FIELD_BY_ID.thrive, values.thrive) ? values.thrive!.text!.trim().replace(/\.$/, '') : null
   if (thrive) fit.push(`You tend to ${thrive}`)
@@ -151,5 +158,5 @@ export function fitLists(values: Values): { fit: string[]; not: string[] } {
   if (type === 'full') not.push('You are looking for part-time work')
   if (type === 'intern' || type === 'thesis' || type === 'summer') not.push('You are looking for a permanent job')
 
-  return { fit: fit.slice(0, 5), not: not.slice(0, 5) }
+  return { fit: fit.slice(0, 6), not: not.slice(0, 6) }
 }

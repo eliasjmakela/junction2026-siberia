@@ -300,6 +300,10 @@ function SkillsField({ field, value, onChange, invalid }: Props) {
     const next = { ...skills, [bucket]: skills[bucket].filter((s) => s !== name) }
     onChange(next.must.length || next.teach.length || next.nice.length ? { skills: next } : {})
   }
+  const move = (from: keyof Skills, to: keyof Skills, name: string) => {
+    if (from === to) return
+    onChange({ skills: { ...skills, [from]: skills[from].filter((s) => s !== name), [to]: [...skills[to], name] } })
+  }
   const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
@@ -314,7 +318,7 @@ function SkillsField({ field, value, onChange, invalid }: Props) {
           <input
             id={`${uid}-skill`}
             className="input"
-            placeholder={undecided ? UNDECIDED : 'e.g. Kotlin, customer service, forklift licence'}
+            placeholder={undecided ? UNDECIDED : 'e.g. Kotlin or customer service'}
             value={draft}
             disabled={undecided}
             autoComplete="off"
@@ -333,6 +337,9 @@ function SkillsField({ field, value, onChange, invalid }: Props) {
         <p className="visually-hidden" id={`${uid}-skill-help`}>
           Press Enter to add as a must-have.
         </p>
+        <div className="qfield__sub">
+          <Undecided value={value} onChange={onChange} />
+        </div>
         <div className="skills__lists">
           {BUCKETS.map((b) => (
             <div key={b.key} className="skills__list">
@@ -344,6 +351,23 @@ function SkillsField({ field, value, onChange, invalid }: Props) {
                   {skills[b.key].map((s) => (
                     <li key={s} className="tag-skill">
                       {s}
+                      <span className="tag-skill__move">
+                        <select
+                          aria-label={`Move ${s} to`}
+                          value={b.key}
+                          disabled={undecided}
+                          onChange={(e) => move(b.key, e.target.value as keyof Skills, s)}
+                        >
+                          {BUCKETS.map((o) => (
+                            <option key={o.key} value={o.key}>
+                              {o.label}
+                            </option>
+                          ))}
+                        </select>
+                        <svg viewBox="0 0 16 16" aria-hidden="true">
+                          <path d="M3 6 L8 11 L13 6 L12 5 L8 9 L4 5 Z" />
+                        </svg>
+                      </span>
                       <button type="button" aria-label={`Remove ${s}`} onClick={() => remove(b.key, s)} disabled={undecided}>
                         <svg viewBox="0 0 16 16" aria-hidden="true">
                           <path d="M4 3 L8 7 L12 3 L13 4 L9 8 L13 12 L12 13 L8 9 L4 13 L3 12 L7 8 L3 4 Z" />
@@ -356,9 +380,6 @@ function SkillsField({ field, value, onChange, invalid }: Props) {
             </div>
           ))}
         </div>
-      </div>
-      <div className="qfield__sub">
-        <Undecided value={value} onChange={onChange} />
       </div>
     </Shell>
   )

@@ -47,17 +47,19 @@ export function RolePreview({ values }: { values: Values }) {
   return (
     <article className="preview" aria-label="Role page preview">
       <header className="preview__head">
-        <p className="preview__company">
-          {company}
-          {hasValue(FIELD_BY_ID.size, values.size) && <span> · {display('size', values)}</span>}
-        </p>
         <h2 className="preview__title">{title}</h2>
-        {goal && (
-          <p className="preview__status">
-            <Emblem goal={goal} />
-            {GOALS[goal].name}
-          </p>
-        )}
+        <p className="preview__byline">
+          {goal && (
+            <span className="preview__status">
+              <Emblem goal={goal} />
+              {GOALS[goal].name}
+            </span>
+          )}
+          <span>
+            {company}
+            {hasValue(FIELD_BY_ID.size, values.size) && <> · {display('size', values)}</>}
+          </span>
+        </p>
         <div className="preview__purpose">
           <Sentence id="purpose" values={values} />
         </div>

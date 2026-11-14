@@ -35,7 +35,7 @@ const CY = H / 2
 const blunt = quad([L, T], [R, T], [R, B], [L, B])
 const band = quad([L, CY - 48], [R, CY - 48], [R, CY + 48], [L, CY + 48])
 const wedge = quad([L, T + 32], [R, CY], [R, CY], [L, B - 32])
-const blunted = quad([L, T + 32], [R, CY - 40], [R, CY + 40], [L, B - 32])
+const blunted = quad([L, T + 32], [R, CY - 64], [R, CY + 64], [L, B - 32])
 
 export const SHAPES: Record<'blunt' | Goal, Pt[]> = {
   blunt,

@@ -24,6 +24,8 @@ type Base = {
   noUndecided?: boolean
   /** Asked once per company and kept when adding another role. */
   company?: boolean
+  /** Short name used to label bare answers (Yes, No, 2) in summaries. */
+  short?: string
 }
 
 export type Field =
@@ -98,7 +100,7 @@ export const SCREENS: Screen[] = [
           { id: 'contract', label: 'Contract' },
         ],
       },
-      { id: 'positions', kind: 'number', label: 'Number of positions', min: 1, max: 99 },
+      { id: 'positions', kind: 'number', label: 'Number of positions', short: 'Positions', min: 1, max: 99 },
       {
         id: 'start',
         kind: 'single',
@@ -138,6 +140,7 @@ export const SCREENS: Screen[] = [
         id: 'hours',
         kind: 'single',
         label: 'Working hours',
+        short: 'Hours',
         options: [
           { id: 'fixed', label: 'Fixed' },
           { id: 'flexible', label: 'Flexible' },
@@ -199,6 +202,7 @@ export const SCREENS: Screen[] = [
         id: 'education',
         kind: 'single',
         label: 'Education',
+        short: 'Education',
         options: [
           { id: 'required', label: 'Required' },
           { id: 'preferred', label: 'Preferred' },
@@ -228,6 +232,7 @@ export const SCREENS: Screen[] = [
         id: 'finnish',
         kind: 'single',
         label: 'Finnish required?',
+        short: 'Finnish',
         options: [
           { id: 'no', label: 'No' },
           { id: 'basic', label: 'Basic' },
@@ -257,6 +262,7 @@ export const SCREENS: Screen[] = [
         id: 'abroadFirst',
         kind: 'single',
         label: 'Can the person work from abroad at first?',
+        short: 'Abroad at first',
         options: [
           { id: 'yes', label: 'Yes' },
           { id: 'no', label: 'No' },
@@ -267,6 +273,7 @@ export const SCREENS: Screen[] = [
         id: 'fromAbroad',
         kind: 'single',
         label: 'Open to candidates from abroad?',
+        short: 'From abroad',
         options: [
           { id: 'yes', label: 'Yes' },
           { id: 'no', label: 'No' },
@@ -277,6 +284,7 @@ export const SCREENS: Screen[] = [
         id: 'visa',
         kind: 'single',
         label: 'Visa support',
+        short: 'Visa',
         options: [
           { id: 'yes', label: 'Yes' },
           { id: 'no', label: 'No' },

@@ -182,17 +182,19 @@ export default function App() {
             </p>
             <RolePreview values={values} />
             <div className="actions actions--review">
-              <button type="button" className="btn" onClick={submit} disabled={savedAt !== null}>
-                {savedAt ? 'Submitted' : 'Submit role'} {!savedAt && <Arrow />}
-              </button>
               {savedAt ? (
-                <button type="button" className="btn-quiet" onClick={addAnotherRole}>
-                  Add another role
+                <button type="button" className="btn" onClick={addAnotherRole}>
+                  Add another role <Arrow />
                 </button>
               ) : (
-                <button type="button" className="btn-quiet" onClick={back}>
-                  Back
-                </button>
+                <>
+                  <button type="button" className="btn" onClick={submit}>
+                    Submit role <Arrow />
+                  </button>
+                  <button type="button" className="btn-quiet" onClick={back}>
+                    Back
+                  </button>
+                </>
               )}
             </div>
             <p className="status" role="status">
