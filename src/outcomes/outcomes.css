@@ -106,6 +106,16 @@
   gap: var(--s-2);
 }
 
+.btn-chip--quiet {
+  background: transparent;
+  border: 2px solid var(--spruce);
+  color: var(--spruce);
+}
+
+.btn-chip--quiet:hover:not(:disabled) {
+  background: var(--granite-light);
+}
+
 .out-actions .btn-chip {
   min-height: 44px;
 }
@@ -197,6 +207,18 @@
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.02em;
+}
+
+.out-hero--provisional {
+  border-top-style: dashed;
+}
+
+.out-hero__prev {
+  margin-top: var(--s-2);
+  padding-top: var(--s-2);
+  border-top: var(--rule);
+  font-size: var(--type-small);
+  font-weight: 600;
 }
 
 .out-hero__note {
@@ -334,7 +356,7 @@
 
 .out-lanes {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--s-2) var(--s-3);
   margin-top: var(--s-2);
   list-style: none;
@@ -629,7 +651,7 @@
   }
 
   .out-lanes {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .out-only-wide {
@@ -638,5 +660,16 @@
 
   .out-only-narrow {
     display: grid;
+  }
+}
+
+@media (max-width: 720px) {
+  .out-table--across {
+    font-size: var(--type-label);
+  }
+
+  .out-table--across th,
+  .out-table--across td {
+    padding: var(--s-1);
   }
 }

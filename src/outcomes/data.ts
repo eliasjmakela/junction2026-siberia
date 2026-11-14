@@ -49,7 +49,7 @@ export const EVENTS: FollowEvent[] = [
     seed: 20270304,
     cohort: 140,
     hirePull: [1.2, 1.0, 0.9, 0.45, 0.8],
-    checks: { 3: { state: 'done', date: '4 Jun 2027' }, 6: { state: 'running', date: '6 Sep 2027' } },
+    checks: { 3: { state: 'done', date: '4 Jun 2027' }, 6: { state: 'running', date: '18 Sep 2027' } },
   },
   {
     id: 'a27',
@@ -63,6 +63,8 @@ export const EVENTS: FollowEvent[] = [
 ]
 
 export const DEFAULT_EVENT = 's27'
+export const RUNNING_START = '09:12'
+export const RUNNING_LEFT = 'about 2 min left'
 
 export type Person = {
   id: number
@@ -97,7 +99,11 @@ export type CompanyRow = Company & {
 
 export type Action = 'confirm' | 'ask' | 'again' | 'none'
 
-export type Agent = { id: number; assigned: number; done: number }
+export type Agent = { id: number; assigned: number; done: number; matched: number }
+
+export type Shown = { picked: string; elsewhere: string; none: string; changes: string; confirmed: string; pickedExact: boolean }
+
+export type Previous = { date: string; picked: string; matched: number; share: string | null }
 
 export type Summary = {
   event: FollowEvent
@@ -112,6 +118,9 @@ export type Summary = {
   confirmed: number
   pickedShare: Interval
   agents: Agent[]
+  pages: { done: number; total: number }
+  shown: Shown
+  previous: Previous | null
   minutes: number
   crossChecks: { reports: number; surveys: number; differ: number }
   companies: CompanyRow[]
@@ -138,7 +147,7 @@ export const COMPANIES: Company[] = SAMPLE_LISTINGS.map((l) => ({
 }))
 
 const INTEREST = [1.3, 1.5, 1.0, 0.8, 0.9]
-const SLOTS = 14
+const SLOTS = [14, 11, 9, 12, 10]
 
 function pickWeighted(rand: () => number, ids: string[], weights: number[]): string {
   const total = weights.reduce((s, w) => s + w, 0)
@@ -172,7 +181,7 @@ function generate(event: FollowEvent): Person[] {
   const invitedBy = new Map<number, string[]>()
   for (const c of ids) {
     const ranked = raw.filter((p) => p.picks.includes(c)).sort((a, b) => b.quality[c] - a.quality[c])
-    for (const p of ranked.slice(0, SLOTS)) invitedBy.set(p.id, [...(invitedBy.get(p.id) ?? []), c])
+    for (const p of ranked.slice(0, SLOTS[ids.indexOf(c)] ?? 10)) invitedBy.set(p.id, [...(invitedBy.get(p.id) ?? []), c])
   }
 
   return raw.map((p) => {
@@ -191,6 +200,7 @@ function generate(event: FollowEvent): Person[] {
     const other3 = !hired3 && rand() < 0.14
     const other6 = !hired6 && (other3 || rand() < 0.13)
 
+    const checkedRoll = extra()
     return {
       id: p.id,
       picks: p.picks,
@@ -201,7 +211,7 @@ function generate(event: FollowEvent): Person[] {
       employer: { 3: hired3 ? target : null, 6: hired6 ? target : null },
       survey: { 3: extra() < 0.55, 6: extra() < 0.55 },
       surveyDiffers: extra() < 0.05,
-      checkedInRun: extra() < 0.6,
+      checkedInRun: checkedRoll < 0.6 || (attended && matched && !(hired3 === false && other3 === false)),
     } satisfies Person
   })
 }
@@ -278,7 +288,6 @@ function companyRows(event: FollowEvent, cp: Checkpoint, b: Built): CompanyRow[]
       reported[k] = reportedAt(k)
       if (event.checks[k].state === 'done' || k === cp) hires[k] = hiresAt(k)
     }
-    const h = hires[cp]
     const earlier = EVENTS.filter((e) => e.seed < event.seed).map((e) => {
       const eb = build(e)
       const eatt = eb.people.filter((p) => p.attended && p.matched && p.invitedBy.includes(c.id))
@@ -292,7 +301,11 @@ function companyRows(event: FollowEvent, cp: Checkpoint, b: Built): CompanyRow[]
       matched: att.filter(countable).length,
       hires,
       reported,
-      action: state === 'done' && h !== null ? actionFor(att.length, h, reported[cp]) : null,
+      action: (() => {
+        const base: Checkpoint = state === 'running' ? 3 : cp
+        const hb = hires[base]
+        return event.checks[base].state === 'done' && hb !== null ? actionFor(att.length, hb, reported[base]) : null
+      })(),
       history: earlier.reverse(),
     }
   })
@@ -318,7 +331,8 @@ export function summary(eventId: string, cp: Checkpoint): Summary {
   const mi = Math.max(1, Math.round(attended.length / 6))
   const agents: Agent[] = Array.from({ length: 6 }, (_, i) => {
     const mine = attended.filter((_, k) => k % 6 === i)
-    return { id: i + 1, assigned: mine.length, done: live ? (state === 'running' ? mine.filter((p) => p.checkedInRun).length : mine.length) : 0 }
+    const doneP = live ? (state === 'running' ? mine.filter((p) => p.checkedInRun) : mine) : []
+    return { id: i + 1, assigned: mine.length, done: doneP.length, matched: doneP.filter((p) => p.matched).length }
   })
   const survey = live ? matchedP.filter((p) => p.survey[cp]) : []
   const s: Summary = {
@@ -334,6 +348,9 @@ export function summary(eventId: string, cp: Checkpoint): Summary {
     confirmed,
     pickedShare: wilson(picked, matchedP.length),
     agents,
+    pages: { done: state === 'running' ? 3 : live ? COMPANIES.length : 0, total: COMPANIES.length },
+    shown: shownOf(picked, elsewhere, matchedP.length - picked - elsewhere, confirmed),
+    previous: previousOf(event, cp),
     minutes: 3 + (mi % 4),
     crossChecks: { reports: companies.filter((c) => c.reported[cp] !== null).length, surveys: survey.length, differ: survey.filter((p) => p.surveyDiffers).length },
     companies,
@@ -344,13 +361,47 @@ export function summary(eventId: string, cp: Checkpoint): Summary {
   return s
 }
 
+/** Display strings for the outcome counts: 1–2 is banded, and a complementary cell is hidden so a banded count cannot be recomputed. */
+function shownOf(picked: number, elsewhere: number, none: number, confirmed: number): Shown {
+  const vals = { picked, elsewhere, none }
+  const keys = ['picked', 'elsewhere', 'none'] as const
+  const out: Record<(typeof keys)[number], string> = { picked: band(picked), elsewhere: band(elsewhere), none: band(none) }
+  const banded = keys.filter((k) => isBanded(vals[k]))
+  if (banded.length === 1) {
+    const others = keys.filter((k) => !isBanded(vals[k]) && vals[k] > 0).sort((a, b) => vals[a] - vals[b])
+    if (others[0]) out[others[0]] = '3+'
+  }
+  const anyHidden = banded.length > 0
+  const changes = picked + elsewhere
+  return {
+    ...out,
+    changes: isBanded(changes) ? band(changes) : anyHidden ? '3+' : String(changes),
+    confirmed: band(confirmed),
+    pickedExact: /^\d+$/.test(out.picked) && !isBanded(picked),
+  }
+}
+
+function previousOf(event: FollowEvent, cp: Checkpoint): Previous | null {
+  if (event.checks[cp].state === 'scheduled') return null
+  const prev = [...EVENTS].reverse().find((e) => e.seed < event.seed && e.checks[cp].state === 'done')
+  if (!prev) return null
+  const ps = summary(prev.id, cp)
+  return { date: prev.date, picked: ps.shown.picked, matched: ps.attendance.matched, share: ps.shown.pickedExact ? pct(ps.pickedShare.value) : null }
+}
+
+function previousText(s: Summary): string {
+  const p = s.previous
+  if (!p) return ''
+  return ` Previous event at ${s.checkpoint} months: ${p.picked} of ${p.matched}${p.share ? ` · ${p.share}` : ''}.`
+}
+
 export function sortedCompanies(s: Summary): CompanyRow[] {
-  if (s.state !== 'done') return s.companies
+  if (s.state === 'scheduled') return s.companies
   return [...s.companies].sort((a, b) => ACTION_ORDER.indexOf(a.action ?? 'none') - ACTION_ORDER.indexOf(b.action ?? 'none'))
 }
 
-function shareText(picked: number, i: Interval): string {
-  return isBanded(picked) ? 'too few to show a share' : `${pct(i.value)}, rough range ${range(i)}`
+function shareText(s: Summary): string {
+  return s.shown.pickedExact ? `${pct(s.pickedShare.value)}, rough range ${range(s.pickedShare)}` : 'too few to show a share'
 }
 
 function reportText(s: Summary): string {
@@ -359,15 +410,14 @@ function reportText(s: Summary): string {
   if (s.state === 'scheduled') {
     return `${e.name}, ${e.date}: the ${cp}-month profile check is scheduled for ${s.checkDate}. Simulated sample data.`
   }
-  const o = s.outcome
   const a = s.attendance
   const prefix = s.state === 'running' ? 'Provisional, the profile check is still running. ' : ''
   return (
     `${prefix}${e.name}, ${e.date}: ${a.attended} of ${a.invited} invited applicants attended and met ${COMPANIES.length} companies. ` +
     `The ${cp}-month profile check matched ${a.matched} of ${a.attended} attendee profiles. ` +
-    `${band(o.picked)} work at a company they applied to meet (${shareText(o.picked, s.pickedShare)}), ` +
-    `${band(o.elsewhere)} have a new employer elsewhere and ${band(o.none)} show no employer change. ` +
-    `Companies confirmed ${band(s.confirmed)} of ${band(o.picked)} hires. Simulated sample data.`
+    `${s.shown.picked} work at a company they applied to meet (${shareText(s)}), ` +
+    `${s.shown.elsewhere} have a new employer elsewhere and ${s.shown.none} show no employer change. ` +
+    `Companies confirmed ${s.shown.confirmed} of ${s.shown.picked} hires.${previousText(s)} Simulated sample data.`
   )
 }
 
@@ -383,9 +433,9 @@ export function toCsv(eventId: string): string {
     const s = summary(eventId, cp)
     const live = s.state !== 'scheduled'
     const o = s.outcome
-    rows.push(['event', s.event.name, s.event.date, cp, s.state, '', s.attendance.invited, s.attendance.attended, live ? s.attendance.matched : '', live ? band(o.picked) : '', live ? band(o.elsewhere) : '', live ? band(o.none) : '', live ? band(o.unmatched) : '', '', ''])
+    rows.push(['event', s.event.name, s.event.date, cp, s.state, '', s.attendance.invited, s.attendance.attended, live ? s.attendance.matched : '', live ? s.shown.picked : '', live ? s.shown.elsewhere : '', live ? s.shown.none : '', live ? o.unmatched : '', '', ''])
     for (const c of s.companies) {
-      rows.push(['company', s.event.name, s.event.date, cp, s.state, c.company, c.invited, c.attended, live ? c.matched : '', '', '', '', '', c.hires[cp], c.reported[cp]])
+      rows.push(['company', s.event.name, s.event.date, cp, s.state, c.company, c.invited, c.attended, live ? c.matched : '', '', '', '', '', c.hires[cp] === null ? '' : band(c.hires[cp] as number), c.reported[cp] === null ? '' : band(c.reported[cp] as number)])
     }
   }
   return ['# Simulated sample data', head.join(','), ...rows.map((r) => r.map(csvCell).join(','))].join('\n') + '\n'

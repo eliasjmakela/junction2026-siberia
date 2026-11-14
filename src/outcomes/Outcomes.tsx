@@ -3,10 +3,11 @@ import { SiteHeader } from '../components/SiteHeader'
 import {
   COMPANIES,
   DEFAULT_EVENT,
+  RUNNING_LEFT,
+  RUNNING_START,
   EVENTS,
   TOO_FEW,
   band,
-  isBanded,
   pct,
   range,
   sortedCompanies,
@@ -30,8 +31,8 @@ const ACTION_LABEL: Record<Action, string> = {
 const eventLabel = (e: { name: string; date: string }) => `${e.name} · ${e.date}`
 
 function statusLine(s: Summary): string {
-  if (s.state === 'done') return `Profile check done ${s.checkDate} · simulated`
-  if (s.state === 'running') return `Profile check running · ${s.checked} of ${s.total} profiles · figures are provisional · simulated`
+  if (s.state === 'done') return `Profile check done ${s.checkDate}`
+  if (s.state === 'running') return `Profile check running · ${s.checked} of ${s.total} profiles · figures are provisional`
   return `Profile check scheduled ${s.checkDate}`
 }
 
@@ -43,13 +44,12 @@ function Provisional({ s }: { s: Summary }) {
 function ShareCell({ s }: { s: Summary }) {
   if (s.state === 'scheduled') return <span className="out-pill">Scheduled {s.checkDate}</span>
   if (s.state === 'running') return <span className="out-pill">Running</span>
-  const { picked } = s.outcome
   const m = s.attendance.matched
-  if (isBanded(picked)) {
+  if (!s.shown.pickedExact) {
     return (
       <>
         {TOO_FEW}
-        <span className="out-range">{band(picked)} of {m}</span>
+        <span className="out-range">{s.shown.picked} of {m}</span>
       </>
     )
   }
@@ -57,41 +57,63 @@ function ShareCell({ s }: { s: Summary }) {
     <>
       {pct(s.pickedShare.value)}
       <span className="out-range">
-        {range(s.pickedShare)} · {picked} of {m}
+        {range(s.pickedShare)} · {s.shown.picked} of {m}
       </span>
     </>
   )
 }
 
-function Lane({ a, max, running }: { a: { id: number; assigned: number; done: number }; max: number; running: boolean }) {
+function Lane({ a, max, running }: { a: { id: number; assigned: number; done: number; matched: number }; max: number; running: boolean }) {
   const open = a.assigned - a.done
   return (
     <li className="out-lane">
-      <span className="out-lane__n">{a.id}</span>
+      <span className="out-lane__n">Agent {a.id}</span>
       <span className="out-lane__track" style={{ width: `${(a.assigned / max) * 100}%` }}>
         <span className="out-lane__done" style={{ flexGrow: a.done }} />
         {open > 0 && <span className="out-lane__open" style={{ flexGrow: open }} />}
       </span>
-      <span className="out-lane__count">{running ? `${a.done} of ${a.assigned}` : a.done}</span>
+      <span className="out-lane__count">{running ? `${a.done} of ${a.assigned} profiles` : `${a.done} profiles`}</span>
+      <span className="out-lane__count">
+        {band(a.matched)} matched · {band(a.done - a.matched)} not matched
+      </span>
+    </li>
+  )
+}
+
+function PagesLane({ done, total }: { done: number; total: number }) {
+  return (
+    <li className="out-lane">
+      <span className="out-lane__n">Company pages</span>
+      <span className="out-lane__track" style={{ width: '100%' }}>
+        <span className="out-lane__done" style={{ flexGrow: done }} />
+        {total > done && <span className="out-lane__open" style={{ flexGrow: total - done }} />}
+      </span>
+      <span className="out-lane__count">{done} of {total} pages</span>
     </li>
   )
 }
 
 function HiresOther({ c, k, s }: { c: CompanyRow; k: Checkpoint; s: Summary }) {
   const st = s.event.checks[k]
-  if (st.state === 'running') return <span className="out-pill">Running</span>
+  const h = c.hires[k]
+  if (st.state === 'running') return <span className="out-pill">{h === null ? 'Running' : `${band(h)} so far`}</span>
   if (st.state === 'scheduled') return <span className="out-pill">Scheduled {st.date}</span>
-  return <>{c.hires[k] ?? '–'}</>
+  return <>{h === null ? '–' : band(h)}</>
 }
 
 function Report({ c, s }: { c: CompanyRow; s: Summary }) {
   const r = c.reported[s.checkpoint]
-  return r === null ? <span className="out-pill">Not reported</span> : <>Reported {r}</>
+  return r === null ? <span className="out-pill">Not reported</span> : <>Reported {band(r)}</>
 }
 
 function Follow({ c, s }: { c: CompanyRow; s: Summary }) {
-  if (s.state !== 'done') return <span className="out-pill">After the check</span>
-  return <span className={`out-action out-action--${c.action}`}>{ACTION_LABEL[c.action ?? 'none']}</span>
+  if (!c.action) return <span className="out-pill">Not yet</span>
+  return (
+    <>
+      <span className={`out-action out-action--${c.action}`}>{ACTION_LABEL[c.action]}</span>
+      {s.state === 'running' && <span className="out-range">From the 3-month check</span>}
+    </>
+  )
 }
 
 function Details({ c, s, id }: { c: CompanyRow; s: Summary; id: string }) {
@@ -102,10 +124,12 @@ function Details({ c, s, id }: { c: CompanyRow; s: Summary; id: string }) {
           <dt>Applicants</dt>
           <dd>{c.applicants}</dd>
         </div>
+        {s.state !== 'scheduled' && (
         <div>
           <dt>Profiles matched</dt>
-          <dd>{s.state === 'scheduled' ? '–' : `${c.matched} of ${c.attended}`}</dd>
+          <dd>{c.matched} of {c.attended}</dd>
         </div>
+        )}
         <div>
           <dt>Questions published</dt>
           <dd>{c.questions}</dd>
@@ -117,7 +141,7 @@ function Details({ c, s, id }: { c: CompanyRow; s: Summary; id: string }) {
               ? 'No earlier events'
               : c.history.map((h) => (
                   <span key={h.date} className="out-hist">
-                    {h.date}: {h.hires} {h.hires === 1 ? 'hire' : 'hires'}
+                    {h.date}: {h.hires === null ? '–' : band(h.hires)} hires
                   </span>
                 ))}
           </dd>
@@ -177,7 +201,7 @@ async function copyText(text: string): Promise<boolean> {
 export function Outcomes() {
   const [eventId, setEventId] = useState(DEFAULT_EVENT)
   const [cp, setCp] = useState<Checkpoint>(3)
-  const [open, setOpen] = useState<string | null>(null)
+  const [open, setOpen] = useState<string[]>([])
   const [copied, setCopied] = useState<'idle' | 'ok' | 'fail'>('idle')
   const timer = useRef<number | undefined>(undefined)
 
@@ -187,21 +211,25 @@ export function Outcomes() {
   const rows = sortedCompanies(s)
   const live = s.state !== 'scheduled'
   const maxAssigned = Math.max(...s.agents.map((x) => x.assigned), 1)
+  const sh = s.shown
   const segs: { key: string; label: string; n: number; shown: string }[] = [
-    { key: 'picked', label: 'At a company they met', n: o.picked, shown: band(o.picked) },
-    { key: 'elsewhere', label: 'New employer elsewhere', n: o.elsewhere, shown: band(o.elsewhere) },
-    { key: 'none', label: 'No employer change', n: o.none, shown: band(o.none) },
-    { key: 'unmatched', label: 'Profile not matched', n: o.unmatched, shown: band(o.unmatched) },
+    { key: 'picked', label: 'At a company they applied to meet', n: o.picked, shown: sh.picked },
+    { key: 'elsewhere', label: 'New employer elsewhere', n: o.elsewhere, shown: sh.elsewhere },
+    { key: 'none', label: 'No employer change', n: o.none, shown: sh.none },
+    { key: 'unmatched', label: 'Profile not matched', n: o.unmatched, shown: String(o.unmatched) },
   ]
   const steps: [string, string][] = [
-    ['Profiles checked', `${s.checked} of ${s.total}`],
+    ['Attendees looked up', `${s.checked} of ${s.total}`],
     ['Profiles matched', String(a.matched)],
-    ['Employer changes', band(s.changes)],
-    ['At a picked company', band(o.picked)],
+    ['Employer changes', sh.changes],
+    ['At a company they applied to meet', sh.picked],
   ]
+  const scheduled = s.state === 'scheduled'
+
+  const toggle = (id: string) => setOpen((o) => (o.includes(id) ? o.filter((x) => x !== id) : [...o, id]))
 
   const choose = (fn: () => void) => {
-    setOpen(null)
+    setOpen([])
     setCopied('idle')
     fn()
   }
@@ -217,7 +245,7 @@ export function Outcomes() {
 
   return (
     <main className="page">
-      <SiteHeader area="outcomes" note="Concept demo" />
+      <SiteHeader area="outcomes" note="Concept demo" event={s.event} />
 
       <section className="out-intro" aria-labelledby="out-title">
         <p className="out-demo">Concept demo · simulated data</p>
@@ -257,7 +285,7 @@ export function Outcomes() {
           <button type="button" className="btn-chip" onClick={copy}>
             {copied === 'ok' ? 'Copied' : 'Copy summary'}
           </button>
-          <button type="button" className="btn-chip" onClick={() => download(`plainly-follow-up-${s.event.id}.csv`, toCsv(s.event.id))}>
+          <button type="button" className="btn-chip btn-chip--quiet" onClick={() => download(`plainly-follow-up-${s.event.id}.csv`, toCsv(s.event.id))}>
             Download CSV
           </button>
         </div>
@@ -275,13 +303,20 @@ export function Outcomes() {
         ) : (
           <>
             <div className="out-headline">
-              <div className="out-hero">
+              <div className={`out-hero${s.state === 'running' ? ' out-hero--provisional' : ''}`}>
                 <p className="out-hero__label">Working at a company they applied to meet</p>
                 <p className="out-hero__value">
-                  {band(o.picked)} of {a.matched} matched profiles
-                  {!isBanded(o.picked) && <> · {pct(s.pickedShare.value)}</>}
+                  {s.state === 'running' && 'So far: '}
+                  {sh.picked} of {a.matched} matched profiles
+                  {sh.pickedExact && <> · {pct(s.pickedShare.value)}</>}
                 </p>
-                <p className="out-hero__note">{isBanded(o.picked) ? TOO_FEW : `Rough range ${range(s.pickedShare)}`}</p>
+                <p className="out-hero__note">{sh.pickedExact ? `Rough range ${range(s.pickedShare)}` : TOO_FEW}</p>
+                {s.previous && (
+                  <p className="out-hero__prev">
+                    Previous event at {cp} months: {s.previous.picked} of {s.previous.matched}
+                    {s.previous.share && <> · {s.previous.share}</>}
+                  </p>
+                )}
               </div>
               <dl className="out-facts">
                 <div>
@@ -294,11 +329,11 @@ export function Outcomes() {
                 </div>
                 <div>
                   <dt>Employer changes</dt>
-                  <dd>{band(s.changes)}</dd>
+                  <dd>{sh.changes}</dd>
                 </div>
                 <div>
                   <dt>Confirmed by company</dt>
-                  <dd>{band(s.confirmed)} of {band(o.picked)}</dd>
+                  <dd>{sh.confirmed} of {sh.picked}</dd>
                 </div>
               </dl>
             </div>
@@ -315,11 +350,13 @@ export function Outcomes() {
             </ul>
           </>
         )}
-        <ul className="out-caveats">
-          <li>Ranges are 95% Wilson intervals over matched profiles.</li>
-          <li>Profiles are often updated weeks after a job starts.</li>
-          <li>Attendee counts of 1–2 are shown as "1–2". Company hire counts are exact.</li>
-        </ul>
+        {!scheduled && (
+          <ul className="out-caveats">
+            <li>Ranges are 95% Wilson intervals over matched profiles.</li>
+            <li>Profiles are often updated weeks after a job starts.</li>
+            <li>Counts of 1–2 are shown as "1–2".</li>
+          </ul>
+        )}
       </section>
 
       <section className="out-section" aria-labelledby="out-h-check">
@@ -345,15 +382,16 @@ export function Outcomes() {
               {s.agents.map((x) => (
                 <Lane key={x.id} a={x} max={maxAssigned} running={s.state === 'running'} />
               ))}
+              <PagesLane done={s.pages.done} total={s.pages.total} />
             </ol>
             <p className="out-sub">
               6 agents in parallel · {s.total} attendee profiles and {COMPANIES.length} company pages ·{' '}
-              {s.state === 'running' ? `started ${s.checkDate}` : `${s.minutes} min`}
+              {s.state === 'running' ? `started ${s.checkDate}, ${RUNNING_START} · ${RUNNING_LEFT}` : `${s.minutes} min`}
             </p>
             <p className="out-label out-label--gap">Cross-checks</p>
             <p className="out-cross">
               <span>Company hire reports {s.crossChecks.reports} of {COMPANIES.length}</span>
-              <span>Survey answers {s.crossChecks.surveys}, {band(s.crossChecks.differ)} differ from the profile</span>
+              <span>Survey answers: {s.crossChecks.surveys} · {band(s.crossChecks.differ)} differ from the profile</span>
             </p>
           </>
         )}
@@ -363,7 +401,11 @@ export function Outcomes() {
         <h2 id="out-h-companies" className="out-h2">
           Companies <Provisional s={s} />
         </h2>
-        <p className="out-sub">Hires found by the profile check, per company.</p>
+        <p className="out-sub">
+          {scheduled
+            ? `Profile checks scheduled ${s.event.checks[3].date} (3 months) and ${s.event.checks[6].date} (6 months).`
+            : 'Hires found by the profile check, per company. Attendees meet up to three companies, so company counts add up to more than the attendee total.'}
+        </p>
         <div className="out-table-wrap out-only-wide">
           <table className="out-table">
             <thead>
@@ -371,17 +413,21 @@ export function Outcomes() {
                 <th scope="col">Company and role</th>
                 <th scope="col" className="out-num">Invited</th>
                 <th scope="col" className="out-num">Attended</th>
-                <th scope="col" className="out-num">Hires 3 m</th>
-                <th scope="col" className="out-num">Hires 6 m</th>
-                <th scope="col">Company report</th>
-                <th scope="col">Follow-up</th>
+                {!scheduled && (
+                  <>
+                    <th scope="col" className="out-num">Hires 3 m</th>
+                    <th scope="col" className="out-num">Hires 6 m</th>
+                    <th scope="col">Company report, {cp} m</th>
+                    <th scope="col">Follow-up</th>
+                  </>
+                )}
                 <th scope="col"><span className="out-sr">Details</span></th>
               </tr>
             </thead>
             <tbody>
               {rows.map((c) => {
                 const id = `out-d-${c.id}`
-                const isOpen = open === c.id
+                const isOpen = open.includes(c.id)
                 return (
                   <Fragment key={c.id}>
                     <tr>
@@ -391,15 +437,19 @@ export function Outcomes() {
                       </th>
                       <td className="out-num">{c.invited}</td>
                       <td className="out-num">{c.attended}</td>
-                      <td className={`out-num${cp === 3 ? ' is-current' : ''}`}><HiresOther c={c} k={3} s={s} /></td>
-                      <td className={`out-num${cp === 6 ? ' is-current' : ''}`}><HiresOther c={c} k={6} s={s} /></td>
-                      <td><Report c={c} s={s} /></td>
-                      <td><Follow c={c} s={s} /></td>
-                      <td><Toggle open={isOpen} onClick={() => setOpen(isOpen ? null : c.id)} controls={id} name={c.company} /></td>
+                      {!scheduled && (
+                        <>
+                          <td className={`out-num${cp === 3 ? ' is-current' : ''}`}><HiresOther c={c} k={3} s={s} /></td>
+                          <td className={`out-num${cp === 6 ? ' is-current' : ''}`}><HiresOther c={c} k={6} s={s} /></td>
+                          <td><Report c={c} s={s} /></td>
+                          <td><Follow c={c} s={s} /></td>
+                        </>
+                      )}
+                      <td><Toggle open={isOpen} onClick={() => toggle(c.id)} controls={id} name={c.company} /></td>
                     </tr>
                     {isOpen && (
                       <tr className="out-detail-row">
-                        <td colSpan={8}><Details c={c} s={s} id={id} /></td>
+                        <td colSpan={scheduled ? 4 : 8}><Details c={c} s={s} id={id} /></td>
                       </tr>
                     )}
                   </Fragment>
@@ -411,7 +461,7 @@ export function Outcomes() {
         <ul className="out-cards out-only-narrow">
           {rows.map((c) => {
             const id = `out-m-${c.id}`
-            const isOpen = open === c.id
+            const isOpen = open.includes(c.id)
             return (
               <li key={c.id} className="out-card">
                 <p className="out-company">{c.company}</p>
@@ -419,12 +469,16 @@ export function Outcomes() {
                 <dl>
                   <div><dt>Invited</dt><dd>{c.invited}</dd></div>
                   <div><dt>Attended</dt><dd>{c.attended}</dd></div>
-                  <div><dt>Hires 3 m</dt><dd><HiresOther c={c} k={3} s={s} /></dd></div>
-                  <div><dt>Hires 6 m</dt><dd><HiresOther c={c} k={6} s={s} /></dd></div>
-                  <div><dt>Company report</dt><dd><Report c={c} s={s} /></dd></div>
-                  <div><dt>Follow-up</dt><dd><Follow c={c} s={s} /></dd></div>
+                  {!scheduled && (
+                    <>
+                      <div><dt>Hires 3 m</dt><dd><HiresOther c={c} k={3} s={s} /></dd></div>
+                      <div><dt>Hires 6 m</dt><dd><HiresOther c={c} k={6} s={s} /></dd></div>
+                      <div><dt>Company report, {cp} m</dt><dd><Report c={c} s={s} /></dd></div>
+                      <div><dt>Follow-up</dt><dd><Follow c={c} s={s} /></dd></div>
+                    </>
+                  )}
                 </dl>
-                <Toggle open={isOpen} onClick={() => setOpen(isOpen ? null : c.id)} controls={id} name={c.company} />
+                <Toggle open={isOpen} onClick={() => toggle(c.id)} controls={id} name={c.company} />
                 {isOpen && <Details c={c} s={s} id={id} />}
               </li>
             )
@@ -435,14 +489,14 @@ export function Outcomes() {
       <section className="out-section" aria-labelledby="out-h-across">
         <h2 id="out-h-across" className="out-h2">Across events</h2>
         <p className="out-sub">The same checkpoint across sample events.</p>
-        <div className="out-table-wrap out-only-wide">
+        <div className="out-table-wrap">
           <table className="out-table out-table--across">
             <thead>
               <tr>
                 <th scope="col">Event date</th>
                 <th scope="col" className="out-num">Attended</th>
                 <th scope="col" className="out-num">Profiles matched</th>
-                <th scope="col" className="out-num">At a company they met, {cp} m</th>
+                <th scope="col" className="out-num">{`At a company they applied to meet, ${cp} m`}</th>
               </tr>
             </thead>
             <tbody>
@@ -450,25 +504,21 @@ export function Outcomes() {
                 <tr key={e.id} className={e.id === eventId ? 'is-selected' : undefined}>
                   <th scope="row">{e.date}</th>
                   <td className="out-num">{r.attendance.attended}</td>
-                  <td className="out-num">{r.state === 'done' ? r.attendance.matched : <span className="out-pill">{r.state === 'running' ? 'Running' : `Scheduled ${r.checkDate}`}</span>}</td>
-                  <td className="out-num"><ShareCell s={r} /></td>
+                  {r.state === 'done' ? (
+                    <>
+                      <td className="out-num">{r.attendance.matched}</td>
+                      <td className="out-num"><ShareCell s={r} /></td>
+                    </>
+                  ) : (
+                    <td className="out-num" colSpan={2}>
+                      <span className="out-pill">{r.state === 'running' ? 'Running' : `Scheduled ${r.checkDate}`}</span>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <ul className="out-cards out-only-narrow">
-          {eventRows.map(({ e, s: r }) => (
-            <li key={e.id} className={`out-card${e.id === eventId ? ' is-selected' : ''}`}>
-              <p className="out-company">{e.date}</p>
-              <dl>
-                <div><dt>Attended</dt><dd>{r.attendance.attended}</dd></div>
-                <div><dt>Profiles matched</dt><dd>{r.state === 'done' ? r.attendance.matched : <span className="out-pill">{r.state === 'running' ? 'Running' : `Scheduled ${r.checkDate}`}</span>}</dd></div>
-                <div><dt>At a company they met, {cp} m</dt><dd><ShareCell s={r} /></dd></div>
-              </dl>
-            </li>
-          ))}
-        </ul>
       </section>
 
       <section className="out-section" aria-labelledby="out-h-summary">
