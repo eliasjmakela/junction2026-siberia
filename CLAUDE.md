@@ -44,7 +44,7 @@ Design check after UI edits: `~/.claude/skills/impeccable/scripts/impeccable det
 | `src/apply/` | Applicant flow at `#/apply`, with its sample demo answers in `demoAnswers.ts` |
 | `src/staff/` | Staff review at `#/staff`: per-company ranking (top 10 shown, plus anything unscored or decided; "Show all" for the rest), per-score evidence strip, decisions, invitations |
 | `src/outcomes/` | Follow-up concept demo at `#/outcomes`: `data.ts` (four seeded events, 3/6-month checks, banding, summary text, CSV), `Outcomes.tsx`, `outcomes.css` (simulated data only) |
-| `src/components/SiteHeader.tsx` | Top bar for the applicant, staff and follow-up views; `NAV_LINKS` is the one main navigation, also rendered by the company page's top bar so labels and order match everywhere |
+| `src/components/SiteHeader.tsx` | Top bar for the applicant, staff and follow-up views; `NAV_LINKS` (in `src/components/nav.ts`) is the one main navigation, also rendered by the company page's top bar so labels and order match everywhere |
 | `server/event-ai.ts` | Vite plugin for `POST /api/questions` and `POST /api/assess`; holds the Anthropic key server-side |
 | `src/seeker/` | Sample role browser at `#/roles` (not in the main nav) |
 | `src/writing-assistant/` | Field-level writing-help client, input sanitizer, prompt, schema and demo suggestions |

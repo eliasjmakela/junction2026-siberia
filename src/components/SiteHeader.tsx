@@ -1,16 +1,8 @@
 import type { ReactNode } from 'react'
 import { EVENT } from '../event/store'
+import { NAV_LINKS, type Area } from './nav'
 import './SiteHeader.css'
 
-export type Area = 'company' | 'apply' | 'staff' | 'outcomes'
-
-/** The main navigation, the same on every page. */
-export const NAV_LINKS: { area: Area; href: string; label: string }[] = [
-  { area: 'company', href: '#/', label: 'For companies' },
-  { area: 'apply', href: '#/apply', label: 'Apply to the event' },
-  { area: 'staff', href: '#/staff', label: 'Staff review' },
-  { area: 'outcomes', href: '#/outcomes', label: 'Follow-up' },
-]
 
 /** The top bar for the applicant, staff and follow-up views. */
 export function SiteHeader({

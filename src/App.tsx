@@ -1,6 +1,6 @@
 import { useRef, useState, type FormEvent, type MouseEvent } from 'react'
 import { Arrow } from './components/Arrow'
-import { NAV_LINKS } from './components/SiteHeader'
+import { NAV_LINKS } from './components/nav'
 import { Sky } from './components/Sky'
 import { FieldView } from './form/fields'
 import { display, fieldsFor, goalOf, hasValue, isAnswered, missingOn, screenSummary } from './form/logic'
