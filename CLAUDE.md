@@ -18,7 +18,7 @@ npm run capture    # screenshots of every main state into .impeccable/review/ (n
 npm run deploy     # build and deploy to Cloudflare (Worker `plainly`, https://plainly.eliasmakela.fi)
 ```
 
-Hosting: a Cloudflare Worker with static assets (`wrangler.jsonc`, `worker/index.ts`). The Worker serves `dist/` and runs first only for `/api/*`, reusing the functions in `server/`. Production deploys from the `event-shortlist` branch through Workers Builds (build `npm run build`, deploy `npx wrangler deploy`). API keys are Worker secrets (`npx wrangler secret put ANTHROPIC_API_KEY`, `GEMINI_API_KEY`); without them the routes return the fallbacks.
+Hosting: a Cloudflare Worker with static assets (`wrangler.jsonc`, `worker/index.ts`). The Worker serves `dist/` and runs first only for `/api/*`, reusing the functions in `server/`. Production deploys from `main` through Workers Builds (build `npm run build`, deploy `npx wrangler deploy`). API keys are Worker secrets (`npx wrangler secret put ANTHROPIC_API_KEY`, `GEMINI_API_KEY`); without them the routes return the fallbacks.
 
 Optional: copy `.env.example` to `.env`. `ANTHROPIC_API_KEY` enables Claude application questions and scoring (default `claude-opus-5-5`, override `PLAINLY_AI_MODEL`); `GEMINI_API_KEY` enables Gemini writing help in text fields. Without keys, questions come from fixed templates, scores are a labelled fixed-rule estimate and writing help shows labelled demo suggestions. Gemini model override: `PLAINLY_WRITING_MODEL`.
 
