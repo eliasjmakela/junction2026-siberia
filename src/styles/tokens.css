@@ -59,11 +59,10 @@
   --focus: 3px solid var(--spruce);      /* on granite */
   --focus-on-spruce: 3px solid var(--lichen);
 
-  /* Motion: exponential ease-out, one authored moment (the shape) */
+  /* Motion: exponential ease-out. The one authored moment is the night sky (src/sky/scene.ts). */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --t-fast: 120ms;
   --t-base: 220ms;
-  --t-shape: 700ms;
 
   --field-width: 560px;
 }

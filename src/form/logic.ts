@@ -1,4 +1,4 @@
-import { ALL_FIELDS, FIELD_BY_ID, GOALS, type Field, type Goal, type Screen, type Value, type Values } from './schema'
+import { FIELD_BY_ID, type Field, type Goal, type Screen, type Value, type Values } from './schema'
 
 export const UNDECIDED = 'Not decided yet'
 
@@ -32,26 +32,9 @@ export function missingOn(screen: Screen, values: Values): Field[] {
   return screen.fields.filter((f) => !f.optional && !isAnswered(f, values[f.id]))
 }
 
-export function screenComplete(screen: Screen, values: Values) {
-  return missingOn(screen, values).length === 0
-}
-
 export function goalOf(values: Values): Goal | null {
   const c = values.vacancy?.choice
   return c === 'now' || c === 'soon' || c === 'pipeline' ? c : null
-}
-
-/**
- * How specific the role is, 0..1. A real answer counts fully, an honest
- * "Not decided yet" counts half, so a role full of gaps never comes fully into focus.
- */
-export function specificity(values: Values): number {
-  const required = ALL_FIELDS.filter((f) => !f.optional && f.id !== 'vacancy')
-  const score = required.reduce((s, f) => {
-    const v = values[f.id]
-    return s + (hasValue(f, v) ? 1 : v?.undecided ? 0.5 : 0)
-  }, 0)
-  return score / required.length
 }
 
 function optionLabel(f: Field, id: string | undefined) {
@@ -114,22 +97,6 @@ export function screenSummary(screen: Screen, values: Values): string {
     })
     .filter(Boolean)
     .join(' · ')
-}
-
-/** The intent sentence on the field: a plain template with slots. */
-export function intentSentence(values: Values): { lead: string; rest: string } {
-  const goal = goalOf(values)
-  if (!goal) return { lead: 'No status yet.', rest: 'Your role appears here as you answer.' }
-  const title = hasValue(FIELD_BY_ID.title, values.title) ? values.title!.text!.trim() : null
-  const n = hasValue(FIELD_BY_ID.positions, values.positions) ? values.positions!.number! : null
-  const type = hasValue(FIELD_BY_ID.type, values.type) ? display('type', values) : null
-  const start = hasValue(FIELD_BY_ID.start, values.start) ? display('start', values) : null
-  const parts = [
-    title && (n && n > 1 ? `${title} × ${n}` : title),
-    type?.toLowerCase(),
-    start && (values.start?.choice === 'date' ? `starting ${start}` : start.toLowerCase()),
-  ].filter(Boolean)
-  return { lead: GOALS[goal].name, rest: parts.length ? `: ${parts.join(', ')}.` : '.' }
 }
 
 /** "You'd fit if" and "Probably not for you if", assembled from answers by fixed rules. */

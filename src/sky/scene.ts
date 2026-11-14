@@ -34,11 +34,11 @@ const H = 2600
 const NS = 'http://www.w3.org/2000/svg'
 
 /** Star index → the form step (1-based count of completed steps) that picks it out. */
-export const LIGHT_AT = [1, 2, 2, 3, 4, 5, 6, 7, 8]
+const LIGHT_AT = [1, 2, 2, 3, 4, 5, 6, 7, 8]
 /** Star index → the screen (0-based) whose answers it stands for. */
 export const STAR_SCREEN = LIGHT_AT.map((s) => s - 1)
 
-export function hash(s: string) {
+function hash(s: string) {
   let h = 1779033703 ^ s.length
   for (let i = 0; i < s.length; i++) {
     h = Math.imul(h ^ s.charCodeAt(i), 3432918353)
@@ -47,7 +47,7 @@ export function hash(s: string) {
   return h >>> 0
 }
 
-export function rng(seed: number) {
+function rng(seed: number) {
   let a = seed
   return () => {
     a |= 0
