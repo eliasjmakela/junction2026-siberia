@@ -8,7 +8,7 @@ export type Goal = 'now' | 'soon' | 'pipeline'
 
 export const GOALS: Record<Goal, { name: string }> = {
   now: { name: 'Open now' },
-  soon: { name: 'Opening soon' },
+  soon: { name: 'Opening within 3 months' },
   pipeline: { name: 'Talent pipeline' },
 }
 
@@ -26,6 +26,10 @@ type Base = {
   company?: boolean
   /** Short name used to label bare answers (Yes, No, 2) in summaries. */
   short?: string
+  /** Show this field only for the selected role intent. */
+  onlyFor?: Goal[]
+  /** Hide this field for the selected role intent. */
+  excludeFor?: Goal[]
 }
 
 export type Field =
@@ -58,7 +62,8 @@ export const SCREENS: Screen[] = [
   {
     id: 'goal',
     name: 'Vacancy',
-    title: 'Is this a real open vacancy, or are you building a talent pipeline?',
+    title: 'What is the status of this role?',
+    hint: 'Choose Open now for an active vacancy, Opening within 3 months for a planned hire, or Talent pipeline for exploratory conversations.',
     fields: [
       {
         id: 'vacancy',
@@ -67,7 +72,7 @@ export const SCREENS: Screen[] = [
         noUndecided: true,
         options: [
           { id: 'now', label: 'Open now' },
-          { id: 'soon', label: 'Opening soon' },
+          { id: 'soon', label: 'Opening within 3 months' },
           { id: 'pipeline', label: 'Talent pipeline' },
         ],
       },
@@ -78,6 +83,29 @@ export const SCREENS: Screen[] = [
     name: 'The role',
     title: 'What is the role?',
     fields: [
+      {
+        id: 'openingWindow',
+        kind: 'single',
+        label: 'When do you expect to open this role?',
+        hint: 'The hiring plan is for the next three months.',
+        short: 'Expected opening',
+        onlyFor: ['soon'],
+        options: [
+          { id: 'm1', label: 'Within 1 month' },
+          { id: 'm2', label: '1–2 months' },
+          { id: 'm3', label: '2–3 months' },
+        ],
+      },
+      {
+        id: 'hiringCondition',
+        kind: 'text',
+        multiline: true,
+        label: 'What would need to happen before hiring?',
+        hint: 'For example, a project is approved or the team has capacity to grow.',
+        short: 'Hiring condition',
+        onlyFor: ['pipeline'],
+        placeholder: 'e.g. a project is approved or the team has capacity to grow.',
+      },
       { id: 'title', kind: 'text', label: 'Role title', placeholder: 'e.g. Backend developer', noUndecided: true },
       {
         id: 'purpose',
@@ -100,11 +128,12 @@ export const SCREENS: Screen[] = [
           { id: 'contract', label: 'Contract' },
         ],
       },
-      { id: 'positions', kind: 'number', label: 'Number of positions', short: 'Positions', min: 1, max: 99 },
+      { id: 'positions', kind: 'number', label: 'Number of positions', short: 'Positions', min: 1, max: 99, excludeFor: ['pipeline'] },
       {
         id: 'start',
         kind: 'single',
         label: 'Start date',
+        excludeFor: ['pipeline'],
         options: [
           { id: 'asap', label: 'As soon as possible' },
           { id: '3m', label: 'Within 3 months' },

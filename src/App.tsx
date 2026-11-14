@@ -1,13 +1,13 @@
-import { useRef, useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent, type MouseEvent } from 'react'
 import { Arrow } from './components/Arrow'
 import { Sky } from './components/Sky'
 import { FieldView } from './form/fields'
-import { display, goalOf, hasValue, isAnswered, missingOn, screenSummary } from './form/logic'
+import { display, fieldsFor, goalOf, hasValue, isAnswered, missingOn, screenSummary } from './form/logic'
 import { RoleCard } from './form/RoleCard'
 import { RolePreview } from './form/RolePreview'
 import { ScreeningReview } from './screening/ScreeningReview'
 import { ALL_FIELDS, FIELD_BY_ID, GOALS, SCREENS, type Value, type Values } from './form/schema'
-import { newSeed, skyStars } from './sky/input'
+import { newSeed, roleFingerprint, skyStars } from './sky/input'
 import './App.css'
 
 const EVENT = { name: 'Espoo Matchmaking Day', date: '4 Mar 2027' }
@@ -15,7 +15,41 @@ const STORAGE_KEY = 'plainly:role:v2'
 const REVIEW = SCREENS.length
 const SUBMITTED = SCREENS.length + 1
 
-type Stored = { values: Values; savedAt: string; seed?: string }
+type Stored = { values: Values; savedAt: string; seed?: string; demo?: boolean }
+
+const SAMPLE_ANSWERS: Values = {
+  vacancy: { choice: 'soon' },
+  openingWindow: { choice: 'm2' },
+  title: { text: 'Field service technician' },
+  purpose: { text: 'customers get reliable equipment repairs on the first visit.' },
+  type: { choice: 'full' },
+  positions: { number: 2 },
+  start: { choice: 'asap' },
+  month1: { text: 'shadow a senior technician, then lead scheduled visits with support.' },
+  problem: { text: 'spring service visits are delayed when technicians receive incomplete equipment histories.' },
+  tuesday: { text: 'check the route, visit two customer sites, update service notes, and review parts needed for tomorrow.' },
+  hours: { choice: 'flexible' },
+  salary: { salary: { min: 3300, max: 3900 } },
+  with: { choices: ['customers', 'engineers'] },
+  solo: { number: 3 },
+  teamsize: { choice: '4-10' },
+  skills: { skills: { must: ['Electrical diagnostics', 'Customer communication'], teach: ['Northline service system'], nice: ['Heat pump experience'] } },
+  education: { choice: 'preferred' },
+  worklang: { choices: ['fi', 'en'] },
+  finnish: { choice: 'basic' },
+  mode: { choice: 'onsite' },
+  office: { text: 'Keilaniemi, Espoo' },
+  abroadFirst: { choice: 'no' },
+  fromAbroad: { choice: 'case' },
+  visa: { choice: 'depends' },
+  relocation: { choices: ['admin', 'travel'] },
+  company: { text: 'Northline Service Oy' },
+  size: { choice: 'growing' },
+  thrive: { text: 'solve practical problems and enjoy meeting customers' },
+  career: { text: 'service specialist, then technical lead or trainer.' },
+}
+
+const delay = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms))
 
 function loadStored(): Stored | null {
   try {
@@ -47,7 +81,12 @@ export default function App() {
   const [changed, setChanged] = useState<Set<string>>(new Set())
   const [savedAt, setSavedAt] = useState<string | null>(initial?.savedAt ?? null)
   const [submitError, setSubmitError] = useState(false)
-  // Each role has its own constellation; the seed is its identity.
+  const [demoRunning, setDemoRunning] = useState(false)
+  const [demoMode, setDemoMode] = useState(initial?.demo ?? false)
+  const demoRun = useRef(0)
+  const demoInteraction = useRef(false)
+  const demoCursor = useRef<HTMLDivElement>(null)
+  // The random seed identifies the noise field; reviewed geometry uses roleFingerprint(values).
   const [seed, setSeed] = useState(() => initial?.seed ?? newSeed())
   const headingRef = useRef<HTMLHeadingElement>(null)
 
@@ -55,11 +94,16 @@ export default function App() {
   const onSubmitted = index === SUBMITTED && savedAt !== null
   const onReview = index >= REVIEW && !onSubmitted
   const screen = SCREENS[Math.min(index, REVIEW - 1)]
-  const isDone = (i: number) => visited.has(SCREENS[i].id) && missingOn(SCREENS[i], values).length === 0
+  const isDone = (i: number) => visited.has(SCREENS[i].id) && missingOn(SCREENS[i], values, goal).length === 0
   const doneCount = SCREENS.filter((_, i) => isDone(i)).length
   const lastToFill = SCREENS.every((_, i) => i === index || isDone(i))
 
   function goTo(i: number) {
+    if (!demoInteraction.current) {
+      demoRun.current += 1
+      setDemoRunning(false)
+      demoCursor.current?.classList.remove('is-visible')
+    }
     setInvalid(new Set())
     setIndex(i)
     window.scrollTo({ top: 0 })
@@ -67,6 +111,11 @@ export default function App() {
   }
 
   function setField(id: string, v: Value) {
+    if (demoRunning && !demoInteraction.current) {
+      demoRun.current += 1
+      setDemoRunning(false)
+      demoCursor.current?.classList.remove('is-visible')
+    }
     setValues((prev) => ({ ...prev, [id]: v }))
     setSavedAt(null)
     setInvalid((prev) => {
@@ -81,7 +130,7 @@ export default function App() {
 
   function next(e: FormEvent) {
     e.preventDefault()
-    const missing = missingOn(screen, values)
+    const missing = missingOn(screen, values, goal)
     if (missing.length) {
       setInvalid(new Set(missing.map((f) => f.id)))
       focusFirstIn(`field-${missing[0].id}`)
@@ -99,7 +148,7 @@ export default function App() {
   function submit() {
     const at = new Date().toISOString()
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ values, savedAt: at, seed } satisfies Stored))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ values, savedAt: at, seed, demo: demoMode } satisfies Stored))
       setSubmitError(false)
       setSavedAt(at)
       setChanged(new Set())
@@ -107,6 +156,160 @@ export default function App() {
     } catch {
       setSubmitError(true)
     }
+  }
+
+  async function playSampleDemo(event: MouseEvent<HTMLButtonElement>) {
+    if (demoRunning) {
+      demoRun.current += 1
+      setDemoRunning(false)
+      demoCursor.current?.classList.remove('is-visible')
+      return
+    }
+
+    const run = demoRun.current + 1
+    demoRun.current = run
+    const cursor = demoCursor.current
+    const startRect = event.currentTarget.getBoundingClientRect()
+    if (cursor) {
+      cursor.style.transition = 'none'
+      cursor.style.transform = `translate3d(${startRect.left + startRect.width / 2}px, ${startRect.top + startRect.height / 2}px, 0)`
+      cursor.classList.add('is-visible')
+      requestAnimationFrame(() => { cursor.style.transition = '' })
+    }
+
+    const glide = async (target: HTMLElement) => {
+      if (!cursor || demoRun.current !== run) return false
+      const before = target.getBoundingClientRect()
+      const outsideViewport = before.top < 28 || before.bottom > window.innerHeight - 28 || before.left < 8 || before.right > window.innerWidth - 8
+      if (outsideViewport) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' })
+        await delay(420)
+      }
+      if (demoRun.current !== run) return false
+      const rect = target.getBoundingClientRect()
+      cursor.style.transform = `translate3d(${rect.left + rect.width / 2}px, ${rect.top + rect.height / 2}px, 0)`
+      await delay(460)
+      return demoRun.current === run
+    }
+
+    const clickTarget = async (target: HTMLElement) => {
+      if (!(await glide(target))) return false
+      cursor?.classList.add('is-down')
+      demoInteraction.current = true
+      target.click()
+      demoInteraction.current = false
+      await delay(150)
+      cursor?.classList.remove('is-down')
+      return demoRun.current === run
+    }
+
+    const typeText = async (target: HTMLInputElement | HTMLTextAreaElement, text: string) => {
+      if (!(await glide(target))) return false
+      demoInteraction.current = true
+      target.click()
+      target.focus()
+      demoInteraction.current = false
+      const prototype = target instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype
+      const setter = Object.getOwnPropertyDescriptor(prototype, 'value')?.set
+      for (let i = 0; i < text.length; i += 1) {
+        if (demoRun.current !== run) return false
+        demoInteraction.current = true
+        setter?.call(target, text.slice(0, i + 1))
+        target.dispatchEvent(new Event('input', { bubbles: true }))
+        demoInteraction.current = false
+        await delay(text[i] === ' ' ? 50 : 32)
+      }
+      await delay(220)
+      return demoRun.current === run
+    }
+
+    const choose = async (field: (typeof ALL_FIELDS)[number], optionId: string) => {
+      if (field.kind !== 'single' && field.kind !== 'multi') return false
+      const option = field.options.find((item) => item.id === optionId)
+      const root = document.getElementById(`field-${field.id}`)
+      const label = option && root
+        ? Array.from(root.querySelectorAll<HTMLElement>('label.chip')).find((item) => item.textContent?.trim() === option.label)
+        : undefined
+      return label ? clickTarget(label) : false
+    }
+
+    setDemoRunning(true)
+    setDemoMode(true)
+    setValues({})
+    setInvalid(new Set())
+    setVisited(new Set())
+    setChanged(new Set())
+    setSavedAt(null)
+    setSubmitError(false)
+    setSeed(newSeed())
+    setIndex(0)
+    window.scrollTo({ top: 0 })
+    await delay(700)
+
+    const demoGoal = 'soon'
+    for (let i = 0; i < SCREENS.length; i += 1) {
+      if (demoRun.current !== run) return
+      const current = SCREENS[i]
+      for (const field of fieldsFor(current, demoGoal)) {
+        if (demoRun.current !== run) return
+        const answer = SAMPLE_ANSWERS[field.id]
+        const root = document.getElementById(`field-${field.id}`)
+        if (!answer || !root) continue
+
+        if (field.kind === 'text' && answer.text) {
+          const input = root.querySelector<HTMLInputElement | HTMLTextAreaElement>('input.input, textarea.input')
+          if (input) await typeText(input, answer.text)
+        } else if (field.kind === 'single' && answer.choice) {
+          await choose(field, answer.choice)
+          if (field.id === 'start' && answer.choice === 'date' && answer.date) {
+            const dateInput = root.querySelector<HTMLInputElement>('input[type="date"]')
+            if (dateInput) await typeText(dateInput, answer.date)
+          }
+        } else if (field.kind === 'multi' && answer.choices) {
+          for (const optionId of answer.choices) await choose(field, optionId)
+        } else if (field.kind === 'number' && typeof answer.number === 'number') {
+          const more = root.querySelector<HTMLButtonElement>('button[aria-label="More"]')
+          if (more && await glide(more)) {
+            for (let count = 0; count < answer.number; count += 1) {
+              if (demoRun.current !== run) return
+              cursor?.classList.add('is-down')
+              demoInteraction.current = true
+              more.click()
+              demoInteraction.current = false
+              cursor?.classList.remove('is-down')
+              await delay(240)
+            }
+          }
+        } else if (field.kind === 'scale' && typeof answer.number === 'number') {
+          const choice = root.querySelector<HTMLElement>(`.scale__step:nth-child(${answer.number})`)
+          if (choice) await clickTarget(choice)
+        } else if (field.kind === 'salary' && answer.salary) {
+          const inputs = root.querySelectorAll<HTMLInputElement>('.salary .money input')
+          if (inputs[0] && typeof answer.salary.min === 'number') await typeText(inputs[0], String(answer.salary.min))
+          if (inputs[1] && typeof answer.salary.max === 'number') await typeText(inputs[1], String(answer.salary.max))
+        } else if (field.kind === 'skills' && answer.skills) {
+          const skillInput = root.querySelector<HTMLInputElement>('.skills__add input')
+          const buckets: [keyof NonNullable<typeof answer.skills>, string][] = [['must', 'Must-have'], ['teach', 'We can teach'], ['nice', 'Nice to have']]
+          for (const [bucket, label] of buckets) {
+            for (const skill of answer.skills[bucket]) {
+              if (!skillInput || !(await typeText(skillInput, skill))) continue
+              const button = Array.from(root.querySelectorAll<HTMLButtonElement>('.skills__buttons button')).find((item) => item.textContent?.trim() === label)
+              if (button) await clickTarget(button)
+            }
+          }
+        }
+        if (demoRun.current !== run) return
+        await delay(230)
+      }
+      const continueButton = document.querySelector<HTMLButtonElement>('#form button[type="submit"]')
+      if (!continueButton || !(await clickTarget(continueButton))) return
+      await delay(500)
+    }
+
+    if (demoRun.current !== run) return
+    setDemoRunning(false)
+    await delay(550)
+    cursor?.classList.remove('is-visible')
   }
 
   function addAnotherRole() {
@@ -129,11 +332,28 @@ export default function App() {
 
   const anyAnswer = ALL_FIELDS.some((f) => isAnswered(f, values[f.id]))
   const stars = skyStars(values, isDone)
+  const fingerprint = onReview || onSubmitted ? roleFingerprint(values) : undefined
   const title = hasValue(FIELD_BY_ID.title, values.title) ? values.title!.text!.trim() : null
-  const details = (['positions', 'type', 'start'] as const)
+  const detailIds = goal === 'pipeline'
+    ? ['type', 'hiringCondition'] as const
+    : goal === 'soon'
+      ? ['positions', 'type', 'openingWindow'] as const
+      : ['positions', 'type', 'start'] as const
+  const details = detailIds
     .filter((id) => hasValue(FIELD_BY_ID[id], values[id]))
     .map((id) => (id === 'positions' ? `${values.positions!.number} ${values.positions!.number === 1 ? 'position' : 'positions'}` : display(id, values)))
     .join(' · ')
+  const screenFields = fieldsFor(screen, goal)
+  const screenTitle = screen.id === 'role'
+    ? goal === 'pipeline'
+      ? 'What kind of role are you exploring?'
+      : goal === 'soon'
+        ? 'What is the role, and when do you expect it to open?'
+        : screen.title
+    : screen.title
+  const screenHint = screen.id === 'role' && goal === 'pipeline'
+    ? 'Describe a specific kind of work to discuss. Headcount and start timing can remain undecided.'
+    : screen.hint
 
   return (
     <div className="shell">
@@ -141,6 +361,7 @@ export default function App() {
         <Sky
           className="field__sky"
           seed={seed}
+          fingerprint={fingerprint}
           goal={goal}
           step={doneCount}
           lit={stars.lit}
@@ -164,6 +385,7 @@ export default function App() {
             <a href="#form" aria-current="page">
               Role
             </a>
+            <a href="#/roles">Browse roles</a>
             <span aria-disabled="true">
               Events <small>soon</small>
             </span>
@@ -171,9 +393,14 @@ export default function App() {
               Company page <small>soon</small>
             </span>
           </nav>
-          <p className="event-chip">
-            Sample event · <b>{EVENT.name}</b> · {EVENT.date}
-          </p>
+          <div className="topbar__actions">
+            <p className="event-chip">
+              {demoMode && <>Sample answers · </>}Sample event · <b>{EVENT.name}</b> · {EVENT.date}
+            </p>
+          <button type="button" className="btn-quiet demo-control" onClick={playSampleDemo} aria-pressed={demoRunning}>
+              {demoRunning ? 'Stop sample demo' : demoMode ? 'Replay sample demo' : 'Play sample demo'}
+            </button>
+          </div>
         </header>
 
         <div className="progress" aria-label={`${doneCount} of ${SCREENS.length} steps complete`}>
@@ -194,7 +421,7 @@ export default function App() {
               {values.title?.text?.trim() || 'The role'} is submitted for {EVENT.name}, {formatTime(savedAt!)}.
             </p>
             <div className="submitted__body">
-              <RoleCard values={values} seed={seed} event={EVENT} />
+              <RoleCard values={values} seed={seed} fingerprint={roleFingerprint(values)} event={EVENT} />
               <div className="submitted__next">
                 <h2>Next</h2>
                 <button type="button" className="btn" onClick={addAnotherRole}>
@@ -244,19 +471,20 @@ export default function App() {
         ) : (
           <form className="question" id="form" onSubmit={next} noValidate>
             <h1 ref={headingRef} tabIndex={-1}>
-              {screen.title}
+              {screenTitle}
             </h1>
-            {screen.hint && <p className="hint">{screen.hint}</p>}
+            {screenHint && <p className="hint">{screenHint}</p>}
             <p className="error" role="alert">
               {invalid.size === 0 ? '' : invalid.size === 1 ? 'One answer is missing.' : `${invalid.size} answers are missing.`}
             </p>
             <div className="fields">
-              {screen.fields.map((f) => (
+              {screenFields.map((f) => (
                 <FieldView
                   key={f.id}
                   field={f}
                   value={values[f.id]}
                   invalid={invalid.has(f.id)}
+                  roleTitle={values.title?.text ?? ''}
                   onChange={(v) => setField(f.id, v)}
                 />
               ))}
@@ -294,7 +522,7 @@ export default function App() {
               </thead>
               <tbody>
                 {SCREENS.map((s, i) => {
-                  const summary = screenSummary(s, values)
+                  const summary = screenSummary(s, values, goal)
                   if (!visited.has(s.id) && !summary) return null
                   return (
                     <tr key={s.id} className={!onReview && i === index ? 'is-current' : undefined}>
@@ -317,6 +545,11 @@ export default function App() {
           )}
         </section>}
       </main>
+      <div ref={demoCursor} className="demo-cursor" aria-hidden="true">
+        <svg className="demo-cursor__shape" viewBox="0 0 24 32" focusable="false">
+          <path d="M2 1v25l7-7 5 11 5-2-5-11h9L2 1Z" />
+        </svg>
+      </div>
     </div>
   )
 }

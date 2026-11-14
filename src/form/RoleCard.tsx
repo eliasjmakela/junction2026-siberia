@@ -4,20 +4,24 @@ import { display, goalOf, hasValue, UNDECIDED } from './logic'
 import { FIELD_BY_ID, GOALS, type Values } from './schema'
 import './RoleCard.css'
 
-type Props = { values: Values; seed: string; event: { name: string; date: string } }
+type Props = { values: Values; seed: string; fingerprint: string; event: { name: string; date: string } }
 
 /**
  * The role card: the role's need on one poster-sized card, for the event
  * listing, the stand and sharing. A miniature of the night-sky field, so it is spruce.
  */
-export function RoleCard({ values, seed, event }: Props) {
+export function RoleCard({ values, seed, fingerprint, event }: Props) {
   const goal = goalOf(values)
   const title = hasValue(FIELD_BY_ID.title, values.title) ? values.title!.text!.trim() : 'Untitled role'
   const company = hasValue(FIELD_BY_ID.company, values.company) ? values.company!.text!.trim() : null
   const must = values.skills?.undecided ? null : values.skills?.skills?.must ?? []
   const facts: [string, string][] = [
     ['Type', 'type'],
-    ['Start', 'start'],
+    ...(goal === 'pipeline'
+      ? [['Before hiring', 'hiringCondition'] as [string, string]]
+      : goal === 'soon'
+        ? [['Expected opening', 'openingWindow'] as [string, string], ['Start', 'start'] as [string, string]]
+        : [['Positions', 'positions'] as [string, string], ['Start', 'start'] as [string, string]]),
     ['Work mode', 'mode'],
     ['Finnish', 'finnish'],
   ]
@@ -31,7 +35,7 @@ export function RoleCard({ values, seed, event }: Props) {
         </span>
       </p>
       <div className="role-card__figure">
-        <Sky thumb seed={seed} goal={goal} step={8} {...skyStars(values, () => true)} complete />
+        <Sky thumb seed={seed} goal={goal} fingerprint={fingerprint} step={8} {...skyStars(values, () => true)} complete />
       </div>
       <h2 className="role-card__title">{title}</h2>
       <p className="role-card__by">

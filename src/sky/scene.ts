@@ -63,29 +63,29 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 type Constellation = { pts: Pt[]; lines: [number, number][]; mags: number[]; cx: number; cy: number }
 
 /**
- * Three figures, one per status, drawn so their lines never cross:
- * an arrow (open now), a blunted arrow (opening soon), a long chain (talent pipeline).
- * Each role gets its own proportions, tilt and small offsets from its seed.
+ * Three closed figures, one per status, drawn so their lines never cross:
+ * an outlined arrow (open now), a blunt-nosed arrow (opening soon), and a linked ring (pipeline).
+ * Each role gets its own proportions, tilt and small offsets from its answer fingerprint.
  */
-function constellation(seed: string, goal: Goal | null): Constellation {
-  const r = rng(hash(seed + (goal ?? 'none')))
+function constellation(fingerprint: string, goal: Goal | null): Constellation {
+  const r = rng(hash(fingerprint + (goal ?? 'none')))
   const j = (a: number) => (r() - 0.5) * a
   const cx = 1000 + j(400)
   const cy = 1150 + j(500)
   let pts: Pt[]
   let lines: [number, number][]
   if (goal === 'soon') {
-    pts = [[140, -34], [50, -50], [-40, -72], [-130, -100], [140, 34], [50, 54], [-40, 76], [-130, 102], [-70, 0]]
-    lines = [[3, 2], [2, 1], [1, 0], [0, 4], [4, 5], [5, 6], [6, 7], [2, 8], [8, 6]]
+    pts = [[126, -32], [126, 32], [72, 72], [0, 68], [-118, 42], [-132, 0], [-118, -42], [0, -68], [72, -72]]
+    lines = pts.map((_, i) => [i, (i + 1) % pts.length] as [number, number])
+    lines.push([2, 8])
   } else if (goal === 'pipeline') {
-    pts = Array.from({ length: 9 }, (_, i) => [-176 + i * 44, Math.sin(i * 1.15) * 30] as Pt)
-    const centre = pts.splice(4, 1)[0]
-    pts.unshift(centre)
-    // chain order after moving the middle star to index 0
-    lines = [[1, 2], [2, 3], [3, 4], [4, 0], [0, 5], [5, 6], [6, 7], [7, 8]]
+    pts = [[0, -112], [72, -92], [126, -32], [112, 48], [52, 104], [-38, 112], [-112, 66], [-130, -12], [-62, -88]]
+    lines = pts.map((_, i) => [i, (i + 1) % pts.length] as [number, number])
+    lines.push([0, 5])
   } else {
-    pts = [[150, 0], [62, -30], [-28, -62], [-118, -96], [62, 30], [-28, 62], [-118, 96], [-30, 0], [-124, 2]]
-    lines = [[3, 2], [2, 1], [1, 0], [0, 4], [4, 5], [5, 6], [0, 7], [7, 8]]
+    pts = [[160, 0], [52, -82], [52, -28], [-50, -28], [-142, -28], [-142, 28], [-50, 28], [52, 28], [52, 82]]
+    lines = pts.map((_, i) => [i, (i + 1) % pts.length] as [number, number])
+    lines.push([3, 6])
   }
   const a = j(SKY.vary * 0.012)
   const ca = Math.cos(a)
@@ -164,12 +164,12 @@ export class SkyScene {
   private goal: State | null = null
   private completeAt = -1
 
-  constructor(svg: SVGSVGElement, seed: string, goal: Goal | null, opts: { thumb?: boolean; still?: boolean } = {}) {
+  constructor(svg: SVGSVGElement, seed: string, goal: Goal | null, opts: { thumb?: boolean; still?: boolean; fingerprint?: string } = {}) {
     this.svg = svg
     this.thumb = Boolean(opts.thumb)
     this.still = Boolean(opts.still)
     svg.replaceChildren()
-    this.con = constellation(seed, goal)
+    this.con = constellation(opts.fingerprint ?? seed, goal)
     this.path = cameraPath(this.con)
     const r = rng(hash(seed + 'sky'))
     const gStars = el('g', {}, svg)

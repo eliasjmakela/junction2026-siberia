@@ -178,6 +178,87 @@
   min-height: 80px;
 }
 
+/* ---------- Company writing help ---------- */
+.writing-assist {
+  margin-top: var(--s-2);
+}
+
+.writing-assist__trigger,
+.writing-assist__close {
+  min-height: var(--s-4);
+  padding: 0 var(--s-2);
+  color: var(--spruce);
+  font-size: var(--type-small);
+  font-weight: 600;
+}
+
+.writing-assist__trigger:hover,
+.writing-assist__close:hover,
+.writing-assist__apply:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.writing-assist__panel {
+  max-width: 720px;
+  margin-top: var(--s-2);
+  padding: var(--s-3);
+  background: var(--granite-light);
+  border-top: 3px solid var(--spruce);
+}
+
+.writing-assist__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-1) var(--s-2);
+}
+
+.writing-assist__heading h3 {
+  font-size: var(--type-body-l);
+  font-weight: 600;
+}
+
+.writing-assist__source,
+.writing-assist__label {
+  color: var(--ink-soft);
+  font-size: var(--type-small);
+  font-weight: 600;
+}
+
+.writing-assist__source {
+  padding: 1px 6px;
+  border: 1px solid var(--spruce);
+  color: var(--ink);
+}
+
+.writing-assist__message,
+.writing-assist__draft,
+.writing-assist__questions {
+  margin-top: var(--s-2);
+  font-size: var(--type-small);
+}
+
+.writing-assist__apply {
+  margin-top: var(--s-1);
+  color: var(--spruce);
+  font-weight: 600;
+}
+
+.writing-assist__questions ul {
+  margin: var(--s-1) 0 0;
+  padding-left: 20px;
+}
+
+.writing-assist__questions li + li {
+  margin-top: var(--s-1);
+}
+
+.writing-assist__close {
+  margin-top: var(--s-2);
+}
+
 .input--date {
   width: auto;
   font-variant-numeric: tabular-nums;

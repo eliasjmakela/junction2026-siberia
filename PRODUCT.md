@@ -16,7 +16,7 @@ Secondary (implied by the challenge, not yet designed for): the talent those com
 
 Built for the Junction 2026 hackathon, City of Espoo challenge: *"How can recruitment and matchmaking events organized by City of Espoo help companies and talent relevantly find and connect with each other, despite AI-generated job search materials and AI-assisted recruitment processes becoming common?"*
 
-The tool has a company describe each role plainly before the event: whether it is open now, opening soon, or a talent pipeline, what the first month and a normal day look like, which skills are must-have versus teachable, language, location and relocation terms. Attendees then see at a glance whether a role is for them.
+The tool has a company describe each role plainly before the event: whether it is open now, expected to open within three months, or a talent pipeline, what the first month and a normal day look like, which skills are must-have versus teachable, language, location and relocation terms. Attendees then see at a glance whether a role is for them.
 
 Typical job fairs fail because they are aimless and nobody really benefits. Success means a company arrives at an Espoo event knowing its goal, and the event can match it with the right people because of that clarity.
 
@@ -33,13 +33,16 @@ Most recruitment tools optimize the candidate side or automate screening. This o
 ## Capabilities and Constraints
 
 - Core capability: a company form with guiding questions and answer chips, filled in once per role (about 8 minutes). Company answers (name, size and stage, who thrives here) are asked once and carried over to every role.
-- The form's first question sets the role status: open now, opening soon, or talent pipeline.
+- The form's first question sets the role status: open now, expected to open within three months, or a talent pipeline. The role step adapts to the status: open roles ask for positions and start timing; expected openings ask for their window; pipelines ask what would need to happen before hiring and leave headcount and start timing undecided.
 - Every required question can be answered "Not decided yet"; the role page shows these as honest gaps instead of filler.
 - Output: a role page generated from the answers by one template, including "You'd fit if" and "Probably not for you if" lists assembled by fixed rules (no LLM).
+- Company writing help: on request, help clarify one text answer with a concise rewrite and job-related follow-up questions. The company chooses whether to apply suggested wording. Until Gemini is configured, the form shows clearly labelled demo suggestions.
 - Role card: the submitted role as one spruce card with its constellation, title, status and key facts.
+- The constellation figure is a clean, status-specific shape with bounded variations derived from the role's active answers, giving the same role a repeatable visual fingerprint.
 - Quick check for attendees (LLM-powered): from the submitted role, AI drafts a 60-second questionnaire of yes/no and number questions about the role's requirements. The company reviews, removes and publishes the questions; attendees answer them at #/check as a self-check. Without an API key, or if the model call fails, the questions come from fixed rules.
 - GDPR and non-discrimination (binding for anything attendees see): only job-relevant requirements; never special-category data, age, gender, family status, nationality or other protected grounds; no names or contact details; attendee answers stay in the attendee's browser, are never stored or sent, and the result is a self-check, never an automated decision. The model sees only the role profile.
-- Planned next: an event page listing all companies with filters (skills, language, remote, relocation); optionally, pasting a job ad to have an LLM draft answers for the company to correct.
+- Writing-help privacy: only the selected field's answer, role title and static field guidance are sent to Gemini, on request. E-mail addresses, URLs and phone-like strings are removed before sending; the Gemini request uses stateless mode. Never send attendee data or other role/company answers.
+- Planned next: live event role listings with filters (skills, language, remote, relocation); the attendee browser currently uses labelled synthetic sample roles. Optionally, pasting a job ad to have an LLM draft answers for the company to correct.
 - Hard limit: a company finishes one role in 10 minutes at most. Question count and question types are chosen for that budget.
 - Stack: React 19 + TypeScript + Vite (already scaffolded).
 - Undecided: how attendees are matched to roles, and the language set (Finnish, Swedish, English).

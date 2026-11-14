@@ -6,13 +6,15 @@ import './Sky.css'
 type Props = SkyInput & {
   seed: string
   goal: Goal | null
+  /** Stable role-answer fingerprint used only for the constellation geometry. */
+  fingerprint?: string
   /** A small, static rendering (role card): no drift, no twinkle, snaps to its state. */
   thumb?: boolean
   className?: string
 }
 
 /** The night sky. Decorative: the caption next to it carries the meaning in text. */
-export function Sky({ seed, goal, step, lit, undecided, complete, thumb, className }: Props) {
+export function Sky({ seed, goal, fingerprint, step, lit, undecided, complete, thumb, className }: Props) {
   const svgRef = useRef<SVGSVGElement>(null)
   const sceneRef = useRef<SkyScene | null>(null)
   const inputRef = useRef<SkyInput>({ step, lit, undecided, complete })
@@ -30,7 +32,7 @@ export function Sky({ seed, goal, step, lit, undecided, complete, thumb, classNa
       svg.setAttribute('viewBox', `0 0 ${Math.max(1, Math.round(r.width))} ${Math.max(1, Math.round(r.height))}`)
     }
     fit()
-    const scene = new SkyScene(svg, seed, goal, { thumb, still: reduce })
+    const scene = new SkyScene(svg, seed, goal, { thumb, still: reduce, fingerprint })
     scene.set(inputRef.current, true)
     sceneRef.current = scene
     let frame = 0
@@ -56,7 +58,7 @@ export function Sky({ seed, goal, step, lit, undecided, complete, thumb, classNa
       ro.disconnect()
       sceneRef.current = null
     }
-  }, [seed, goal, thumb])
+  }, [seed, goal, thumb, fingerprint])
 
   useEffect(() => {
     const scene = sceneRef.current

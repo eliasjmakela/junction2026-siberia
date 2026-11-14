@@ -17,7 +17,7 @@ npm run lint       # oxlint
 npm run capture    # screenshots of every main state into .impeccable/review/ (needs the dev server; see scripts/capture.mjs)
 ```
 
-Optional: copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` so the quick check is drafted by Claude. Without it the questions come from fixed rules. The AI path has not been run with a real key yet.
+Optional: copy `.env.example` to `.env`. `ANTHROPIC_API_KEY` enables Claude quick-check drafts; `GEMINI_API_KEY` enables Gemini writing help in text fields. Without either key, the app uses its labelled fixed demo suggestions. Model overrides are `PLAINLY_SCREENING_MODEL` and `PLAINLY_WRITING_MODEL`.
 
 Design check after UI edits: `~/.claude/skills/impeccable/scripts/impeccable detect --json src` should return `[]` (only present on machines with the Impeccable skill).
 
@@ -32,20 +32,26 @@ Design check after UI edits: `~/.claude/skills/impeccable/scripts/impeccable det
 | `src/form/RolePreview.*` | The attendee-facing role page shown on the review step |
 | `src/form/RoleCard.*` | The role card on the submitted page |
 | `src/sky/scene.ts` | The night-sky hero (camera, focus, constellations). Settings in `SKY` |
-| `src/sky/input.ts` | Which stars are lit or undecided, from the form state; role seeds |
+| `src/sky/input.ts` | Which stars are lit or undecided, from the form state; deterministic role-answer fingerprint |
 | `src/components/Sky.tsx` | React wrapper for the sky (resize, animation loop, reduced motion) |
 | `src/screening/` | Quick check: `core.ts` (shared types, validator, rules generator, prompt, scoring), `ScreeningReview.tsx` (company side), `SeekerCheck.tsx` (attendee side, `#/check`), `Root.tsx` (hash router) |
+| `src/seeker/` | Sample attendee role browser at `#/roles`; five synthetic profiles use the generated role card and role page components |
 | `server/screening.ts` | Vite plugin for `POST /api/screening`; holds the API key server-side |
+| `src/writing-assistant/` | Field-level writing-help client, input sanitizer, prompt, schema and demo suggestions |
+| `server/writing-assistant.ts` | Vite plugin for `POST /api/writing-assist`; holds the Gemini key server-side |
 | `src/styles/tokens.css`, `base.css` | Design tokens and browser-surface styling |
 | `scripts/capture.mjs` | Playwright screenshots with synthetic sample answers |
+
+The top-bar **Play sample demo** action fills the company flow with clearly labelled synthetic answers and advances through all eight steps to review.
 
 ## How things fit together
 
 - All state lives in the browser. `localStorage` keys: `plainly:role:v2` (`{ values, savedAt, seed }`, written on Submit role) and `plainly:screening:v1` (the published quick check). There is no backend database.
-- **Adding a question**: add the field to a screen in `schema.ts`. If attendees should see it, render it in `RolePreview.tsx`; if it should affect fit, add a rule in `fitLists()`; add a fill step to `scripts/capture.mjs`. Required fields automatically get "Not decided yet" unless `noUndecided` or `optional` is set.
+- **Adding a question**: add the field to a screen in `schema.ts`. Fields can be scoped to a role status with `onlyFor` / `excludeFor`; `fieldsFor()` keeps validation, progress and ledger summaries on the active path. If attendees should see it, render it in `RolePreview.tsx`; if it should affect fit, add a rule in `fitLists()`; add a fill step to `scripts/capture.mjs`. Required fields automatically get "Not decided yet" unless `noUndecided` or `optional` is set.
 - **The sky maps stars to steps**: `LIGHT_AT`/`STAR_SCREEN` in `src/sky/scene.ts` assume 8 screens and 9 stars (two stars for step 2). Changing the number of screens means updating that mapping and the constellation figures.
+- The three status constellations are closed outlines with a restrained internal connection. Keep the geometry bounded and line segments clear as the answer fingerprint varies it.
 - Lines join the constellation only when every step is complete (review and submitted pages). A step with any "Not decided yet" answer keeps a dim star and dashed lines.
-- The role's constellation shape comes from its seed (new per role, saved with the role); the camera path is random each time.
+- The noise field seed is new per role and saved. At review and submission, the constellation shape uses a deterministic fingerprint of the active role answers; company-wide answers are excluded. The bounded geometry preserves the clean status-specific figures, and the camera path is random each time.
 - `#/check` reads the published quick check and the submitted role from `localStorage`, so it only works in the same browser for now.
 
 ## Rules that are easy to break
@@ -61,7 +67,7 @@ Design check after UI edits: `~/.claude/skills/impeccable/scripts/impeccable det
 
 ## Known gaps
 
-- Event page listing all roles with filters, and attendee-to-role matching.
+- Live event role data and filters, and attendee-to-role matching; `#/roles` currently shows five synthetic sample profiles.
 - Finnish and Swedish copy.
 - Persistence beyond one browser; `/api/screening` exists only in `vite dev`/`vite preview` (a static deploy falls back to rules in the browser).
 - The keyword-based topic filter is deliberately broad and can drop a legitimate skill question.

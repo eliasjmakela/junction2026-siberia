@@ -2,7 +2,8 @@ import { display, fitLists, goalOf, hasValue, UNDECIDED } from './logic'
 import { FIELD_BY_ID, GOALS, type Values } from './schema'
 import './RolePreview.css'
 
-function Val({ id, values, fallback = 'Not answered' }: { id: string; values: Values; fallback?: string }) {
+function Val({ id, values, fallback = 'Not answered', forceUndecided = false }: { id: string; values: Values; fallback?: string; forceUndecided?: boolean }) {
+  if (forceUndecided) return <span className="gap-tag">{UNDECIDED}</span>
   const text = display(id, values)
   if (text === UNDECIDED) return <span className="gap-tag">{UNDECIDED}</span>
   if (!text) return <span className="gap-tag">{fallback}</span>
@@ -24,17 +25,17 @@ function Sentence({ id, values }: { id: string; values: Values }) {
 }
 
 /** The role page attendees see, rendered from the answers by one template. */
-export function RolePreview({ values }: { values: Values }) {
+export function RolePreview({ values, part = 'all' }: { values: Values; part?: 'all' | 'summary' | 'details' }) {
   const goal = goalOf(values)
   const { fit, not } = fitLists(values)
   const skills = values.skills?.undecided ? null : values.skills?.skills
   const title = hasValue(FIELD_BY_ID.title, values.title) ? values.title!.text!.trim() : 'Untitled role'
   const company = hasValue(FIELD_BY_ID.company, values.company) ? values.company!.text!.trim() : 'Your company'
 
-  const facts: [string, string][] = [
+  const allFacts: [string, string][] = [
     ['Type', 'type'],
     ['Positions', 'positions'],
-    ['Start', 'start'],
+    ...(goal === 'soon' ? [['Expected opening', 'openingWindow'] as [string, string]] : [['Start', 'start'] as [string, string]]),
     ['Work mode', 'mode'],
     ['Office', 'office'],
     ['Working language', 'worklang'],
@@ -42,36 +43,41 @@ export function RolePreview({ values }: { values: Values }) {
     ['Hours', 'hours'],
     ['Salary', 'salary'],
   ]
+  const summaryFacts = allFacts.filter(([label]) => ['Type', 'Positions', 'Expected opening', 'Start', 'Work mode', 'Office', 'Working language', 'Salary'].includes(label))
+  const facts = part === 'summary' ? summaryFacts : allFacts
 
   return (
-    <article className="preview" aria-label="Role page preview">
-      <header className="preview__head">
-        <h2 className="preview__title">{title}</h2>
-        <p className="preview__byline">
-          {goal && (
-            <span className="preview__status">{GOALS[goal].name}</span>
-          )}
-          <span>
-            {company}
-            {hasValue(FIELD_BY_ID.size, values.size) && <> · {display('size', values)}</>}
-          </span>
-        </p>
-        <div className="preview__purpose">
-          <Sentence id="purpose" values={values} />
-        </div>
-      </header>
+    <article className={`preview preview--${part}`} aria-label="Role page preview">
+      {part !== 'details' && (
+        <>
+          <header className="preview__head">
+            <h2 className="preview__title">{title}</h2>
+            <p className="preview__byline">
+              {goal && <span className="preview__status">{GOALS[goal].name}</span>}
+              <span>{company}{hasValue(FIELD_BY_ID.size, values.size) && <> · {display('size', values)}</>}</span>
+            </p>
+            <div className="preview__purpose"><Sentence id="purpose" values={values} /></div>
+          </header>
 
-      <dl className="preview__facts">
-        {facts.map(([label, id]) => (
-          <div key={id}>
-            <dt>{label}</dt>
-            <dd>
-              <Val id={id} values={values} fallback={id === 'salary' ? 'Not listed' : 'Not answered'} />
-            </dd>
-          </div>
-        ))}
-      </dl>
+          <dl className="preview__facts">
+            {facts.map(([label, id]) => (
+              <div key={id}>
+                <dt>{label}</dt>
+                <dd>
+                  <Val
+                    id={id}
+                    values={values}
+                    fallback={id === 'salary' ? 'Not listed' : 'Not answered'}
+                    forceUndecided={goal === 'pipeline' && (id === 'positions' || id === 'start')}
+                  />
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </>
+      )}
 
+      {part !== 'summary' && <>
       <div className="preview__fit">
         <section className="fit fit--yes">
           <h3>You’d fit if</h3>
@@ -92,6 +98,12 @@ export function RolePreview({ values }: { values: Values }) {
       </div>
 
       <div className="preview__body">
+        {goal === 'pipeline' && (
+          <section>
+            <h3>Before hiring</h3>
+            <Sentence id="hiringCondition" values={values} />
+          </section>
+        )}
         <section>
           <h3>The first month</h3>
           <Sentence id="month1" values={values} />
@@ -146,6 +158,7 @@ export function RolePreview({ values }: { values: Values }) {
           </section>
         )}
       </div>
+      </>}
     </article>
   )
 }

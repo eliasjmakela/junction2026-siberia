@@ -1,4 +1,4 @@
-import { hasValue } from '../form/logic'
+import { goalOf, hasValue } from '../form/logic'
 import { FIELD_BY_ID, type Values } from '../form/schema'
 import { sanitizeProfile, type RoleProfile } from './core'
 
@@ -12,7 +12,7 @@ export function profileFrom(values: Values): RoleProfile {
   const choice = (id: string) => answered(id)?.choice
   const text = (id: string) => answered(id)?.text?.trim()
   const skills = answered('skills')?.skills
-  const start = answered('start')
+  const start = goalOf(values) === 'pipeline' ? undefined : answered('start')
 
   return sanitizeProfile({
     title: text('title'),

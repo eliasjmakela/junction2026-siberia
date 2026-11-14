@@ -28,8 +28,12 @@ export function isAnswered(f: Field, v: Value | undefined): boolean {
   return Boolean(v?.undecided) || hasValue(f, v)
 }
 
-export function missingOn(screen: Screen, values: Values): Field[] {
-  return screen.fields.filter((f) => !f.optional && !isAnswered(f, values[f.id]))
+export function fieldsFor(screen: Screen, goal: Goal | null): Field[] {
+  return screen.fields.filter((f) => (!f.onlyFor || (goal !== null && f.onlyFor.includes(goal))) && (!f.excludeFor || !goal || !f.excludeFor.includes(goal)))
+}
+
+export function missingOn(screen: Screen, values: Values, goal: Goal | null = goalOf(values)): Field[] {
+  return fieldsFor(screen, goal).filter((f) => !f.optional && !isAnswered(f, values[f.id]))
 }
 
 export function goalOf(values: Values): Goal | null {
@@ -87,8 +91,8 @@ export function display(fieldId: string, values: Values): string | null {
 
 const BARE = new Set(['Yes', 'No', 'Depends', 'Case by case', 'Required', 'Preferred', 'Not important', 'Basic', 'Fluent', 'Fixed', 'Flexible', UNDECIDED])
 
-export function screenSummary(screen: Screen, values: Values): string {
-  return screen.fields
+export function screenSummary(screen: Screen, values: Values, goal: Goal | null = goalOf(values)): string {
+  return fieldsFor(screen, goal)
     .map((f) => {
       const text = display(f.id, values)
       if (!text) return null

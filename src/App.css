@@ -105,10 +105,62 @@
 
 .topbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--s-4);
   min-height: var(--s-6);
+}
+
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  margin-left: auto;
+  min-width: 0;
+}
+
+.demo-control {
+  flex: 0 0 auto;
+  padding-inline: var(--s-3);
+  white-space: nowrap;
+}
+
+.demo-cursor {
+  position: fixed;
+  z-index: 10000;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 32px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(-40px, -40px, 0);
+  transition: transform 460ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 140ms ease-out;
+}
+
+.demo-cursor.is-visible {
+  opacity: 1;
+}
+
+.demo-cursor__shape {
+  width: 24px;
+  height: 32px;
+  overflow: visible;
+}
+
+.demo-cursor__shape path {
+  fill: var(--spruce);
+  stroke: var(--white);
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+  transition: transform 100ms ease-out;
+  transform-origin: 2px 1px;
+}
+
+.demo-cursor.is-down .demo-cursor__shape path {
+  transform: scale(0.88);
 }
 
 .tabs {
@@ -489,7 +541,13 @@
   }
 
   .topbar {
-    overflow-x: auto;
+    overflow: visible;
+    row-gap: var(--s-1);
+  }
+
+  .topbar__actions {
+    width: 100%;
+    justify-content: flex-end;
   }
 
   .tabs {
