@@ -41,7 +41,7 @@ Design check after UI edits: `~/.claude/skills/impeccable/scripts/impeccable det
 | `src/event/api.ts` | Browser client for the AI endpoints with rules fallback and re-validation |
 | `src/event/CompanyQuestions.tsx` | Company side: draft, review and publish application questions (submitted page) |
 | `src/event/sample.ts`, `sampleApplicants.ts`, `sampleAssessments.ts` | Synthetic sample companies (from `src/seeker/sampleRoles.ts`) with hand-written question sets, sample applicants, and hand-written sample assessments (shown as "Sample assessment" until a pair is scored again) |
-| `src/apply/` | Applicant flow at `#/apply` |
+| `src/apply/` | Applicant flow at `#/apply`, with its sample demo answers in `demoAnswers.ts` |
 | `src/staff/` | Staff review at `#/staff`: per-company ranking, evidence, decisions, invitations |
 | `src/outcomes/` | Follow-up concept demo at `#/outcomes` (simulated data only) |
 | `src/components/SiteHeader.tsx` | Top bar for the applicant, staff and follow-up views |
@@ -52,7 +52,7 @@ Design check after UI edits: `~/.claude/skills/impeccable/scripts/impeccable det
 | `src/styles/tokens.css`, `base.css` | Design tokens and browser-surface styling |
 | `scripts/capture.mjs` | Playwright screenshots with synthetic sample answers |
 
-The top-bar **Play sample demo** action fills the company flow with clearly labelled synthetic answers and advances through all eight steps to review.
+The top-bar **Play sample demo** action fills the company flow with clearly labelled synthetic answers and advances through all eight steps to review. The same action on `#/apply` (`src/apply/demoAnswers.ts`, cursor helper `src/components/demoCursor.ts`) picks the newest company-published role plus a sample role, types synthetic answers, e-mail and consent, and stops at the review; a submitted demo application is marked as a sample applicant. Any real click or key press stops either demo.
 
 ## How things fit together
 

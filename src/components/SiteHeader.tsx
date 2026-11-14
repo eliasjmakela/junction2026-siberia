@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { EVENT } from '../event/store'
 import './SiteHeader.css'
 
@@ -11,7 +12,7 @@ const LINKS: { area: Area; href: string; label: string }[] = [
 ]
 
 /** The top bar for the applicant, staff and follow-up views. */
-export function SiteHeader({ area, note }: { area: Area; note?: string }) {
+export function SiteHeader({ area, note, action }: { area: Area; note?: string; action?: ReactNode }) {
   return (
     <header className="site-header">
       <a className="site-header__brand" href="#/">
@@ -24,9 +25,12 @@ export function SiteHeader({ area, note }: { area: Area; note?: string }) {
           </a>
         ))}
       </nav>
-      <p className="site-header__event">
-        {note && <>{note} · </>}Sample event · <b>{EVENT.name}</b> · {EVENT.date}
-      </p>
+      <div className="site-header__actions">
+        <p className="site-header__event">
+          {note && <>{note} · </>}Sample event · <b>{EVENT.name}</b> · {EVENT.date}
+        </p>
+        {action}
+      </div>
     </header>
   )
 }

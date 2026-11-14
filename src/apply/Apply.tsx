@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react'
 import { Arrow } from '../components/Arrow'
 import { SiteHeader } from '../components/SiteHeader'
 import { Sky } from '../components/Sky'
+import { delay, demoCursor } from '../components/demoCursor'
 import { ANSWER_MAX, MAX_PICKS } from '../event/core'
 import { deleteApplication, EVENT, newCode, newId, setKeyOf, submitApplication, useEvent, type Application, type Listing } from '../event/store'
 import { goalOf } from '../form/logic'
@@ -9,6 +10,7 @@ import { GOALS } from '../form/schema'
 import { roleFingerprint, skyStars } from '../sky/input'
 import '../App.css'
 import '../form/fields.css'
+import { DEMO_EMAIL, demoAnswerFor, demoPicks } from './demoAnswers'
 import './apply.css'
 
 const MINE_KEY = 'plainly:apply:mine'
@@ -54,7 +56,7 @@ function ListingCard({ listing, checked, disabled, onToggle }: { listing: Listin
   const status = statusOf(listing)
   const goal = goalOf(listing.values)
   return (
-    <label className={`apply-card${checked ? ' is-checked' : ''}${disabled ? ' is-disabled' : ''}`}>
+    <label className={`apply-card${checked ? ' is-checked' : ''}${disabled ? ' is-disabled' : ''}`} data-listing={listing.id}>
       <input type="checkbox" checked={checked} disabled={disabled} onChange={onToggle} />
       <span className="apply-card__sky" aria-hidden="true">
         <Sky thumb seed={listing.seed} goal={goal} fingerprint={roleFingerprint(listing.values)} step={8} {...skyStars(listing.values, () => true)} complete />
@@ -204,7 +206,12 @@ export function Apply() {
   const [error, setError] = useState('')
   const [status, setStatus] = useState('')
   const [backToReview, setBackToReview] = useState(false)
+  const [demoRunning, setDemoRunning] = useState(false)
+  const [demoMode, setDemoMode] = useState(false)
+  const demoRun = useRef(0)
+  const cursorRef = useRef<HTMLDivElement>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
+
 
   const picked = picks.map((id) => listings.find((l) => l.id === id)).filter((l): l is Listing => Boolean(l))
   const total = picked.length + 3 // pick, one per company, contact, review
@@ -298,6 +305,7 @@ export function Apply() {
       ),
       email: email.trim(),
       consentAt: now,
+      sample: demoMode || undefined,
       sets: Object.fromEntries(picked.map((l) => [l.id, setKeyOf(l.set)])),
     }
     if (!submitApplication(app)) {
@@ -310,9 +318,83 @@ export function Apply() {
     setAnswers({})
     setEmail('')
     setConsent(false)
+    setDemoMode(false)
     setStatus('')
     setStep({ kind: 'intro' })
     window.scrollTo({ top: 0 })
+  }
+
+  function stopDemo() {
+    demoRun.current += 1
+    setDemoRunning(false)
+    cursorRef.current?.classList.remove('is-visible', 'is-down')
+  }
+
+  // Any real click or key press during the sample demo hands control back to the person.
+  useEffect(() => {
+    if (!demoRunning) return
+    const takeOver = (e: Event) => {
+      if (!e.isTrusted || (e.target instanceof Element && e.target.closest('.demo-control'))) return
+      stopDemo()
+    }
+    window.addEventListener('pointerdown', takeOver, true)
+    window.addEventListener('keydown', takeOver, true)
+    return () => {
+      window.removeEventListener('pointerdown', takeOver, true)
+      window.removeEventListener('keydown', takeOver, true)
+    }
+  }, [demoRunning])
+
+  /** Fills the application with synthetic sample answers, step by step, and stops at the review. */
+  async function playSampleDemo(event: MouseEvent<HTMLButtonElement>) {
+    if (demoRunning) {
+      stopDemo()
+      return
+    }
+    const run = demoRun.current + 1
+    demoRun.current = run
+    const d = demoCursor(cursorRef.current, () => demoRun.current === run)
+    const plan = demoPicks(listings)
+    d.show(event.currentTarget)
+    setDemoRunning(true)
+    setDemoMode(true)
+    // A new sample application: the earlier one stays stored for staff review.
+    writeMine(null)
+    setMineId(null)
+    setPicks([])
+    setAnswers({})
+    setEmail('')
+    setConsent(false)
+    setBackToReview(false)
+    go({ kind: 'intro' })
+    await delay(600)
+
+    const clickOn = async (selector: string) => {
+      const el = await d.find(selector)
+      return el ? d.click(el) : false
+    }
+
+    if (!plan.length || !(await clickOn('.apply-intro .btn'))) return stopDemo()
+    for (const l of plan) if (!(await clickOn(`label.apply-card[data-listing="${CSS.escape(l.id)}"]`))) return stopDemo()
+    if (!(await clickOn('form.apply-step button[type="submit"]'))) return stopDemo()
+
+    for (const l of plan) {
+      for (const [i, q] of l.set.questions.entries()) {
+        const box = await d.find<HTMLTextAreaElement>(`#${CSS.escape(`apply-${l.id}-${q.id}`)}`)
+        if (!box || !(await d.type(box, demoAnswerFor(l, q, i), 'word'))) return stopDemo()
+      }
+      if (!(await clickOn('form.apply-step button[type="submit"]'))) return stopDemo()
+      await delay(300)
+    }
+
+    const emailBox = await d.find<HTMLInputElement>('#apply-email')
+    if (!emailBox || !(await d.type(emailBox, DEMO_EMAIL))) return stopDemo()
+    if (!(await clickOn('label.apply-consent'))) return stopDemo()
+    if (!(await clickOn('form.apply-step button[type="submit"]'))) return stopDemo()
+    await d.find('#apply-review-title')
+    await delay(400)
+    setDemoRunning(false)
+    d.hide()
   }
 
   function onDeleted() {
@@ -322,18 +404,32 @@ export function Apply() {
     go({ kind: 'intro' })
   }
 
+  const demoButton = (
+    <button type="button" className="btn-quiet demo-control" onClick={playSampleDemo} aria-pressed={demoRunning}>
+      {demoRunning ? 'Stop sample demo' : demoMode ? 'Replay sample demo' : 'Play sample demo'}
+    </button>
+  )
+  const cursor = (
+    <div ref={cursorRef} className="demo-cursor" aria-hidden="true">
+      <svg className="demo-cursor__shape" viewBox="0 0 24 32" focusable="false">
+        <path d="M2 1v25l7-7 5 11 5-2-5-11h9L2 1Z" />
+      </svg>
+    </div>
+  )
+
   if (mine) {
     return (
       <main className="page apply">
-        <SiteHeader area="apply" />
+        <SiteHeader area="apply" note={mine.sample ? 'Sample answers' : undefined} action={demoButton} />
         <Submitted app={mine} listings={listings} onDeleted={onDeleted} />
+        {cursor}
       </main>
     )
   }
 
   return (
     <main className="page apply">
-      <SiteHeader area="apply" />
+      <SiteHeader area="apply" note={demoMode ? 'Sample answers' : undefined} action={demoButton} />
       {step.kind !== 'intro' && (
         <Progress current={current} total={total} detail={step.kind === 'answer' ? `Company ${step.index + 1} of ${picked.length}` : undefined} />
       )}
@@ -647,6 +743,7 @@ export function Apply() {
           </p>
         </section>
       )}
+      {cursor}
     </main>
   )
 }
