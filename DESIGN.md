@@ -226,7 +226,7 @@ Two grounds, one bright ink, one warning colour: a landscape palette committed t
 - **On Spruce** (on-spruce) / **Soft On Spruce** (on-spruce-soft): text and noise stars on the field; soft for the tagline, details line, empty-title placeholder and card meta (7.4:1 on spruce).
 
 ### Named Rules
-**The One Bright Ink Rule.** Lichen marks the picked stars, the role's status, the selection and the change, and nothing else. If an element is not one of those things, it is not lichen.
+**The One Bright Ink Rule.** Lichen marks the picked stars, the role's status, the selection and the change, and nothing else. One deliberate exception: the "Play walkthrough" button in the viewing-as band is filled lichen with ink text and a play mark (outlined lichen with a stop square while it runs), because it is the first action every new viewer should take. If an element is not one of those things, it is not lichen.
 
 **The Rowan Is Alarm Rule.** Rowan appears only on errors. It never marks emphasis, a brand moment or a destructive-looking button.
 

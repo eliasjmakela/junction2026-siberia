@@ -103,9 +103,49 @@
   margin-left: auto;
 }
 
+/* The walkthrough is the one action every first-time viewer should take: a filled lichen button. */
 .band .demo-control {
-  background: none;
-  border-radius: 0;
+  gap: var(--s-2);
+  min-height: var(--s-5);
+  padding: 0 var(--s-3) 0 12px;
+  background: var(--lichen);
+  border: 2px solid var(--lichen);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-weight: 600;
+  transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out);
+}
+
+.band .demo-control::before {
+  content: '';
+  flex: none;
+  width: 10px;
+  height: 12px;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.band .demo-control:hover {
+  background: var(--on-spruce);
+  border-color: var(--on-spruce);
+  color: var(--ink);
+}
+
+/* Running: outlined, with a stop square. */
+.band .demo-control[aria-pressed='true'] {
+  background: transparent;
+  color: var(--lichen);
+}
+
+.band .demo-control[aria-pressed='true']::before {
+  height: 10px;
+  clip-path: none;
+}
+
+.band .demo-control[aria-pressed='true']:hover {
+  background: transparent;
+  border-color: var(--on-spruce);
+  color: var(--on-spruce);
 }
 
 .band__next {
