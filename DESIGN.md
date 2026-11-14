@@ -206,7 +206,7 @@ The signature is the night sky. Each completed step moves the camera, unevenly, 
 Two grounds, one bright ink, one warning colour: a landscape palette committed to in full.
 
 ### Primary
-- **Spruce Field** (spruce): the night. The shell's left region at full height, the role card, the applicant picker's sky bands, the primary button and skill-bucket buttons, the selected scale step, selected-chip borders, done progress segments, the active tab underline, heavy rules over the privacy note and "fit" list, and the focus ring on granite. It is a ground, not an accent.
+- **Spruce Field** (spruce): the night. The shell's left region at full height, the role card, the small constellation tiles on applicant picker cards, the primary button and skill-bucket buttons, the selected scale step, selected-chip borders, done progress segments, the active tab underline, heavy rules over the privacy note and "fit" list, and the focus ring on granite. It is a ground, not an accent.
 - **Raised Spruce** (spruce-raised): hover on spruce surfaces and the scrollbar thumb.
 - **Deep Spruce** (spruce-deep): pressed state on spruce.
 
@@ -230,7 +230,7 @@ Two grounds, one bright ink, one warning colour: a landscape palette committed t
 
 **The Rowan Is Alarm Rule.** Rowan appears only on errors. It never marks emphasis, a brand moment or a destructive-looking button.
 
-**The Field Owns a Region Rule.** Spruce is applied as a whole region: the field, the role card, the picker's sky bands (a miniature of the field carrying its own sky) and solid actions. Never as a thin tint or a generic card background on granite.
+**The Field Owns a Region Rule.** Spruce is applied as a whole region: the field, the role card and the picker's constellation tiles (miniatures of the field carrying their own sky) and solid actions. Never as a thin tint or a generic card background on granite.
 
 ## Typography
 
@@ -264,7 +264,7 @@ Two grounds, one bright ink, one warning colour: a landscape palette committed t
 
 The work area runs top to bottom: section tabs and the sample-event chip, progress segments with "Step n of 8", the step title, hint, error line, fields, actions, a status line, and the ledger pushed to the foot with auto margin. Content widths cap at 800px (step), 880px (ledger, review sheet, submitted page, application questions) and 720px (inputs).
 
-**Site pages.** The applicant (`#/apply`), staff review (`#/staff`) and follow-up (`#/outcomes`) views share one granite page with a top bar: the spruce wordmark, text tabs with the spruce underline for the current page, and the sample-event chip. Spruce appears as whole regions only: the constellation band on each company card in the applicant picker, primary actions and heavy rules.
+**Site pages.** The applicant (`#/apply`), staff review (`#/staff`) and follow-up (`#/outcomes`) views share one granite page with a top bar: the spruce wordmark, text tabs with the spruce underline for the current page, and the sample-event chip. Spruce appears as whole regions only: the small constellation tile on each company card in the applicant picker, primary actions and heavy rules. On phones the links form one scrolling row, as on the company page.
 
 Spacing is an 8px module with a 4px half-step (s-1 to s-9, 4–64px). Fields stack 32px apart; chip sets wrap with 8px gaps. Status and error lines reserve their height so the layout never jumps.
 
@@ -345,7 +345,7 @@ A 400px spruce card on the submitted page: lichen wordmark and the event in 13px
 A top-ruled section on the submitted page: Display L compact title, lede, then a light granite panel holding the draft. A Small meta line shows the producer (outlined "AI-drafted · model" tag, "Drafted from your answers · fixed templates", or spruce "Published"). "What applicants are scored on" lists the attributes as white tiles in a two-column grid: Body L/600 name, Small soft-ink "strong answers show", and each source quote under a 2px spruce left rule with its micro label (the company field it quotes). Questions are numbered rows with 1px rules: Body L/500 question, Small "Shows:" line, a spruce "Remove" text action. A dashed notice appears when the role has changed since publishing. A Small soft-ink privacy paragraph closes the section.
 
 ### Applicant flow
-Progress segments as in the company form, Display XL step headings. The picker is a grid of company cards: a spruce sky band with the complete constellation on top, status, title, company, purpose and question count below; a chosen card takes the white fill, spruce border and lichen mark of a chosen chip. Answers are textareas with a character counter. A privacy block under the heavy spruce rule comes before anything the applicant answers.
+Progress segments as in the company form, Display XL step headings. The picker is a grid of company cards: status, title, company, purpose, and a footer with the question count and a small 48px spruce tile carrying the role's complete constellation below; a chosen card takes the white fill, spruce border and lichen mark of a chosen chip. Answers are textareas with a character counter. A privacy block under the heavy spruce rule comes before anything the applicant answers.
 
 ### Staff review
 A "Before you decide" block under the heavy spruce rule, company-role tiles with counts (the chosen one with a spruce border), then the ranked table: rank, application code with an "Answers" toggle, overall score in display numerals, one score cell per attribute and Invite / Waitlist / Decline chips on one line. Each score cell is a button (0–10 spruce bar, the number, a quote glyph; dashed track when there is no evidence). Selecting it opens one white evidence strip under the row, joined to the active cell like a tab to its panel: applicant, position and score, the rubric, the question and answer with the evidence underlined in lichen, the producer tag and rationale, and the company's own words. Arrow keys step cells (the strip follows), Escape closes. Opening a strip never changes row heights or column widths. A labelled rule marks the event-slot reference line. The table shows the top 10 (plus anything unscored or already decided) with a Small line "Top 10 of n applicants…" and a quiet "Show all n" action under it. Below 1024px rows become stacked cards and the strip opens inside the tapped attribute.

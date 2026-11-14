@@ -67,4 +67,14 @@
   .site-header__event {
     display: none;
   }
+
+  /* One scrolling row of links, as on the company page. */
+  .site-header__nav {
+    flex-basis: 100%;
+    flex-wrap: nowrap;
+    gap: var(--s-4);
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
 }

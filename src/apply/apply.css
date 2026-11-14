@@ -175,7 +175,6 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--s-2);
-  margin-top: var(--s-3);
 }
 
 .apply-card__mark {
@@ -197,14 +196,16 @@
   border-color: var(--granite-line);
 }
 
-/* A miniature of the night field: the complete constellation on spruce, bled to the card edges. */
+/* The role's constellation as a small mark in the card's corner. */
 .apply-card__sky {
   display: block;
-  height: 144px;
-  margin: calc(var(--s-3) * -1) calc(var(--s-3) * -1) 0;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  margin-left: auto;
   overflow: hidden;
   background: var(--spruce);
-  border-radius: var(--radius) var(--radius) 0 0;
+  border-radius: var(--radius);
 }
 
 .apply-card__sky svg {

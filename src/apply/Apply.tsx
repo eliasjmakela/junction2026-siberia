@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent, type ReactNode } from 'react'
 import { Arrow } from '../components/Arrow'
 import { SiteHeader } from '../components/SiteHeader'
 import { Sky } from '../components/Sky'
@@ -58,9 +58,6 @@ function ListingCard({ listing, checked, disabled, onToggle }: { listing: Listin
   return (
     <label className={`apply-card${checked ? ' is-checked' : ''}${disabled ? ' is-disabled' : ''}`} data-listing={listing.id}>
       <input type="checkbox" checked={checked} disabled={disabled} onChange={onToggle} />
-      <span className="apply-card__sky" aria-hidden="true">
-        <Sky thumb seed={listing.seed} goal={goal} fingerprint={roleFingerprint(listing.values)} step={8} {...skyStars(listing.values, () => true)} complete />
-      </span>
       <span className="apply-card__top">
         <span className="apply-card__status">{status ?? ''}</span>
         <span className="apply-card__mark" aria-hidden="true" />
@@ -75,12 +72,15 @@ function ListingCard({ listing, checked, disabled, onToggle }: { listing: Listin
       )}
       <span className="apply-card__meta">
         <span>{plural(listing.set.questions.length, 'question', 'questions')}</span>
+        <span className="apply-card__sky" aria-hidden="true">
+          <Sky thumb seed={listing.seed} goal={goal} fingerprint={roleFingerprint(listing.values)} step={8} {...skyStars(listing.values, () => true)} complete />
+        </span>
               </span>
     </label>
   )
 }
 
-function Progress({ current, total, detail }: { current: number; total: number; detail?: string }) {
+function Progress({ current, total, detail, action }: { current: number; total: number; detail?: string; action?: ReactNode }) {
   return (
     <div className="progress apply-progress" aria-label={`Step ${current} of ${total}`}>
       <ol className="progress__bars" aria-hidden="true">
@@ -92,11 +92,12 @@ function Progress({ current, total, detail }: { current: number; total: number; 
         Step {current} of {total}
         {detail && <> · {detail}</>}
       </span>
+      {action}
     </div>
   )
 }
 
-function Submitted({ app, listings, onDeleted }: { app: Application; listings: Listing[]; onDeleted: () => void }) {
+function Submitted({ app, listings, onDeleted, action }: { app: Application; listings: Listing[]; onDeleted: () => void; action?: ReactNode }) {
   const [confirming, setConfirming] = useState(false)
   const [status, setStatus] = useState('')
   const headingRef = useRef<HTMLHeadingElement>(null)
@@ -179,6 +180,7 @@ function Submitted({ app, listings, onDeleted }: { app: Application; listings: L
       <p className="status" role="status">
         {status}
       </p>
+      {action && <div className="actions apply-actions">{action}</div>}
     </section>
   )
 }
@@ -328,7 +330,7 @@ export function Apply() {
     cursorRef.current?.classList.remove('is-visible', 'is-down')
   }
 
-  // Any real click or key press during the sample demo hands control back to the person.
+  // Any real click or key press during the walkthrough hands control back to the person.
   useEffect(() => {
     if (!demoRunning) return
     const takeOver = (e: Event) => {
@@ -403,8 +405,8 @@ export function Apply() {
   }
 
   const demoButton = (
-    <button type="button" className="btn-quiet demo-control" onClick={playSampleDemo} aria-pressed={demoRunning}>
-      {demoRunning ? 'Stop sample demo' : demoMode ? 'Replay sample demo' : 'Play sample demo'}
+    <button type="button" className="btn-quiet demo-control" onClick={playSampleDemo} aria-pressed={demoRunning} title="Fills in the form with example answers, step by step. Click anywhere to take over.">
+      {demoRunning ? 'Stop walkthrough' : demoMode ? 'Replay walkthrough' : 'Play walkthrough'}
     </button>
   )
   const cursor = (
@@ -418,8 +420,8 @@ export function Apply() {
   if (mine) {
     return (
       <main className="page apply">
-        <SiteHeader area="apply" action={demoButton} />
-        <Submitted app={mine} listings={listings} onDeleted={onDeleted} />
+        <SiteHeader area="apply" />
+        <Submitted app={mine} listings={listings} onDeleted={onDeleted} action={demoButton} />
         {cursor}
       </main>
     )
@@ -427,9 +429,14 @@ export function Apply() {
 
   return (
     <main className="page apply">
-      <SiteHeader area="apply" action={demoButton} />
+      <SiteHeader area="apply" />
       {step.kind !== 'intro' && (
-        <Progress current={current} total={total} detail={step.kind === 'answer' ? `Company ${step.index + 1} of ${picked.length}` : undefined} />
+        <Progress
+          current={current}
+          total={total}
+          detail={step.kind === 'answer' ? `Company ${step.index + 1} of ${picked.length}` : undefined}
+          action={demoButton}
+        />
       )}
 
       {step.kind === 'intro' && (
@@ -467,6 +474,7 @@ export function Apply() {
             <button type="button" className="btn" onClick={() => go({ kind: 'pick' })}>
               Start application <Arrow />
             </button>
+            {demoButton}
           </div>
           <p className="status" role="status">
             {status}

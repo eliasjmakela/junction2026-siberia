@@ -127,6 +127,21 @@
   white-space: nowrap;
 }
 
+.progress {
+  flex-wrap: wrap;
+}
+
+.progress > span {
+  white-space: nowrap;
+}
+
+/* In a progress row the walkthrough control sits at the row's end, compact. */
+.progress .demo-control {
+  min-height: var(--s-5);
+  margin-left: auto;
+  padding-inline: var(--s-2);
+}
+
 .demo-cursor {
   position: fixed;
   z-index: 10000;

@@ -2,8 +2,8 @@ import type { OpenQuestion } from '../event/core'
 import type { Listing } from '../event/store'
 
 /**
- * Synthetic answers for the applicant sample demo. They are filled in by the
- * "Play sample demo" action and marked as sample answers wherever shown.
+ * Synthetic answers for the applicant walkthrough, filled in by the
+ * "Play walkthrough" action.
  */
 
 export const DEMO_EMAIL = 'sample.applicant@example.invalid'

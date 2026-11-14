@@ -22,7 +22,7 @@ npm run dev
 
 Open the printed URL. The company form is at `/`, applying at `#/apply`, staff review at `#/staff` and the follow-up demo at `#/outcomes`. Five synthetic sample companies and their sample applicants are always present; everything you add is kept in this browser's storage and shared between its tabs.
 
-Use **Play sample demo** in the top bar to watch a synthetic role fill through the questionnaire and arrive at its attendee-facing review page.
+Use **Play walkthrough** (next to the step counter) to watch a synthetic role fill through the questionnaire and arrive at its review page. The applicant flow at `#/apply` has the same walkthrough.
 
 To have questions drafted and answers scored by Claude, copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` (default model `claude-opus-5-5`, override with `PLAINLY_AI_MODEL`). Without a key, questions come from fixed templates and scores are a labelled fixed-rule estimate.
 

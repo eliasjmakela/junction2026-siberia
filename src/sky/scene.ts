@@ -63,41 +63,70 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 type Constellation = { pts: Pt[]; lines: [number, number][]; mags: number[]; cx: number; cy: number }
 
 /**
- * Three closed figures, one per status, drawn so their lines never cross:
- * an outlined arrow (open now), a blunt-nosed arrow (opening soon), and a linked ring (pipeline).
- * Each role gets its own proportions, tilt and small offsets from its answer fingerprint.
+ * One figure per status, drawn like the sky's own star patterns: sparse stick
+ * figures with at most one small closed shape, never crossing lines.
+ * - Open now: a standing figure (head, shoulders, belt, feet, a raised arm), ready.
+ * - Opening soon: a dipper (a four-star bowl with a handle), about to pour.
+ * - Talent pipeline: a long cross with open wings, still on its way.
+ * Star order follows the figure, so stars light along it step by step.
  */
+const FIGURES: Record<Goal | 'none', { pts: Pt[]; lines: [number, number][] }> = {
+  now: {
+    pts: [[-75, -90], [0, -135], [75, -95], [44, -2], [0, 4], [-44, 10], [-82, 112], [72, 106], [128, -150]],
+    lines: [[0, 1], [1, 2], [0, 5], [2, 3], [3, 4], [4, 5], [5, 6], [3, 7], [2, 8]],
+  },
+  soon: {
+    pts: [[-145, -20], [-140, 50], [-60, 62], [-55, -2], [12, -22], [68, -34], [118, -56], [160, -92], [-78, 128]],
+    lines: [[0, 1], [1, 2], [2, 3], [3, 0], [3, 4], [4, 5], [5, 6], [6, 7], [2, 8]],
+  },
+  pipeline: {
+    pts: [[0, -140], [0, -50], [-4, 30], [-8, 120], [-75, -42], [-140, -12], [78, -62], [145, -44], [-178, 40]],
+    lines: [[0, 1], [1, 2], [2, 3], [1, 4], [4, 5], [1, 6], [6, 7], [5, 8]],
+  },
+  none: {
+    pts: [[-75, -90], [0, -135], [75, -95], [44, -2], [0, 4], [-44, 10], [-82, 112], [72, 106], [128, -150]],
+    lines: [[0, 1], [1, 2], [0, 5], [2, 3], [3, 4], [4, 5], [5, 6], [3, 7], [2, 8]],
+  },
+}
+
+/** True when two segments that share no star cross each other. */
+function crossing(pts: Pt[], lines: [number, number][]): boolean {
+  const side = (a: Pt, b: Pt, c: Pt) => Math.sign((b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]))
+  for (let i = 0; i < lines.length; i++) {
+    for (let k = i + 1; k < lines.length; k++) {
+      const [a, b] = lines[i]
+      const [c, d] = lines[k]
+      if (a === c || a === d || b === c || b === d) continue
+      const [A, B, C, D] = [pts[a], pts[b], pts[c], pts[d]]
+      if (side(A, B, C) !== side(A, B, D) && side(C, D, A) !== side(C, D, B)) return true
+    }
+  }
+  return false
+}
+
+/** The role's constellation: its status figure with small proportions, tilt and offsets from the answer fingerprint. */
 function constellation(fingerprint: string, goal: Goal | null): Constellation {
   const r = rng(hash(fingerprint + (goal ?? 'none')))
   const j = (a: number) => (r() - 0.5) * a
   const cx = 1000 + j(400)
   const cy = 1150 + j(500)
-  let pts: Pt[]
-  let lines: [number, number][]
-  if (goal === 'soon') {
-    pts = [[126, -32], [126, 32], [72, 72], [0, 68], [-118, 42], [-132, 0], [-118, -42], [0, -68], [72, -72]]
-    lines = pts.map((_, i) => [i, (i + 1) % pts.length] as [number, number])
-    lines.push([2, 8])
-  } else if (goal === 'pipeline') {
-    pts = [[0, -112], [72, -92], [126, -32], [112, 48], [52, 104], [-38, 112], [-112, 66], [-130, -12], [-62, -88]]
-    lines = pts.map((_, i) => [i, (i + 1) % pts.length] as [number, number])
-    lines.push([0, 5])
-  } else {
-    pts = [[160, 0], [52, -82], [52, -28], [-50, -28], [-142, -28], [-142, 28], [-50, 28], [52, 28], [52, 82]]
-    lines = pts.map((_, i) => [i, (i + 1) % pts.length] as [number, number])
-    lines.push([3, 6])
-  }
-  const a = j(SKY.vary * 0.012)
+  const figure = FIGURES[goal ?? 'none']
+  const a = j(SKY.vary * 0.01)
   const ca = Math.cos(a)
   const sa = Math.sin(a)
-  const sx = 1 + j(SKY.vary * 0.008)
-  const sy = 1 + j(SKY.vary * 0.01)
-  pts = pts.map(([x, y]) => {
-    x *= sx
-    y *= sy
-    return [cx + x * ca - y * sa + j(SKY.vary), cy + x * sa + y * ca + j(SKY.vary)]
-  })
-  return { pts, lines, mags: pts.map((_, i) => (i === 0 ? 1 : 0.55 + r() * 0.4)), cx, cy }
+  const sx = 1 + j(SKY.vary * 0.006)
+  const sy = 1 + j(SKY.vary * 0.006)
+  // Per-star wobble keeps each role's figure its own; it shrinks until no lines cross.
+  let pts: Pt[] = []
+  for (let wobble = SKY.vary * 0.6; ; wobble /= 2) {
+    pts = figure.pts.map(([x, y]) => {
+      const px = x * sx + j(wobble)
+      const py = y * sy + j(wobble)
+      return [cx + px * ca - py * sa, cy + px * sa + py * ca]
+    })
+    if (!crossing(pts, figure.lines) || wobble < 1) break
+  }
+  return { pts, lines: figure.lines, mags: pts.map((_, i) => (i === 0 ? 1 : 0.55 + r() * 0.4)), cx, cy }
 }
 
 type Key = { lz: number; tx: number; ty: number; rot: number }
@@ -248,8 +277,13 @@ export class SkyScene {
     const band = !this.thumb && VH < 500
     const fx = band ? VW * 0.72 : VW / 2
     const fy = this.thumb ? VH / 2 : band ? VH * 0.42 : VH * 0.4
-    const fit = this.thumb ? 0.6 * Math.min(1.25, Math.max(0.55, VW / 560)) : Math.min(1.25, Math.max(0.3, Math.min(VW / 560, VH / 700)))
+    // Small thumbs fit the whole figure (about 380 sky units across) inside the tile.
+    const fit = this.thumb
+      ? Math.min(0.6 * Math.min(1.25, Math.max(0.55, VW / 560)), (0.8 * Math.min(VW, VH)) / (380 * SKY.z1))
+      : Math.min(1.25, Math.max(0.3, Math.min(VW / 560, VH / 700)))
     const z = Math.exp(c.lz) * fit
+    // Tiny thumbs draw stars and lines finer so the figure stays legible.
+    const fine = this.thumb ? Math.max(0.45, Math.min(1, Math.min(VW, VH) / 160)) : 1
     const live = this.thumb || this.still ? 0 : 1
     // A slow idle drift keeps the sky alive between answers.
     const drx = Math.sin(time / 7000) * 10 * live * (1 - 0.6 * c.p)
@@ -271,7 +305,7 @@ export class SkyScene {
         continue
       }
       const b = c.blur + c.dof * Math.abs(s.d - 0.5) * 2
-      const r0 = s.r * SKY.starSize * (0.75 + 0.25 * Math.min(z, 2)) * (0.7 + s.d * 0.6)
+      const r0 = s.r * SKY.starSize * (0.75 + 0.25 * Math.min(z, 2)) * (0.7 + s.d * 0.6) * fine
       const re = r0 + b * 0.55
       const o = s.o * c.dim * (r0 / re) * (1 - tw * 0.5 * (1 + Math.sin(time * 0.001 * s.sp + s.ph)))
       s.n.setAttribute('cx', x.toFixed(1))
@@ -283,7 +317,7 @@ export class SkyScene {
     this.cs.forEach((s, i) => {
       const l = c.lit[i]
       const [x, y] = P[i]
-      const r0 = (1 + l * 2.4 * s.m) * SKY.cSize * (this.thumb ? 0.85 : 1)
+      const r0 = (1 + l * 2.4 * s.m) * SKY.cSize * (this.thumb ? 0.85 : 1) * fine
       const re = r0 + c.blur * 0.55
       const f = (r0 * r0) / (re * re)
       for (const n of [s.halo, s.core, s.lit]) {
@@ -305,7 +339,7 @@ export class SkyScene {
       L.n.setAttribute('y1', a[1].toFixed(1))
       L.n.setAttribute('x2', lerp(a[0], b[0], d).toFixed(1))
       L.n.setAttribute('y2', lerp(a[1], b[1], d).toFixed(1))
-      L.n.setAttribute('stroke-width', (1.3 + c.blur * 0.5).toFixed(2))
+      L.n.setAttribute('stroke-width', ((1.3 + c.blur * 0.5) * Math.max(0.6, fine)).toFixed(2))
       L.n.setAttribute('opacity', (d > 0.01 ? (0.8 / (1 + c.blur * 0.35)) * (1 - 0.45 * c.dash[i]) : 0).toFixed(3))
       L.n.setAttribute('stroke-dasharray', c.dash[i] > 0.5 ? '3 5' : '')
     })

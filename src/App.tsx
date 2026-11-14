@@ -393,9 +393,6 @@ export default function App() {
             <p className="event-chip">
               <b>{EVENT.name}</b> · {EVENT.date}
             </p>
-          <button type="button" className="btn-quiet demo-control" onClick={playSampleDemo} aria-pressed={demoRunning}>
-              {demoRunning ? 'Stop sample demo' : demoMode ? 'Replay sample demo' : 'Play sample demo'}
-            </button>
           </div>
         </header>
 
@@ -406,6 +403,9 @@ export default function App() {
             ))}
           </ol>
           <span>{onSubmitted ? 'Submitted' : onReview ? 'Review' : `Step ${index + 1} of ${SCREENS.length}`}</span>
+          <button type="button" className="btn-quiet demo-control" onClick={playSampleDemo} aria-pressed={demoRunning} title="Fills in the form with example answers, step by step. Click anywhere to take over.">
+            {demoRunning ? 'Stop walkthrough' : demoMode ? 'Replay walkthrough' : 'Play walkthrough'}
+          </button>
         </div>
 
         {onSubmitted ? (
