@@ -1,7 +1,7 @@
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from 'react'
 import { SiteHeader } from '../components/SiteHeader'
 import { GOALS } from '../form/schema'
-import type { Attribute, Score } from '../event/core'
+import type { Attribute } from '../event/core'
 import {
   answeredEarlier,
   EVENT,
@@ -54,28 +54,62 @@ function ProducerTag({ a }: { a: Pick<Assessment, 'source' | 'model'> }) {
   )
 }
 
-/** One attribute score as a compact 0–10 bar with its number. */
-function ScoreBar({ score, name, withheld }: { score: number | null; name: string; withheld?: boolean }) {
+const QUERY_NARROW = '(max-width: 1023px)'
+
+/** Whether a media query matches, kept in sync as the viewport changes. */
+function useMediaQuery(query: string) {
+  return useSyncExternalStore(
+    (notify) => {
+      const m = window.matchMedia(query)
+      m.addEventListener('change', notify)
+      return () => m.removeEventListener('change', notify)
+    },
+    () => window.matchMedia(query).matches,
+    () => false,
+  )
+}
+
+/** One attribute score as a compact 0–10 bar with its number; the whole cell opens the evidence. */
+function ScoreCell({
+  score,
+  name,
+  withheld,
+  expanded,
+  controls,
+  narrow,
+  row,
+  col,
+  onClick,
+}: {
+  score: number | null
+  name: string
+  withheld?: boolean
+  expanded: boolean
+  controls: string
+  narrow: boolean
+  row: number
+  col: number
+  onClick: () => void
+}) {
+  const state = score !== null ? `${score} of 10` : withheld ? 'read the answers' : 'no evidence'
   return (
-    <span className="staff-bar">
-      <span className="staff-bar__label">{name}</span>
-      <span className={`staff-bar__track${score === null ? ' is-empty' : ''}`} aria-hidden="true">
-        {score !== null && <span className="staff-bar__fill" style={{ width: `${score * 10}%` }} />}
+    <button type="button" className="staff-score" aria-expanded={expanded} aria-controls={expanded ? controls : undefined} data-row={row} data-col={col} onClick={onClick}>
+      <span className="visually-hidden">
+        {narrow && `${name}: `}
+        {state}, show evidence
       </span>
-      <span className="staff-bar__value">
-        {score === null ? (
-          <>
-            <span aria-hidden="true">{withheld ? '?' : '–'}</span>
-            <span className="visually-hidden">{withheld ? 'Evidence withheld, read the answers' : 'No evidence'}</span>
-          </>
-        ) : (
-          <>
-            {score}
-            <span className="visually-hidden"> of 10</span>
-          </>
-        )}
+      <span className="staff-bar" aria-hidden="true">
+        <span className="staff-bar__label">{name}</span>
+        <span className={`staff-bar__track${score === null ? ' is-empty' : ''}`}>
+          {score !== null && <span className="staff-bar__fill" style={{ width: `${score * 10}%` }} />}
+        </span>
+        <span className={`staff-bar__value${score === null && withheld ? ' is-word' : ''}`}>{score !== null ? score : withheld ? 'Read' : '–'}</span>
       </span>
-    </span>
+      <svg className="staff-score__icon" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M2 3h5v5l-2 4H3l1.5-4H2z" />
+        <path d="M9 3h5v5l-2 4h-2l1.5-4H9z" />
+      </svg>
+    </button>
   )
 }
 
@@ -92,39 +126,137 @@ function MarkedAnswer({ text, quote }: { text: string; quote: string }) {
   )
 }
 
-function AttributeDetail({ attribute, score, listing, answers }: { attribute: Attribute; score?: Score; listing: Listing; answers: Record<string, string> }) {
-  const question = score?.question ? listing.set.questions.find((q) => q.id === score.question) : undefined
+function Answer({ text }: { text?: string }) {
+  return text?.trim() ? <p className="staff-answer">{text}</p> : <p className="staff-gap">Not answered</p>
+}
+
+function StepIcon({ kind }: { kind: 'prev' | 'next' | 'close' }) {
   return (
-    <section className="staff-attr" aria-label={attribute.name}>
-      <header className="staff-attr__head">
-        <h4>{attribute.name}</h4>
-        {score && score.score !== null ? <p className="staff-attr__score">{score.score} / 10</p> : <p className="staff-gap">{score?.withheld ? 'Read the answers' : 'No evidence'}</p>}
-      </header>
-      <p className="staff-attr__looks">Strong answers show: {attribute.looksLike}</p>
-      {score && <p className="staff-attr__rationale">{score.rationale}</p>}
-      {question && score?.evidence && (
-        <div className="staff-attr__evidence">
-          <p className="staff-label">Evidence · {question.text}</p>
-          <MarkedAnswer text={answers[question.id] ?? ''} quote={score.evidence} />
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      {kind === 'prev' && <path d="M10.5 2 11.9 3.4 7.3 8l4.6 4.6L10.5 14 4.5 8z" />}
+      {kind === 'next' && <path d="M5.5 2 4.1 3.4 8.7 8l-4.6 4.6L5.5 14l6-6z" />}
+      {kind === 'close' && <path d="M3.4 2 8 6.6 12.6 2 14 3.4 9.4 8 14 12.6 12.6 14 8 9.4 3.4 14 2 12.6 6.6 8 2 3.4z" />}
+    </svg>
+  )
+}
+
+/** The strip under a row: the quote behind one score, in its answer. */
+function Evidence({
+  row,
+  listing,
+  attribute,
+  index,
+  id,
+  narrow,
+  onStep,
+  onAnswers,
+  onClose,
+}: {
+  row: Row
+  listing: Listing
+  attribute: Attribute
+  index: number
+  id?: string
+  narrow: boolean
+  onStep: (delta: -1 | 1) => void
+  onAnswers: () => void
+  onClose: () => void
+}) {
+  const titleId = useId()
+  const answers = row.app.answers[listing.id] ?? {}
+  const total = listing.set.attributes.length
+  const score = row.assessment?.scores.find((s) => s.attribute === attribute.id)
+  const question = score?.question ? listing.set.questions.find((q) => q.id === score.question) : undefined
+  const marked = Boolean(question && score?.evidence && answers[question.id]?.toLowerCase().includes(score.evidence.toLowerCase()))
+  const related = listing.set.questions.filter((q) => q.attributes.includes(attribute.id))
+  const unmarked = related.length ? related : listing.set.questions
+  const value = score?.score ?? null
+  return (
+    <section className="staff-evidence" id={id} role="region" aria-labelledby={titleId}>
+      <header className="staff-evidence__head">
+        <div className="staff-evidence__title" aria-live="polite" aria-atomic="true">
+          <p className="staff-evidence__pos">
+            {row.app.code} · {index + 1} of {total}
+          </p>
+          <h3 id={titleId}>{attribute.name}</h3>
+          {value !== null ? <p className="staff-evidence__score">{value} / 10</p> : <p className="staff-gap">{score?.withheld ? 'Read the answers' : 'No evidence'}</p>}
         </div>
-      )}
-      <div className="staff-attr__why">
-        <p className="staff-label">Why the company looks for this</p>
-        <ul>
-          {attribute.sources.map((s) => (
-            <li key={`${s.field}-${s.quote}`}>
-              <span className="staff-attr__src">{s.label}</span> “{s.quote}”
-            </li>
-          ))}
-        </ul>
+        <div className="staff-evidence__steps">
+          <button type="button" className="staff-icon-btn" data-step="prev" aria-label="Previous attribute" aria-disabled={index === 0} onClick={() => onStep(-1)}>
+            <StepIcon kind="prev" />
+          </button>
+          <button type="button" className="staff-icon-btn" data-step="next" aria-label="Next attribute" aria-disabled={index === total - 1} onClick={() => onStep(1)}>
+            <StepIcon kind="next" />
+          </button>
+          <button type="button" className="staff-icon-btn" data-step="close" aria-label="Close" onClick={onClose}>
+            <StepIcon kind="close" />
+          </button>
+        </div>
+      </header>
+      <p className="staff-evidence__looks">Strong answers show: {attribute.looksLike}</p>
+      <div className="staff-evidence__body">
+        <div className="staff-evidence__col">
+          <p className="staff-label">Evidence</p>
+          {marked && question ? (
+            <>
+              <p className="staff-qa__q">{question.text}</p>
+              <MarkedAnswer text={answers[question.id] ?? ''} quote={score?.evidence ?? ''} />
+            </>
+          ) : (
+            unmarked.map((q) => (
+              <div key={q.id} className="staff-evidence__qa">
+                <p className="staff-qa__q">{q.text}</p>
+                <Answer text={answers[q.id]} />
+              </div>
+            ))
+          )}
+        </div>
+        <div className="staff-evidence__col">
+          <p className="staff-label">Assessment</p>
+          {row.assessment && (
+            <p>
+              <ProducerTag a={row.assessment} />
+            </p>
+          )}
+          {score?.rationale && <p className="staff-evidence__rationale">{score.rationale}</p>}
+          {value === null && <p className="staff-evidence__fixed">{score?.withheld ? 'Left out of the overall score.' : 'Counts as 0 in the overall score.'}</p>}
+        </div>
+        {(() => {
+          const list = (
+            <ul className="staff-why">
+              {attribute.sources.map((s) => (
+                <li key={`${s.field}-${s.quote}`}>
+                  <span className="staff-why__src">{s.label}</span> “{s.quote}”
+                </li>
+              ))}
+            </ul>
+          )
+          return narrow ? (
+            <details className="staff-evidence__col staff-evidence__why">
+              <summary className="staff-label">Why the company looks for this</summary>
+              {list}
+            </details>
+          ) : (
+            <div className="staff-evidence__col">
+              <p className="staff-label">Why the company looks for this</p>
+              {list}
+            </div>
+          )
+        })()}
       </div>
+      <footer className="staff-evidence__foot">
+        <button type="button" className="staff-link" onClick={onAnswers}>
+          All answers
+        </button>
+      </footer>
     </section>
   )
 }
 
-function RowDetail({ row, listing }: { row: Row; listing: Listing }) {
+function AnswersDetail({ row, listing, last }: { row: Row; listing: Listing; last?: string }) {
   const answers = row.app.answers[listing.id] ?? {}
   const a = row.assessment
+  const lastScore = last ? a?.scores.find((x) => x.attribute === last) : undefined
   function remove() {
     if (window.confirm(`Delete application ${row.app.code}? Its answers, scores and decisions are removed from this browser.`)) deleteApplication(row.app.id)
   }
@@ -140,13 +272,6 @@ function RowDetail({ row, listing }: { row: Row; listing: Listing }) {
           </>
         )}
       </p>
-      {a && (
-        <div className="staff-detail__attrs">
-          {listing.set.attributes.map((attr) => (
-            <AttributeDetail key={attr.id} attribute={attr} score={a.scores.find((s) => s.attribute === attr.id)} listing={listing} answers={answers} />
-          ))}
-        </div>
-      )}
       <h4 className="staff-label staff-detail__all">All answers</h4>
       <ol className="staff-qa">
         {listing.set.questions.map((q, i) => (
@@ -154,7 +279,7 @@ function RowDetail({ row, listing }: { row: Row; listing: Listing }) {
             <span className="staff-qa__n">{i + 1}</span>
             <div>
               <p className="staff-qa__q">{q.text}</p>
-              {answers[q.id]?.trim() ? <p className="staff-answer">{answers[q.id]}</p> : <p className="staff-gap">Not answered</p>}
+              {lastScore?.question === q.id && lastScore.evidence && answers[q.id]?.trim() ? <MarkedAnswer text={answers[q.id]} quote={lastScore.evidence} /> : <Answer text={answers[q.id]} />}
             </div>
           </li>
         ))}
@@ -217,8 +342,13 @@ function SlotStepper({ listingId, slots }: { listingId: string; slots: number })
   )
 }
 
+type Open = { app: string; view: string; at?: string; last?: string }
+
 function Ranking({ state, listing, scoring }: { state: EventState; listing: Listing; scoring: boolean }) {
-  const [open, setOpen] = useState<string | null>(null)
+  const [openRaw, setOpen] = useState<Open | null>(null)
+  const narrow = useMediaQuery(QUERY_NARROW)
+  const tableRef = useRef<HTMLTableElement>(null)
+  const pending = useRef<string | null>(null)
   const slots = slotsFor(state, listing.id)
   const rows: Row[] = useMemo(() => {
     const all = applicantsOf(state, listing.id).map((app) => {
@@ -232,20 +362,110 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
     })
   }, [state, listing])
   const scored = rows.filter((r) => r.assessment).length
-  const cols = 4 + listing.set.attributes.length
+  const invites = invitesFor(state, listing.id)
+  const attrs = listing.set.attributes
+  const cols = 4 + attrs.length
+
+  // The open strip closes when its applicant, its scores or its attribute are gone or replaced.
+  const openRow = openRaw ? rows.find((r) => r.app.id === openRaw.app) : undefined
+  const open =
+    openRaw && openRow && (openRaw.view === 'answers' || (openRow.assessment?.assessedAt === openRaw.at && attrs.some((a) => a.id === openRaw.view)))
+      ? openRaw
+      : null
+
+  // Move focus after a state change has rendered (steps, "All answers", closing).
+  useEffect(() => {
+    if (!pending.current) return
+    const el = tableRef.current?.querySelector<HTMLElement>(pending.current)
+    pending.current = null
+    el?.focus()
+  }, [openRaw])
+
+  // Keep what was just opened in view: the tapped score on a phone, the strip on a wide screen.
+  const openKey = open && open.view !== 'answers' ? `${open.app}:${open.view}` : ''
+  useEffect(() => {
+    if (!openKey) return
+    const t = tableRef.current
+    const el = narrow ? t?.querySelector<HTMLElement>('.staff-score[aria-expanded="true"]') : t?.querySelector<HTMLElement>('.staff-evidence')
+    el?.scrollIntoView({ block: 'nearest' })
+  }, [openKey, narrow])
 
   if (!rows.length) return <p className="staff-empty">No applications for this role yet.</p>
+
+  const openAt = (i: number, view: string): Open => ({ app: rows[i].app.id, view, at: rows[i].assessment?.assessedAt })
+  const cellSelector = (i: number, j: number) => `.staff-score[data-row="${i}"][data-col="${j}"]`
+
+  function toggleScore(i: number, view: string) {
+    setOpen(open && open.app === rows[i].app.id && open.view === view ? null : openAt(i, view))
+  }
+
+  function close(focusOwner: boolean) {
+    if (!open) return
+    if (focusOwner) {
+      const i = rows.findIndex((r) => r.app.id === open.app)
+      const j = attrs.findIndex((a) => a.id === open.view)
+      pending.current = j >= 0 ? cellSelector(i, j) : `.staff-who[data-row="${i}"]`
+    }
+    setOpen(null)
+  }
+
+  function step(delta: -1 | 1) {
+    if (!open) return
+    const i = rows.findIndex((r) => r.app.id === open.app)
+    const j = attrs.findIndex((a) => a.id === open.view) + delta
+    if (i < 0 || j < 0 || j >= attrs.length) return
+    pending.current = `[data-step="${delta < 0 ? 'prev' : 'next'}"]`
+    setOpen(openAt(i, attrs[j].id))
+  }
+
+  function answersAt(i: number): Open {
+    const same = open?.app === rows[i].app.id
+    const last = same ? (open.view === 'answers' ? open.last : open.view) : undefined
+    return { ...openAt(i, 'answers'), last }
+  }
+
+  function showAnswers(i: number) {
+    pending.current = `.staff-who[data-row="${i}"]`
+    setOpen(answersAt(i))
+  }
+
+  function onKeyDown(e: KeyboardEvent<HTMLTableElement>) {
+    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
+    const target = e.target as HTMLElement
+    const cell = target.closest<HTMLElement>('.staff-score')
+    if (e.key === 'Escape') {
+      if (open && (cell || target.closest('.staff-evidence, .staff-detail, .staff-who'))) {
+        e.preventDefault()
+        close(!cell && !target.closest('.staff-who'))
+      }
+      return
+    }
+    if (!cell || !e.key.startsWith('Arrow')) return
+    const r = Number(cell.dataset.row)
+    const c = Number(cell.dataset.col)
+    let next: HTMLElement | null = null
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      next = tableRef.current?.querySelector<HTMLElement>(cellSelector(r, c + (e.key === 'ArrowLeft' ? -1 : 1))) ?? null
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      const dir = e.key === 'ArrowUp' ? -1 : 1
+      for (let k = r + dir; k >= 0 && k < rows.length && !next; k += dir) next = tableRef.current?.querySelector<HTMLElement>(cellSelector(k, c)) ?? null
+    } else return
+    e.preventDefault()
+    if (!next) return
+    next.focus()
+    if (open && open.view !== 'answers') setOpen(openAt(Number(next.dataset.row), attrs[Number(next.dataset.col)].id))
+  }
 
   return (
     <>
       <div className="staff-toolbar">
         <SlotStepper listingId={listing.id} slots={slots} />
         <p className="staff-toolbar__count">
-          {invitesFor(state, listing.id)} of {slots} invited · {scored} of {rows.length} scored
+          {invites > slots ? <strong>{invites} invited · {slots} slots</strong> : `${invites} of ${slots} invited`} · {scored} of {rows.length} scored
         </p>
       </div>
       <div className="staff-table-wrap">
-        <table className="staff-table">
+        <table className="staff-table" ref={tableRef} onKeyDown={onKeyDown}>
           <caption className="visually-hidden">
             Applicants for {listing.title}, {listing.company}, ranked by overall score
           </caption>
@@ -258,7 +478,7 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
               <th scope="col" className="staff-table__overall">
                 Overall
               </th>
-              {listing.set.attributes.map((a) => (
+              {attrs.map((a) => (
                 <th scope="col" key={a.id} className="staff-table__attr">
                   {a.name}
                 </th>
@@ -268,9 +488,11 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
           </thead>
           <tbody>
             {rows.map((row, i) => {
-              const expanded = open === row.app.id
-              const detailId = `staff-detail-${row.app.id}`
-              const pending = !row.assessment
+              const isOpen = open?.app === row.app.id
+              const answersOpen = isOpen && open.view === 'answers'
+              const openIndex = isOpen && !answersOpen ? attrs.findIndex((a) => a.id === open.view) : -1
+              const stripId = `staff-strip-${row.app.id}`
+              const isPending = !row.assessment
               return (
                 <Fragment key={row.app.id}>
                   {i === slots && scored > slots && (
@@ -280,12 +502,19 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
                       </td>
                     </tr>
                   )}
-                  <tr className={`staff-row${expanded ? ' is-open' : ''}`}>
-                    <td className="staff-table__rank">{pending ? '–' : i + 1}</td>
+                  <tr className={`staff-row${answersOpen ? ' is-open' : ''}${openIndex >= 0 ? ' is-evidence' : ''}`}>
+                    <td className="staff-table__rank">{isPending ? '–' : i + 1}</td>
                     <td className="staff-table__who">
-                      <button type="button" className="staff-who" aria-expanded={expanded} aria-controls={detailId} onClick={() => setOpen(expanded ? null : row.app.id)}>
+                      <button
+                        type="button"
+                        className="staff-who"
+                        data-row={i}
+                        aria-expanded={answersOpen}
+                        aria-controls={stripId}
+                        onClick={() => setOpen(answersOpen ? null : answersAt(i))}
+                      >
                         <span className="staff-who__code">{row.app.code}</span>
-                        <span className="staff-who__more">{expanded ? 'Hide details' : 'Details'}</span>
+                        <span className="staff-who__more">{answersOpen ? 'Hide answers' : 'Answers'}</span>
                       </button>
                     </td>
                     <td className="staff-table__overall">
@@ -300,22 +529,61 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
                         </span>
                       )}
                     </td>
-                    {listing.set.attributes.map((a) => (
-                      <td key={a.id} className="staff-table__attr">
-                        {row.assessment ? (() => {
-                          const s = row.assessment.scores.find((x) => x.attribute === a.id)
-                          return <ScoreBar name={a.name} score={s?.score ?? null} withheld={s?.withheld} />
-                        })() : null}
-                      </td>
-                    ))}
+                    {attrs.map((a, j) => {
+                      const s = row.assessment?.scores.find((x) => x.attribute === a.id)
+                      const here = openIndex === j
+                      return (
+                        <td key={a.id} className="staff-table__attr">
+                          {row.assessment && (
+                            <ScoreCell
+                              name={a.name}
+                              score={s?.score ?? null}
+                              withheld={s?.withheld}
+                              expanded={here}
+                              controls={stripId}
+                              narrow={narrow}
+                              row={i}
+                              col={j}
+                              onClick={() => toggleScore(i, a.id)}
+                            />
+                          )}
+                          {here && narrow && (
+                            <Evidence
+                              id={stripId}
+                              narrow
+                              row={row}
+                              listing={listing}
+                              attribute={a}
+                              index={j}
+                              onStep={step}
+                              onAnswers={() => showAnswers(i)}
+                              onClose={() => close(true)}
+                            />
+                          )}
+                        </td>
+                      )
+                    })}
                     <td className="staff-table__decision">
                       <DecisionGroup app={row.app} listingId={listing.id} decision={decisionOf(state, row.app.id, listing.id)} />
                     </td>
                   </tr>
-                  {expanded && (
-                    <tr className="staff-row-detail" id={detailId}>
+                  {(answersOpen || (openIndex >= 0 && !narrow)) && (
+                    <tr className={`staff-row-detail${answersOpen ? '' : ' staff-row-detail--evidence'}`} id={stripId}>
                       <td colSpan={cols}>
-                        <RowDetail row={row} listing={listing} />
+                        {answersOpen ? (
+                          <AnswersDetail row={row} listing={listing} last={open?.last} />
+                        ) : (
+                          <Evidence
+                            narrow={false}
+                            row={row}
+                            listing={listing}
+                            attribute={attrs[openIndex]}
+                            index={openIndex}
+                            onStep={step}
+                            onAnswers={() => showAnswers(i)}
+                            onClose={() => close(true)}
+                          />
+                        )}
                       </td>
                     </tr>
                   )}
@@ -439,7 +707,7 @@ export function Staff() {
           Before you decide
         </h2>
         <ul>
-          <li>Scores are drafted by AI from the applicant’s answers to that company’s questions, or estimated by fixed rules when AI is unavailable. Each score shows the quote it is based on.</li>
+          <li>Scores are drafted by AI from the applicant’s answers to that company’s questions, or estimated by fixed rules when AI is unavailable. Select a score to see the quote it is based on.</li>
           <li>A person decides every invitation. Check the evidence before deciding: a score is a suggestion, never a decision.</li>
           <li>Scoring never sees e-mail addresses or application codes. Attributes come only from the company’s own description of the role.</li>
           <li>An attribute without evidence counts as 0 in the overall score. When the topic filter withholds the evidence, the attribute is left out of the overall score and shown as “Read the answers”.</li>
@@ -509,7 +777,7 @@ export function Staff() {
           <p className="status" role="status">
             {run ? `Scoring ${Math.min(run.done + 1, run.total)} of ${run.total}…` : ''}
           </p>
-          <Ranking state={state} listing={listing} scoring={Boolean(run)} />
+          <Ranking key={listing.id} state={state} listing={listing} scoring={Boolean(run)} />
         </section>
       )}
 
@@ -520,7 +788,7 @@ export function Staff() {
           Data in this browser
         </h2>
         <p className="staff-lede">
-          Applications, scores and decisions are stored in this browser only. Delete a single application from its details, or clear everything.
+          Applications, scores and decisions are stored in this browser only. Delete a single application from its answers, or clear everything.
         </p>
         <div className="actions">
           <button type="button" className="btn-quiet" onClick={clearAll}>
