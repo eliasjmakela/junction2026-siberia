@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero Concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@700&family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--spruce:#173a30;--spruce-raised:#21483c;--lichen:#e4cb3a;--granite:#d6d9d5;--granite-light:#f0f2ef;--ink:#121614;--ink-soft:#464b47;--on:#eef0ec;--on-soft:#b4c2bb}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Schibsted Grotesk",system-ui,sans-serif;background:var(--granite);color:var(--ink);padding:32px 40px 48px}
+h1{font-family:"Familjen Grotesk";font-size:34px;letter-spacing:-.02em;line-height:1.1}
+.intro{color:var(--ink-soft);max-width:70ch;margin-top:8px}
+.controls{position:sticky;top:0;z-index:2;background:var(--granite);display:flex;flex-wrap:wrap;gap:16px 32px;align-items:center;padding:16px 0;margin-top:16px;border-bottom:1px solid #c4c8c3}
+.controls label{font-size:14px;font-weight:600;display:flex;gap:10px;align-items:center}
+input[type=range]{width:260px;accent-color:var(--spruce)}
+.seg{display:flex;gap:4px}
+.seg button{font:inherit;font-size:14px;font-weight:500;padding:8px 12px;border:2px solid transparent;background:var(--granite-light);border-radius:2px;cursor:pointer}
+.seg button[aria-pressed=true]{background:#fff;border-color:var(--spruce)}
+.play{font:inherit;font-weight:600;background:var(--spruce);color:var(--on);border:0;border-radius:2px;padding:10px 18px;cursor:pointer}
+.out{font-variant-numeric:tabular-nums;min-width:7ch}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:24px}
+.card h2{font-family:"Familjen Grotesk";font-size:22px;letter-spacing:-.02em}
+.card p{font-size:14px;color:var(--ink-soft);margin-top:4px;max-width:52ch}
+.frame{margin-top:12px;background:var(--spruce);border-radius:2px;padding:24px}
+.frame svg{width:100%;height:auto;display:block;overflow:visible}
+.why{margin-top:10px;font-size:14px}
+.why b{font-weight:600}
+@media (max-width:1100px){.grid{grid-template-columns:1fr}}
+.t{transition:transform .9s cubic-bezier(.16,1,.3,1),opacity .6s cubic-bezier(.16,1,.3,1)}
+.ln{transition:stroke-dashoffset .9s cubic-bezier(.16,1,.3,1),opacity .4s}
+.label{font-family:"Schibsted Grotesk";font-size:11px;font-weight:600;letter-spacing:.12em;fill:var(--lichen)}
+</style>
+</head>
+<body>
+<h1>Three ways the hero can form</h1>
+<p class="intro">Drag the slider through the 8 steps, switch the role and status, or press Play. Each concept starts vague and resolves as the company answers. In all three the finished image is unique to the role, so it can also mark the role on the event page.</p>
+
+<div class="controls">
+  <label>Answers <input id="a" type="range" min="0" max="8" step="1" value="0"><span class="out" id="aout">0 of 8</span></label>
+  <div class="seg" id="roles" aria-label="Sample role"></div>
+  <div class="seg" id="statuses" aria-label="Status"></div>
+  <button class="play" id="play">Play</button>
+</div>
+
+<div class="grid">
+  <section class="card">
+    <h2>1 · Constellation</h2>
+    <p>A night sky full of noise. Each answer pulls one star out of the noise, places it and links it. The rest of the sky dims. The finished constellation is labelled with the role, like a star chart.</p>
+    <div class="frame"><svg id="sky" viewBox="0 0 400 320"></svg></div>
+    <p class="why"><b>Why:</b> signal out of noise is the challenge itself (AI sameness vs. a clear role). An event page becomes a sky of constellations.</p>
+  </section>
+  <section class="card">
+    <h2>2 · Print registration</h2>
+    <p>The shape printed as three misaligned screen-print passes, ghosted and doubled. Each answer pulls the passes closer until they lock into one solid print of the role's form.</p>
+    <div class="frame"><svg id="reg" viewBox="0 0 400 320"></svg></div>
+    <p class="why"><b>Why:</b> comes straight from the Finnish poster world. "Coming into register" is a real printer's moment of clarity.</p>
+  </section>
+  <section class="card">
+    <h2>3 · Poster tiles</h2>
+    <p>A 3 × 3 grid of blurred blanks. Each answer prints one tile as a flat geometric mark chosen by that answer (team size, start, skills…). The centre tile is the status.</p>
+    <div class="frame"><svg id="tiles" viewBox="0 0 400 320"></svg></div>
+    <p class="why"><b>Why:</b> the image is literally made of the answers, so two roles never look alike. Reads like a 1960s pattern print.</p>
+  </section>
+</div>
+
+<script>
+const NS='http://www.w3.org/2000/svg'
+const el=(t,a={},p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e}
+function hash(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19}return h>>>0}
+function rng(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const ROLES=['Backend developer','Field service technician','Summer trainee']
+const STATUSES=[['now','Open now'],['soon','Opening soon'],['pipeline','Talent pipeline']]
+let role=0,status='now',answers=0
+
+/* ---------- 1 Constellation ---------- */
+const sky=document.getElementById('sky')
+function templ(st,r){
+  const j=()=> (r()-.5)*28
+  if(st==='pipeline') return Array.from({length:9},(_,i)=>[50+i*37+j()*.5,160+(r()-.5)*90])
+  if(st==='soon') return [[60,92],[150,116],[240,134],[322,142],[322,178],[240,186],[150,204],[60,228],[176,160]].map(([x,y])=>[x+j(),y+j()])
+  return [[60,92],[150,118],[250,140],[344,160],[250,180],[150,202],[60,228],[124,160],[214,160]].map(([x,y])=>[x+j(),y+j()])
+}
+const LINES={now:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[7,8],[8,3]],soon:[[0,1],[1,2],[2,3],[4,5],[5,6],[6,7],[8,2],[8,5]],pipeline:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8]]}
+let skyState=null
+function buildSky(){
+  sky.innerHTML=''
+  const r=rng(hash(ROLES[role]+status))
+  const defs=el('defs',{},sky)
+  const f=el('filter',{id:'glow',x:-1,y:-1,width:3,height:3},defs);skyState={blur:el('feGaussianBlur',{stdDeviation:2},f)}
+  const noise=el('g',{},sky)
+  skyState.noise=Array.from({length:150},()=>{const x=r()*400,y=r()*320,o=.2+r()*.45;return {c:el('circle',{cx:x,cy:y,r:.6+r()*1.1,fill:'#eef0ec',opacity:o,class:'t'},noise),o}})
+  const tg=templ(status,r)
+  const lines=el('g',{},sky)
+  skyState.lines=LINES[status].map(([a,b])=>{const[x1,y1]=tg[a],[x2,y2]=tg[b];const len=Math.hypot(x2-x1,y2-y1);const l=el('line',{x1,y1,x2,y2,stroke:'#e4cb3a','stroke-width':status==='pipeline'?1:1.5,'stroke-dasharray':status==='soon'?'4 5':len,'stroke-dashoffset':len,opacity:0,class:'ln'},lines);return{l,a,b,len}})
+  const sig=el('g',{filter:'url(#glow)'},sky)
+  skyState.stars=tg.map(([x,y],i)=>{const sx=r()*400,sy=r()*320;const g=el('g',{class:'t',style:`transform:translate(${sx}px,${sy}px)`},sig);const c=el('circle',{r:1.2,fill:'#eef0ec',opacity:.45},g);return{g,c,x,y,sx,sy}})
+  skyState.label=el('text',{x:tg[0][0],y:Math.min(...tg.map(p=>p[1]))-18,class:'label t',opacity:0},sky)
+  skyState.label.textContent=ROLES[role].toUpperCase()
+}
+function drawSky(){
+  const p=answers/8,placed=answers===0?0:Math.round(p*9)
+  skyState.noise.forEach(n=>n.c.setAttribute('opacity',(n.o*(1-.8*p)).toFixed(2)))
+  skyState.stars.forEach((s,i)=>{const on=i<placed;s.g.style.transform=`translate(${on?s.x:s.sx}px,${on?s.y:s.sy}px)`;s.c.setAttribute('r',on?(i===3&&status==='now'?4.5:3.2):1.2);s.c.setAttribute('fill',on?'#e4cb3a':'#eef0ec');s.c.setAttribute('opacity',on?1:.45)})
+  skyState.lines.forEach(L=>{const on=L.a<placed&&L.b<placed;L.l.setAttribute('opacity',on?(status==='pipeline'?.5:.85):0);if(status!=='soon')L.l.setAttribute('stroke-dashoffset',on?0:L.len)})
+  skyState.blur.setAttribute('stdDeviation',(1.6*(1-p)).toFixed(2))
+  skyState.label.setAttribute('opacity',answers===8?1:0)
+}
+
+/* ---------- 2 Registration ---------- */
+const reg=document.getElementById('reg')
+const SHAPES={now:'56,40 392,160 56,280',soon:'56,40 392,96 392,224 56,280',pipeline:'8,112 392,112 392,208 8,208'}
+let regPlates=[]
+function buildReg(){
+  reg.innerHTML=''
+  el('rect',{x:1,y:1,width:398,height:318,fill:'none',stroke:'#e4cb3a','stroke-opacity':.35,'stroke-dasharray':'4 8','stroke-width':2},reg)
+  const r=rng(hash(ROLES[role]))
+  // Each role notches its form differently, so the locked print is unique.
+  const notch=8+Math.floor(r()*5)*8, nx=120+Math.floor(r()*4)*40
+  regPlates=[0,1,2].map(i=>{const g=el('g',{class:'t',style:'transform-origin:200px 160px'},reg);el('polygon',{points:SHAPES[status],fill:'#e4cb3a'},g);el('rect',{x:nx,y:status==='pipeline'?112:150-notch/2,width:notch,height:status==='pipeline'?96:notch+20,fill:'#173a30'},g);return g})
+}
+function drawReg(){
+  const q=1-answers/8,dirs=[[-1,-.6],[1,-.2],[.2,1]]
+  regPlates.forEach((g,i)=>{const[dx,dy]=dirs[i];g.style.transform=`translate(${dx*30*q}px,${dy*30*q}px) rotate(${(i-1)*5*q}deg)`;g.style.opacity=answers===8?(i===0?1:0):.42})
+}
+
+/* ---------- 3 Tiles ---------- */
+const tiles=document.getElementById('tiles')
+const CW=120,CH=96,GX=20,GY=12
+function prim(g,kind,rot,x,y){
+  const cx=x+CW/2,cy=y+CH/2,s=Math.min(CW,CH)
+  const t=`rotate(${rot} ${cx} ${cy})`
+  switch(kind){
+    case 'square':el('rect',{x:cx-s/2+8,y:cy-s/2+8,width:s-16,height:s-16,transform:t},g);break
+    case 'half':el('rect',{x:cx-s/2+8,y:cy-s/2+8,width:(s-16)/2,height:s-16,transform:t},g);break
+    case 'quarter':el('path',{d:`M${cx-s/2+8} ${cy+s/2-8} L${cx-s/2+8} ${cy-s/2+8} A${s-16} ${s-16} 0 0 1 ${cx+s/2-8} ${cy+s/2-8} Z`,transform:t},g);break
+    case 'circle':el('circle',{cx,cy,r:s/2-10},g);break
+    case 'dots':for(let i=0;i<3;i++)for(let j=0;j<3;j++)el('circle',{cx:cx-24+i*24,cy:cy-24+j*24,r:7},g);break
+    case 'bars':for(let i=0;i<3;i++)el('rect',{x:cx-30+i*24,y:cy-s/2+10,width:12,height:s-20,transform:t},g);break
+    case 'wedge':el('polygon',{points:`${cx-s/2+8},${cy-s/2+8} ${cx+s/2-8},${cy} ${cx-s/2+8},${cy+s/2-8}`,transform:t},g);break
+    case 'arc':el('path',{d:`M${cx-s/2+10} ${cy+s/2-10} A${s/2-10} ${s/2-10} 0 0 1 ${cx+s/2-10} ${cy+s/2-10} L${cx+s/4-4} ${cy+s/2-10} A${s/4-6} ${s/4-6} 0 0 0 ${cx-s/4+4} ${cy+s/2-10} Z`,transform:t},g);break
+    case 'band':el('rect',{x:x+6,y:cy-14,width:CW-12,height:28},g);break
+    case 'blunt':el('polygon',{points:`${cx-s/2+8},${cy-s/2+8} ${cx+s/2-4},${cy-14} ${cx+s/2-4},${cy+14} ${cx-s/2+8},${cy+s/2-8}`},g);break
+  }
+}
+let tileCells=[]
+function buildTiles(){
+  tiles.innerHTML=''
+  const defs=el('defs',{},tiles);const f=el('filter',{id:'tb',x:-.5,y:-.5,width:2,height:2},defs);el('feGaussianBlur',{stdDeviation:9},f)
+  const r=rng(hash(ROLES[role]))
+  const KINDS=['square','half','quarter','circle','dots','bars','arc','wedge']
+  const order=[0,1,2,3,5,6,7,8] // cell index for answers 1..8; 4 is the centre status tile
+  tileCells=[]
+  for(let i=0;i<9;i++){
+    const col=i%3,row=Math.floor(i/3),x=GX+col*(CW+0),y=GY+row*(CH+4)
+    const blank=el('rect',{x:x+14,y:y+12,width:CW-28,height:CH-24,fill:'#2f5a4c',filter:'url(#tb)',class:'t'},tiles)
+    const g=el('g',{fill:'#e4cb3a',class:'t',style:`transform-origin:${x+CW/2}px ${y+CH/2}px`},tiles)
+    if(i===4)prim(g,status==='now'?'wedge':status==='soon'?'blunt':'band',0,x,y)
+    else prim(g,KINDS[Math.floor(r()*KINDS.length)],[0,90,180,270][Math.floor(r()*4)],x,y)
+    tileCells.push({i,blank,g,step:i===4?1:order.indexOf(i)+1})
+  }
+}
+function drawTiles(){
+  tileCells.forEach(c=>{const on=answers>=c.step;c.blank.style.opacity=on?0:1;c.g.style.opacity=on?1:0;c.g.style.transform=on?'scale(1)':'scale(.6)'})
+}
+
+/* ---------- controls ---------- */
+function build(){buildSky();buildReg();buildTiles();requestAnimationFrame(()=>requestAnimationFrame(draw))}
+function draw(){document.getElementById('aout').textContent=`${answers} of 8`;drawSky();drawReg();drawTiles()}
+const seg=(id,items,get,set)=>{const box=document.getElementById(id);items.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.onclick=()=>{set(v);[...box.children].forEach(x=>x.setAttribute('aria-pressed',x===b));build()};b.setAttribute('aria-pressed',get()===v);box.appendChild(b)})}
+seg('roles',ROLES.map((r,i)=>[i,r]),()=>role,v=>role=v)
+seg('statuses',STATUSES,()=>status,v=>status=v)
+const slider=document.getElementById('a');slider.oninput=()=>{answers=+slider.value;draw()}
+let timer=null
+document.getElementById('play').onclick=e=>{clearInterval(timer);answers=0;slider.value=0;draw();e.target.textContent='Playing…';timer=setInterval(()=>{answers++;slider.value=answers;draw();if(answers>=8){clearInterval(timer);e.target.textContent='Play'}},900)}
+build()
+</script>
+</body>
+</html>

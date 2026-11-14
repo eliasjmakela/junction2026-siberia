@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent } from 'react'
 import { Arrow, Emblem, IntentShape } from './components/IntentShape'
 import { FieldView } from './form/fields'
 import { goalOf, intentSentence, isAnswered, missingOn, screenSummary, specificity } from './form/logic'
+import { RoleCard } from './form/RoleCard'
 import { RolePreview } from './form/RolePreview'
 import { ALL_FIELDS, GOALS, SCREENS, type Goal, type Value, type Values } from './form/schema'
 import './App.css'
@@ -9,6 +10,7 @@ import './App.css'
 const EVENT = { name: 'Espoo Matchmaking Day', date: '4 Mar 2027' }
 const STORAGE_KEY = 'plainly:role:v2'
 const REVIEW = SCREENS.length
+const SUBMITTED = SCREENS.length + 1
 
 type Stored = { values: Values; savedAt: string }
 
@@ -35,8 +37,8 @@ function focusFirstIn(id: string) {
 export default function App() {
   const [initial] = useState(loadStored)
   const [values, setValues] = useState<Values>(initial?.values ?? {})
-  // A restored role opens on its review.
-  const [index, setIndex] = useState(initial ? REVIEW : 0)
+  // A restored role opens on its confirmation.
+  const [index, setIndex] = useState(initial ? SUBMITTED : 0)
   const [invalid, setInvalid] = useState<Set<string>>(new Set())
   const [visited, setVisited] = useState<Set<string>>(new Set(initial ? SCREENS.map((s) => s.id) : []))
   const [changed, setChanged] = useState<Set<string>>(new Set())
@@ -47,7 +49,8 @@ export default function App() {
   const goal = goalOf(values)
   const spec = goal ? specificity(values) : 0
   const sentence = intentSentence(values)
-  const onReview = index >= REVIEW
+  const onSubmitted = index === SUBMITTED && savedAt !== null
+  const onReview = index >= REVIEW && !onSubmitted
   const screen = SCREENS[Math.min(index, REVIEW - 1)]
   const isDone = (i: number) => visited.has(SCREENS[i].id) && missingOn(SCREENS[i], values).length === 0
   const doneCount = SCREENS.filter((_, i) => isDone(i)).length
@@ -97,6 +100,7 @@ export default function App() {
       setSubmitError(false)
       setSavedAt(at)
       setChanged(new Set())
+      goTo(SUBMITTED)
     } catch {
       setSubmitError(true)
     }
@@ -166,13 +170,35 @@ export default function App() {
         <div className="progress" aria-label={`${doneCount} of ${SCREENS.length} steps complete`}>
           <ol className="progress__bars" aria-hidden="true">
             {SCREENS.map((s, i) => (
-              <li key={s.id} className={!onReview && i === index ? 'is-current' : isDone(i) ? 'is-done' : undefined} />
+              <li key={s.id} className={!onReview && !onSubmitted && i === index ? 'is-current' : isDone(i) ? 'is-done' : undefined} />
             ))}
           </ol>
-          <span>{onReview ? 'Review' : `Step ${index + 1} of ${SCREENS.length}`}</span>
+          <span>{onSubmitted ? 'Submitted' : onReview ? 'Review' : `Step ${index + 1} of ${SCREENS.length}`}</span>
         </div>
 
-        {onReview ? (
+        {onSubmitted ? (
+          <section className="submitted" id="form" aria-labelledby="submitted-title">
+            <h1 id="submitted-title" ref={headingRef} tabIndex={-1}>
+              Role submitted
+            </h1>
+            <p className="hint">
+              {values.title?.text?.trim() || 'The role'} is submitted for {EVENT.name}, {formatTime(savedAt!)}.
+            </p>
+            <div className="submitted__body">
+              <RoleCard values={values} event={EVENT} />
+              <div className="submitted__next">
+                <h2>Next</h2>
+                <button type="button" className="btn" onClick={addAnotherRole}>
+                  Submit another role <Arrow />
+                </button>
+                <p className="submitted__note">Company details are filled in for you.</p>
+                <button type="button" className="btn-quiet" onClick={() => goTo(REVIEW)}>
+                  View or edit this role
+                </button>
+              </div>
+            </div>
+          </section>
+        ) : onReview ? (
           <section className="review" id="form" aria-labelledby="review-title">
             <h1 id="review-title" ref={headingRef} tabIndex={-1}>
               Review your role page
@@ -184,7 +210,7 @@ export default function App() {
             <div className="actions actions--review">
               {savedAt ? (
                 <button type="button" className="btn" onClick={addAnotherRole}>
-                  Add another role <Arrow />
+                  Submit another role <Arrow />
                 </button>
               ) : (
                 <>
@@ -236,7 +262,7 @@ export default function App() {
           </form>
         )}
 
-        <section className="ledger" aria-labelledby="ledger-title">
+        {!onSubmitted && <section className="ledger" aria-labelledby="ledger-title">
           <h2 id="ledger-title">Your answers</h2>
           {!anyAnswer && visited.size === 0 ? (
             <p className="ledger__empty">No answers yet.</p>
@@ -279,7 +305,7 @@ export default function App() {
               </tbody>
             </table>
           )}
-        </section>
+        </section>}
       </main>
     </div>
   )
