@@ -43,7 +43,7 @@ Design check after UI edits: `~/.claude/skills/impeccable/scripts/impeccable det
 | `src/event/sample.ts`, `sampleApplicants.ts`, `sampleAssessments.ts` | Synthetic sample companies (from `src/seeker/sampleRoles.ts`) with hand-written question sets, sample applicants, and hand-written sample assessments (shown as "Sample assessment" until a pair is scored again) |
 | `src/apply/` | Applicant flow at `#/apply`, with its sample demo answers in `demoAnswers.ts` |
 | `src/staff/` | Staff review at `#/staff`: per-company ranking, evidence, decisions, invitations |
-| `src/outcomes/` | Follow-up concept demo at `#/outcomes` (simulated data only) |
+| `src/outcomes/` | Follow-up concept demo at `#/outcomes`: `data.ts` (four seeded events, 3/6-month checks, banding, summary text, CSV), `Outcomes.tsx`, `outcomes.css` (simulated data only) |
 | `src/components/SiteHeader.tsx` | Top bar for the applicant, staff and follow-up views |
 | `server/event-ai.ts` | Vite plugin for `POST /api/questions` and `POST /api/assess`; holds the Anthropic key server-side |
 | `src/seeker/` | Sample role browser at `#/roles` (not in the main nav) |
@@ -68,7 +68,7 @@ The top-bar **Play sample demo** action fills the company flow with clearly labe
 
 - **Copy**: UI text is generic product copy that holds for any company. No commentary on the user's particular answers, except AI-generated questions, attributes, scores and rationales, which are labelled as AI-drafted wherever they appear. "Not decided yet" is the one wording for honest gaps.
 - **GDPR / non-discrimination**: attributes and questions only from the company's job texts, each attribute quoting them; never special categories, age, gender, family, nationality or other protected grounds in questions, attributes, scores, rationales or evidence; no names or contact details sent to a model (the scoring request carries one listing's questions and one applicant's scrubbed answers, never the e-mail or code); e-mails appear only in the staff invitation list; scores are decision support and staff decide every invitation by hand. `touchesForbidden` and the validators in `src/event/core.ts` enforce this; keep them in the path for both AI and rules output, on both server and browser.
-- **Follow-up** (`#/outcomes`) is a concept demo: simulated numbers only, labelled as such. Nothing is scraped or collected.
+- **Follow-up** (`#/outcomes`) is a concept demo of a LinkedIn profile check: simulated, deterministic numbers only, labelled as such. Nothing is looked up or collected. Every count of 1–2 (attendee, company hires, reports) is shown as "1–2"; 0 and 3 or more stay exact, and a banded figure must not be recomputable from exact ones.
 - **Visual**: lichen `#e4cb3a` is the only bright colour (lit stars, lines, selection, changed state). Dashed means "not yet". Flat ink, 2px corners, 8px module, Familjen Grotesk display at the fixed steps in `tokens.css`, Schibsted Grotesk UI. Blur exists only in the sky. No new fonts, icons from emoji, gradients or shadows.
 - Sample event and answers are synthetic and labelled "Sample". Never invent outcomes, customers or numbers.
 
