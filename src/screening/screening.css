@@ -232,7 +232,7 @@
 .seeker__foot {
   margin-top: var(--s-5);
   padding-top: var(--s-3);
-  border-top: 1px solid rgb(238 240 236 / 0.18);
+  border-top: var(--rule-on-spruce);
   font-size: var(--type-label);
   color: var(--on-spruce-soft);
 }

@@ -46,16 +46,13 @@
 }
 
 .role-card__status {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-2);
   color: var(--lichen);
 }
 
 .role-card__facts {
   margin-top: var(--s-4);
   padding-top: var(--s-3);
-  border-top: 1px solid rgb(238 240 236 / 0.18);
+  border-top: var(--rule-on-spruce);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px var(--s-3);

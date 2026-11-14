@@ -1,6 +1,6 @@
 ---
 name: Plainly
-description: Intent drill for companies attending City of Espoo recruitment events, inked as a Finnish modernist poster.
+description: Role profiles for companies attending City of Espoo recruitment events, inked as a Finnish modernist poster under a northern night sky.
 colors:
   spruce: "#173a30"
   spruce-raised: "#21483c"
@@ -22,9 +22,21 @@ typography:
     fontWeight: 700
     lineHeight: 1.06
     letterSpacing: "-0.025em"
+  display-xl-compact:
+    fontFamily: "Familjen Grotesk, Schibsted Grotesk, system-ui, sans-serif"
+    fontSize: "1.875rem"
+    fontWeight: 700
+    lineHeight: 1.1
+    letterSpacing: "-0.025em"
   display-l:
     fontFamily: "Familjen Grotesk, Schibsted Grotesk, system-ui, sans-serif"
     fontSize: "2.125rem"
+    fontWeight: 700
+    lineHeight: 1.1
+    letterSpacing: "-0.02em"
+  display-l-compact:
+    fontFamily: "Familjen Grotesk, Schibsted Grotesk, system-ui, sans-serif"
+    fontSize: "1.375rem"
     fontWeight: 700
     lineHeight: 1.1
     letterSpacing: "-0.02em"
@@ -61,18 +73,6 @@ typography:
     fontWeight: 600
     lineHeight: 1.5
     letterSpacing: "0.08em"
-  display-xl-compact:
-    fontFamily: "Familjen Grotesk, Schibsted Grotesk, system-ui, sans-serif"
-    fontSize: "1.875rem"
-    fontWeight: 700
-    lineHeight: 1.1
-    letterSpacing: "-0.025em"
-  display-l-compact:
-    fontFamily: "Familjen Grotesk, Schibsted Grotesk, system-ui, sans-serif"
-    fontSize: "1.375rem"
-    fontWeight: 700
-    lineHeight: 1.1
-    letterSpacing: "-0.02em"
 rounded:
   radius: "2px"
 spacing:
@@ -96,29 +96,51 @@ components:
     backgroundColor: "{colors.spruce-raised}"
   button-primary-active:
     backgroundColor: "{colors.spruce-deep}"
+  button-primary-disabled:
+    backgroundColor: "{colors.granite-light}"
+    textColor: "{colors.ink-soft}"
   button-quiet:
     textColor: "{colors.ink-soft}"
     padding: "0 8px"
     height: "48px"
-  answer-cell:
+  button-chip:
+    backgroundColor: "{colors.spruce}"
+    textColor: "{colors.on-spruce}"
+    typography: "{typography.small}"
+    rounded: "{rounded.radius}"
+    padding: "0 16px"
+    height: "48px"
+  chip:
     backgroundColor: "{colors.granite-light}"
     textColor: "{colors.ink}"
-    typography: "{typography.body-l}"
+    typography: "{typography.body}"
     rounded: "{rounded.radius}"
-    padding: "16px 20px"
-    height: "56px"
-  answer-cell-hover:
+    padding: "0 16px 0 14px"
+    height: "44px"
+  chip-hover:
     backgroundColor: "{colors.white}"
-  answer-cell-selected:
+  chip-selected:
     backgroundColor: "{colors.white}"
-  own-words-input:
+  chip-undecided:
     backgroundColor: "transparent"
-    textColor: "{colors.ink}"
+    textColor: "{colors.ink-soft}"
     rounded: "{rounded.radius}"
-    padding: "12px 18px"
+    height: "44px"
+  text-input:
+    backgroundColor: "{colors.granite-light}"
+    textColor: "{colors.ink}"
+    typography: "{typography.body}"
+    rounded: "{rounded.radius}"
+    padding: "12px 16px"
     height: "48px"
-  own-words-input-filled:
+  text-input-focus:
     backgroundColor: "{colors.white}"
+  scale-step:
+    backgroundColor: "{colors.granite-light}"
+    rounded: "{rounded.radius}"
+    height: "40px"
+  scale-step-selected:
+    backgroundColor: "{colors.spruce}"
   event-chip:
     backgroundColor: "{colors.granite-light}"
     textColor: "{colors.ink-soft}"
@@ -130,6 +152,33 @@ components:
     textColor: "{colors.ink}"
     rounded: "{rounded.radius}"
     padding: "1px 6px"
+  gap-tag:
+    backgroundColor: "transparent"
+    textColor: "{colors.ink-soft}"
+    typography: "{typography.small}"
+    rounded: "{rounded.radius}"
+    padding: "0 6px"
+  ai-source-tag:
+    backgroundColor: "transparent"
+    textColor: "{colors.ink}"
+    typography: "{typography.small}"
+    rounded: "{rounded.radius}"
+    padding: "0 6px"
+  preview-sheet:
+    backgroundColor: "{colors.granite-light}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.radius}"
+    padding: "40px 40px 32px"
+  role-card:
+    backgroundColor: "{colors.spruce}"
+    textColor: "{colors.on-spruce}"
+    rounded: "{rounded.radius}"
+    padding: "24px 24px 32px"
+    width: "400px"
+  qc-panel:
+    backgroundColor: "{colors.granite-light}"
+    rounded: "{rounded.radius}"
+    padding: "24px"
 ---
 
 # Design System: Plainly
@@ -138,49 +187,50 @@ components:
 
 **Creative North Star: "The Cut Poster"**
 
-Plainly is a 1960s–70s Finnish modernist poster inked in Espoo landscape colour. A deep spruce field owns one whole region of the shell and carries the brand, the intent shape and the intent sentence; the work happens on cool granite beside it. One bright ink, sulphur lichen, is reserved for the things that matter right now: the shape, the selected answer, what just changed. Everything else is ink on stone.
+Plainly is a 1960s–70s Finnish modernist poster inked in Espoo landscape colour, with a northern night sky as its hero. A deep spruce field owns one whole region of the shell and is the night: a full-bleed sky in which the role's constellation is brought out of the noise, answer by answer, with a plain-text caption at its foot. The work happens on cool granite beside it. One bright ink, sulphur lichen, is reserved for the things that matter right now: the picked stars and their lines, the role's status, the selected answer, what just changed. Everything else is ink on stone.
 
-The world is flat ink. No gradients, no drop shadows, 2px corners, one 8px module for shape, type and layout. One display face appears at fixed steps, set bold and tight. Density is calm and operational: a question, a set of answer cells, a primary action, and a ledger of answers that restyles rows in place.
+The world is flat ink everywhere except the sky's soft focus. No gradients, no drop shadows, 2px corners, one 8px module for shape, type and layout. One display face appears at fixed steps, set bold and tight. Density is calm and operational: a step title, a few fields built from chips, inputs and steppers, a primary action, and a ledger of answers that restyles rows in place.
 
-The signature is the intent shape: a single lichen polygon on spruce that starts out of focus and is cut, answer by answer, from a blunt stock toward one of three emblems, coming into sharp focus as the intent becomes plain. Motion is reserved for that moment; every other transition is a short state change.
+The signature is the night sky. Each completed step moves the camera, unevenly, toward the role's constellation, pulls the focus and picks one more star out of the noise; only when the profile is complete do lichen lines connect the picked stars into a legible figure. Its motion is the one authored moment; every other transition is a short state change.
 
 **Key Characteristics:**
 - Total palette commitment: spruce field, granite ground, lichen as the only bright ink, rowan for errors only.
-- Flat ink, 2px corners, no shadows or gradients.
+- Flat ink, 2px corners, no shadows or gradients; softness and glow live only inside the sky.
 - One 8px module (4px half-step) for spacing, shape geometry and type rhythm.
 - One display face (Familjen Grotesk 700) at fixed steps; Schibsted Grotesk for the interface.
-- One authored motion moment: the intent shape morph and focus pull (700ms, exponential ease-out).
+- One authored motion moment: the night sky's camera move, focus pull and constellation draw.
+- Dashed means not yet: "Not decided yet" answers, honest gaps and unanswered results are dashed everywhere, sky included.
 
 ## Colors
 
 Two grounds, one bright ink, one warning colour: a landscape palette committed to in full.
 
 ### Primary
-- **Spruce Field** (spruce): the shell's left region at full height, the primary button, selected-cell borders, the done segments of progress, the active tab underline, and the focus ring on granite. It is a ground, not an accent.
-- **Raised Spruce** (spruce-raised): spruce one step lighter, for hover on spruce surfaces and the scrollbar thumb.
+- **Spruce Field** (spruce): the night. The shell's left region at full height, the attendee page side panel, the role card, the primary button and skill-bucket buttons, the selected scale step, selected-chip borders, done progress and time-budget segments, the active tab underline, heavy rules over the privacy note and "fit" list, and the focus ring on granite. It is a ground, not an accent.
+- **Raised Spruce** (spruce-raised): hover on spruce surfaces and the scrollbar thumb.
 - **Deep Spruce** (spruce-deep): pressed state on spruce.
 
 ### Secondary
-- **Sulphur Lichen** (lichen): the only bright ink. The intent shape, the wordmark, the goal phrase in the intent sentence, the active legend emblem, the selected radio dot, the current progress segment, the "changed" tag, text selection, the primary-button arrow, and the focus ring on spruce.
+- **Sulphur Lichen** (lichen): the only bright ink. Picked stars, their halo and the constellation lines; the wordmark; the status label in the field caption and on the role card; the selected chip mark; the current progress segment; the 6px bar inside a selected scale step; "fit" and "matches" marks; the "changed" tag; text selection; the primary-button arrow; and the focus ring on spruce.
 
 ### Tertiary
-- **Rowan** (rowan): errors only (5.0:1 on granite). Never decorative.
+- **Rowan** (rowan): errors only (5.0:1 on granite): error text, invalid field borders, the hover colour of a skill tag's remove control. Never decorative.
 
 ### Neutral
-- **Granite** (granite): the work ground and page background.
-- **Granite Line** (granite-line): 1px rules, empty progress segments, dashed own-words edge, answer-cell hover border.
-- **Light Granite** (granite-light): answer cells, the event chip, the current ledger row.
-- **White** (white): selected and hovered answer cells and the filled own-words field. Paper shows through only where the user has acted.
+- **Granite** (granite): the work ground and page background; stepper button hover.
+- **Granite Line** (granite-line): 1px rules, empty progress and budget segments, dashed "not yet" edges, hover borders, the "not for you" list rule.
+- **Light Granite** (granite-light): chips, inputs, steppers, scale steps, the event chip, the current ledger row, the review sheet and the quick-check panel.
+- **White** (white): selected and hovered chips, focused inputs, skill tags. Paper shows through only where the user has acted.
 - **Ink** (ink): primary text on granite.
-- **Soft Ink** (ink-soft): secondary text on granite: hints, ledger questions, meta (7.1:1 on granite).
-- **On Spruce** (on-spruce) / **Soft On Spruce** (on-spruce-soft): text on the field; soft for tagline, legend and quiet intent text (7.4:1 on spruce).
+- **Soft Ink** (ink-soft): secondary text on granite: hints, leads, ledger questions, meta, unselected marks (7.1:1 on granite).
+- **On Spruce** (on-spruce) / **Soft On Spruce** (on-spruce-soft): text and noise stars on the field; soft for the tagline, details line, empty-title placeholder and card meta (7.4:1 on spruce).
 
 ### Named Rules
-**The One Bright Ink Rule.** Lichen marks the shape, the selection and the change, and nothing else. If an element is not one of those things, it is not lichen.
+**The One Bright Ink Rule.** Lichen marks the picked stars, the role's status, the selection and the change, and nothing else. If an element is not one of those things, it is not lichen.
 
-**The Rowan Is Alarm Rule.** Rowan appears only on error text. It never marks emphasis, a brand moment or a destructive-looking button.
+**The Rowan Is Alarm Rule.** Rowan appears only on errors. It never marks emphasis, a brand moment or a destructive-looking button.
 
-**The Field Owns a Region Rule.** Spruce is applied as a whole region (the field, the primary button), never as a thin tint or a card background on granite.
+**The Field Owns a Region Rule.** Spruce is applied as a whole region: the field, the attendee side panel, the role card (a miniature of the field carrying its own sky) and solid actions. Never as a thin tint or a generic card background on granite.
 
 ## Typography
 
@@ -190,108 +240,157 @@ Two grounds, one bright ink, one warning colour: a landscape palette committed t
 **Character:** A compact, slightly quirky grotesk set bold and tight for poster headlines, against a plain, sturdy grotesk for everything operational. Both are self-hosted (weights 500/700 display; 400/500/600 UI).
 
 ### Hierarchy
-- **Display XL** (700, 46px, 1.06, -0.025em): the current question and the result heading. Max about 19em. Steps down to 30px / 1.1 at 900px and below.
-- **Display L** (700, 34px, 1.1, -0.02em): the intent sentence on the field, max 28ch, reserved height of three lines so the field never jumps. The quiet tail uses weight 500 in soft on-spruce. 22px in the mobile band.
-- **Display M** (700, 28px, 1, -0.02em): the wordmark, in lichen.
-- **Body L** (500, 17px, 1.3): answer cell labels.
-- **Body** (400, 16px, 1.5): hints (max 62ch), inputs, buttons (600).
-- **Small** (14px): ledger, progress count, status and error lines. Progress uses tabular numerals.
-- **Label** (600, 13px, 0.08em, uppercase): section headings such as the ledger title, and the "soon" status beside disabled tabs (11px). The legend and event chip use 13px without tracking or case change.
+- **Display XL** (700, 46px, 1.06, -0.025em): the role title in the field caption, step titles, the review and submitted headings, the attendee page heading. Max about 19em.
+- **Display XL compact** (700, 30px, 1.1): step, submitted and attendee headings at 900px and below.
+- **Display L** (700, 34px, 1.1, -0.02em): the empty-title placeholder in the caption (in soft on-spruce), the role card title, the review sheet title, the role title in the attendee side panel.
+- **Display L compact** (700, 22px, 1.1): in-page section headings (the "fit" lists, the quick-check title) and the caption and side-panel titles in the phone band.
+- **Display M** (700, 28px, 1, -0.02em): the wordmark, in lichen; the attendee question-stage heading.
+- **Body L** (500, 17px, 1.3): field labels and sentence leads (600), the caption details line, the role purpose, quick-check questions, stepper values.
+- **Body** (400, 16px, 1.5): hints (max 62ch), inputs, chips (500), buttons (600).
+- **Small** (14px): ledger, progress and budget counts (tabular numerals), status and error lines, field hints, meta and notes.
+- **Label** (600, 13px, 0.08em, uppercase): the field-caption status, section headings (ledger, skill buckets, review sections, "What next", "Before you start"), the company line in the attendee panel. Definition terms and card meta use 13px without tracking or case change. The "changed" tag is 13px/600.
+- **Micro** (600, 11px, 0.08em, uppercase): status suffixes such as "soon" and "Optional".
 
 ### Named Rules
-**The Fixed Steps Rule.** Display type uses only the three named steps. No fluid clamp scaling; the steps change once, at the 900px breakpoint.
+**The Fixed Steps Rule.** Display type uses only the named steps (XL, L, M and the two compact steps). No fluid clamp scaling; headings switch to compact steps once, at the 900px breakpoint.
 
-**The One Display Face Rule.** Familjen Grotesk is the only display face. Emphasis inside display type is colour (lichen on spruce), never italic: emphasis elements are set upright.
+**The One Display Face Rule.** Familjen Grotesk is the only display face. Emphasis inside display type is colour, never italic.
+
+**The Labels Carry Data Rule.** Tracked uppercase labels name a section or show a real value (the role's status, the company). They are never invented category kickers above a heading.
 
 ## Layout
 
-A two-region shell. The spruce field is a fixed-width left column (560px) that stays sticky at full viewport height while the granite work area scrolls; the field colour is painted the full page height behind it. The field stacks wordmark and tagline at top, the intent shape (max 400px wide) and intent sentence centred by auto margins, and the three-emblem legend at the foot above a faint rule.
+**Company shell.** Two regions. The spruce field is a fixed-width left column (560px) that stays sticky at full viewport height while the granite work area scrolls; the field colour is painted the full page height behind it. The sky fills the whole field. The wordmark and tagline sit at the top (24px down, 48px in); the caption sits at the bottom (40px up, 48px in): status, role title, details line.
 
-The work area runs top to bottom: section tabs and the sample-event chip, progress segments with the question count, the question, answer cells, the own-words field, actions, a status line, and the ledger pushed to the foot with auto margin. Content widths cap at 800px (question) and 880px (ledger).
+The work area runs top to bottom: section tabs and the sample-event chip, progress segments with "Step n of 8", the step title, hint, error line, fields, actions, a status line, and the ledger pushed to the foot with auto margin. Content widths cap at 800px (step), 880px (ledger, review sheet, submitted page, quick check) and 720px (inputs).
 
-Spacing is an 8px module with a 4px half-step (s-1 to s-9, 4–64px). Field padding is 24/48/40px; work-area padding is 24/64/40px. Answer cells sit in a two-column grid with 8px gaps; a three-answer set spans its last cell full width. Status and error lines reserve their height so the layout never jumps.
+**Attendee shell.** The same two-region model with a 440px spruce side panel (360px at 1120px and below): wordmark and "Quick check" tag at top, the submitted role's complete sky behind, the company and role title pushed to the foot, then a footer under a faint rule (`--rule-on-spruce`) with question count and time. The work column caps at 880px with 64px padding.
+
+Spacing is an 8px module with a 4px half-step (s-1 to s-9, 4–64px). Fields stack 32px apart; chip sets wrap with 8px gaps. Status and error lines reserve their height so the layout never jumps.
 
 **Breakpoints:**
-- **1360px and below:** field narrows to 440px; field padding-inline 32px, work 40px.
-- **1120px and below:** the event chip is hidden.
-- **900px and below:** the field becomes a top band (brand row, then intent sentence beside a 128px shape); legend hidden; tabs scroll horizontally; answers become a single column with 48px cells; primary actions stretch; ledger rows stack into a number / question-over-answer / edit grid.
+- **1360px and below:** company field narrows to 440px; caption and brand insets 32px, work padding 40px.
+- **1120px and below:** event chip hidden; submitted page stacks the role card over the next steps; attendee panel narrows to 360px.
+- **900px and below:** the company field becomes a 240px band (brand and caption inset 16px; title at Display L compact, empty placeholder at Body L, details at Small) with the constellation small on the right. The attendee panel becomes a top band (min 200px, footer hidden). Tabs scroll horizontally; skill buckets, fit lists and preview grids go single column; primary actions stretch; ledger rows stack into a number / question-over-answer / edit grid.
 
 ## Elevation & Depth
 
-Flat. There are no drop shadows and no gradients anywhere. Depth comes from tonal layering only: spruce field beside granite ground, light granite cells on granite, white where the user has acted. The only `box-shadow` uses in the build are flat ink devices, not elevation: the 3px inset underline on the active tab and the 3px white inset ring inside the selected radio.
+Flat. There are no drop shadows and no gradients in the interface. Depth comes from tonal layering only: spruce field beside granite ground, light granite chips and sheets on granite, white where the user has acted. The `box-shadow` uses in the build are flat ink strokes, not elevation: the 3px inset underline on the active tab, the 6px lichen inset bar in a selected scale step, and the 4px inset top rule on the "fit" lists.
+
+The only depth effects anywhere live inside the night sky: star softness, depth-of-field, parallax and a faint lichen halo around picked stars. They are drawn as flat SVG circles whose radius and opacity change; no CSS or SVG blur filter exists in the build.
 
 ### Named Rules
-**The Flat Ink Rule.** Surfaces never lift. State is shown by changing ink (background, border colour, border style), never by shadow or blur. Inset strokes that draw a line in solid ink are allowed; cast shadows are not. The single exception is the intent shape's focus blur, which carries meaning (how vague the intent still is) and reaches zero when the drill is complete.
+**The Flat Ink Rule.** Surfaces never lift. State is shown by changing ink (background, border colour, border style), never by shadow or blur. Inset strokes that draw a line in solid ink are allowed; cast shadows are not. The single exception is the night sky: its focus, depth and halo carry meaning (how far the role has come into focus) and resolve as the profile completes. Blur, glow and softness exist only in the sky.
+
+**The Heavy Rule.** A 4px spruce rule heads a block the reader must take in: the privacy note and the "You'd fit if" list (the "not for you" list takes a granite-line rule of the same weight). Ordinary sections take the 1px granite-line rule.
 
 ## Shapes
 
-Near-square: one radius (2px) on buttons, cells, inputs, chips and tags; progress segments and the shape stock are square. Radios are the only circles. Borders are 2px for interactive edges (cells, inputs, radio rings) and 1px for rules. Dashed strokes mean "not yet": the empty own-words field has a 2px dashed granite-line edge that turns solid spruce once focused or filled; the shape's register frame and cut guides are dashed.
+Near-square: one radius (2px) on buttons, chips, inputs, steppers, scale steps, sheets, cards and tags; progress and budget segments are square. Radio marks in chips are the only circles; checkbox marks are square. Borders are 2px for interactive edges and selected marks, 1px for rules and small tags. List markers are small solid squares (8px in fit and privacy lists, 12px outlined result marks), drawn in CSS.
 
-The emblem set is drawn on a 16-unit grid: circle (be seen), wedge pointing right (hire for a specific need), horizontal band (hire in general). The filled arrow shares that grid. These three silhouettes are the system's only iconography; icons are inline SVG, never glyphs.
+**Dashed means not yet.** The "Not decided yet" chip and its mark, a disabled input, stepper or salary field left undecided, the gap tag in the review sheet and role card, the "role has changed" notice, an unanswered result mark, and in the sky an undecided star's lines. Solid edges arrive once something is decided.
+
+Icons are filled inline SVG on a 16-unit grid: the primary arrow, the stepper minus and plus, the skill-tag move and remove controls. Never glyphs.
 
 ## Components
 
 ### Buttons
 Solid, square-cornered, confident.
 - **Shape:** 2px radius, 48px tall, 24px horizontal padding, weight 600.
-- **Primary:** spruce fill, on-spruce text, a 16px filled lichen arrow after the label.
+- **Primary:** spruce fill, on-spruce text, a 16px filled lichen arrow after the label. Disabled: light granite with soft-ink text.
 - **Hover / Active:** raised spruce on hover with the arrow nudging 3px right (220ms); deep spruce when pressed.
-- **Quiet:** text-only in soft ink, 48px tall, underline fading in on hover (120ms) and text darkening to ink; disabled at 45% opacity.
+- **Quiet:** text-only in soft ink, 48px tall, underline fading in on hover (120ms) and text darkening to ink; disabled at 45% opacity. Inline text actions (ledger "Change", quick-check "Remove") use the same pattern in spruce, Small, 600.
+- **Bucket button:** spruce, 48px, Small/600, 16px padding: the "Must-have / Can learn / Nice to have" adders in the skill sorter.
 - **Focus:** 3px spruce outline, 2px offset.
 
-### Answer cells
-Light granite slabs that turn to paper when chosen.
-- **Rest:** light granite, 2px transparent border, 56px min height, 16px/20px padding, 17px/500 label after a 20px radio ring in soft ink.
+### Chips
+Light granite choices that turn to paper when chosen; the form's answer primitive.
+- **Rest:** light granite, 2px transparent border, 44px min height, 16px/500, a 14px mark ring in soft ink (circle for single choice, square for multiple).
 - **Hover:** white with a granite-line border.
-- **Selected:** white cell, 2px spruce border; the radio fills lichen inside a spruce ring with a 3px white inset. Spruce ring, white inset, lichen dot.
-- **Focus:** the whole cell takes the 3px spruce outline (2px offset), not the native radio.
+- **Selected:** white chip, spruce border; the mark fills lichen inside a spruce ring.
+- **Not decided yet:** transparent with a 2px dashed granite-line border, soft-ink text, dashed square mark; stays dashed when pressed, text darkens to ink. Choosing it disables and dashes the field it belongs to.
+- **Large (attendee yes/no):** 56px, Body L, in two 160px columns.
+- **Focus:** the whole chip takes the 3px spruce outline.
 
-### Own-words field
-- **Style:** transparent, 2px dashed granite-line, 2px radius, 48px tall; placeholder in soft ink.
-- **Hover:** border darkens to soft ink.
-- **Focus / Filled:** border goes solid spruce and the field turns white.
-
-### Progress
-One 32px × 6px segment per question with 4px gaps (24px wide on mobile): spruce when done, lichen for the current question, granite-line when ahead. A small-type count sits beside it.
+### Inputs / Fields
+- **Field frame:** a label in Body L/600 (an "Optional" micro tag beside it when optional), a Small hint, then the control 12px below. Text fields with a sentence lead show the lead as the label, ending in "…" or ":" so the answer completes the sentence ("A normal Tuesday looks like …").
+- **Text input / textarea:** light granite, 2px transparent border, 48px tall (textarea 80px, vertical resize), placeholder in soft ink. Hover: granite-line border. Focus: white with a spruce border, no outline. Disabled: transparent with a dashed granite-line border.
+- **Number stepper:** a 48px light-granite bar with 48px minus/plus buttons (spruce SVG, granite on hover) around a 56px tabular Body L/600 value. Focus within: white with spruce border. Undecided: dashed.
+- **Five-step scale:** two end labels in Small soft ink around five 40px light-granite steps (4px gaps). Selected: solid spruce with a 6px lichen inset bar along the bottom.
+- **Salary range:** two money boxes ("€" prefix, 96px tabular input) joined by "to"; same rest/focus/undecided treatment as the stepper.
+- **Skill sorter:** a text input with three bucket buttons, then three ruled columns (label headings) of skill tags: white, 2px spruce border, Small/600, with a move control (a select laid over a 16-grid icon) that moves the tag to another bucket in place, and a remove control that turns rowan on hover.
+- **Error:** rowan Small/600 under the field; the control border turns rowan.
 
 ### Navigation
-Section tabs at 16px/500 in soft ink with 32px gaps. The current tab is ink with a 3px spruce underline. Unavailable tabs stay in place with an 11px tracked uppercase "soon" label and a default cursor.
+Section tabs at 16px/500 in soft ink with 32px gaps. The current tab is ink with a 3px spruce underline. Unavailable tabs stay in place with a micro "soon" label and a default cursor.
+
+### Progress
+One 32px × 6px segment per step with 4px gaps (24px wide on phones): spruce when done, lichen for the current step, granite-line when ahead. A Small count sits beside it. The attendee time budget is the same bar with segments sized by each question's estimated seconds, spruce when answered, sticky at the top of the question list.
 
 ### Chips and tags
 - **Event chip:** light granite, 13px soft-ink text with the event name in 600 ink, 8px/12px padding, labelled as sample data.
-- **Changed tag:** lichen with 12px/600 ink text, 1px/6px padding, set after an edited ledger answer. It is the change state.
+- **Changed tag:** lichen with 13px/600 ink text, 1px/6px padding, under an edited ledger answer. It is the change state.
+- **Gap tag:** 1px dashed soft-ink outline (soft on-spruce on the role card), Small/500, for "Not decided yet" and "Not answered" values.
+- **AI source tag:** 1px solid spruce outline around a bold "Generated by AI", Small, in the quick-check meta line.
 
 ### Ledger
-A fixed-column table (number, question, answer, edit) in small type with 1px granite-line rules between rows. Questions are soft ink, answers 600 ink, the edit action is a spruce text button whose underline fades in on hover. The current row tints light granite. Rows restyle in place as answers change; nothing animates in or out. Below 900px rows stack into a grid.
+A fixed-column table (number, question, answer, edit) in Small with 1px granite-line rules between rows. Questions are soft ink, answers 600 ink (clamped to two lines), the edit action a spruce text button. The current row tints light granite. Rows restyle in place as answers change; nothing animates in or out. Below 900px rows stack into a grid.
+
+### Review sheet
+The attendee-facing role page shown on the review screen: a light granite sheet (2px radius), Display L title, a Small/600 byline with the status in spruce text and the company, the purpose in Body L with its sentence lead in soft ink, a three-column ruled facts grid (13px soft-ink terms, 600 values), then two "fit" lists side by side: "You'd fit if" under a 4px spruce rule with lichen squares in spruce borders, "Probably not for you if" under a 4px granite-line rule with outlined soft-ink squares. Further sections take label headings. Gaps show as gap tags.
+
+### Role card
+A 400px spruce card on the submitted page: lichen wordmark and the event in 13px soft on-spruce at top, a 4:3 bleed of the complete static sky, the role title in Display L, status in lichen and company in Small/600, a two-column facts grid under a faint rule (`--rule-on-spruce`) and the must-have skills. Next to it, a top-ruled column with a label heading, the primary "Submit another role" action, a Small note and a quiet "View or edit this role" action.
+
+### Quick check (company review)
+A top-ruled section after submission: Display L compact title, lede, then a light granite panel holding the draft. A Small meta line shows the source (AI source tag, or spruce "Published"). Questions are numbered rows with 1px rules: Body L/500 question, Small meta (answer type, the requirement it checks, what counts as a match), a spruce "Remove" text action. A dashed notice appears when the role has changed since publishing. Actions: primary publish or open, quiet regenerate/edit/unpublish. A Small soft-ink privacy paragraph closes the section.
+
+### Quick check (attendee page)
+- **Privacy note:** read before starting. A block under the 4px spruce heavy rule with a label heading ("Before you start") and short statements marked by 8px spruce squares: answers stay on the device, no contact details are asked, how the questions were made (stating AI generation when it applies), and that the result is a self-check, never a decision.
+- **Questions:** a ruled list of fieldsets, legend in Body L/600 with its number in soft ink, answered with large yes/no chips or an enlarged 56px stepper with its unit.
+- **Result:** heading "Matches n of m requirements" (a template), then ruled rows with a 12px square mark: lichen in spruce border for a match, soft-ink outline for a miss, dashed for not answered, and a Small/600 state word (spruce for a match).
 
 ### Focus
-**The Ring Follows the Ground Rule.** Focus is a 3px solid outline at 2px offset: spruce on granite surfaces, lichen on spruce surfaces. Every interactive element inside the field uses the lichen ring.
+**The Ring Follows the Ground Rule.** Focus is a 3px solid outline at 2px offset: spruce on granite surfaces, lichen on spruce surfaces. Every interactive element inside the field, the attendee panel and the role card uses the lichen ring.
 
-### Intent Shape (signature)
-A single flat lichen polygon on the spruce field (400 × 320 viewBox), drawn with 48 points arranged as four 12-point sides so edges stay straight while morphing. It starts as a blunt stock and is cut toward its goal emblem as specificity grows: circle (be seen), wedge (hire for a specific need) or band (hire in general). At the same time it comes into focus: a Gaussian blur on the ink (viewBox units) is 14 before a goal exists, 10 once the goal is chosen, then falls as 10 × (1 − specificity)^1.3 to exactly 0 when every answer is in. Shape and blur change together over 700ms with exponential ease-out; with reduced motion both jump straight to their targets. The register frame, cut guides and legend are never blurred.
-- **Register frame:** a dashed lichen rectangle (2px, 4/8 dash, 40% opacity) offset outside the stock so it never touches the ink.
-- **Cut guides:** the three possible cuts drawn as dashed spruce outlines (1.5px, 6/6 dash, 45% opacity) over the stock, shown only before a goal exists and fading out (220ms) once one does.
-- **Legend:** the three emblems at the field's foot in soft on-spruce; the active goal turns lichen and 600 weight.
-- The shape is decorative (`aria-hidden`); the intent sentence carries the meaning in text.
+### Night Sky (signature)
+A decorative SVG (`aria-hidden`) that fills the company field, the attendee side panel and the role card figure; the caption beside it carries the meaning in text. All parameters live in the sky's own settings object.
+
+- **The sky:** 1600 noise stars (700 on the role card) in on-spruce on an 1800 × 2600 world, each with its own depth, size (base 0.35–1.75, scaled 1.35), opacity (0.25–0.85) and twinkle phase. Depth drives heavy parallax (1.4).
+- **The constellation:** nine stars in one figure per status, lines never crossing: an arrow (Open now), a blunted arrow (Opening soon), a long chain (Talent pipeline). Each role's seed varies proportions, tilt and offsets (±30 units), so every role has its own figure. With no status yet, the arrow figure stands in.
+- **Per completed step (0–8):** the camera zooms from 0.32 to 1.15 in eight uneven steps, pans from the sky's centre toward the constellation with a wander (±240) that shrinks as it nears, and swings its rotation (up to ±22°) back to level at the last step. The path is new each time a scene is built. Focus pulls: a softness of 3 falls linearly to 0 while depth-of-field (to 1.2) rises, so stars away from the focal plane stay soft; noise stars dim to 55%. One more constellation star is picked (step 2 picks two): it grows, takes a lichen dot over its core and a faint lichen halo (3.2× radius).
+- **Motion:** every value eases exponentially toward its target (time constant about 325ms). A slow idle drift, rotation sway and twinkle (0.15) keep the sky alive and quieten as the role comes into focus.
+- **Complete profile:** on the review and submitted screens, lichen lines (1.3px, round caps, 80% opacity) draw one after another along the figure, 140ms apart. Lines never appear before the profile is complete.
+- **Undecided:** a star whose step was answered "Not decided yet" is picked at 30% strength, with its lichen dot halved and no halo; every line touching it is dashed (3/5) and drawn at 55% of full opacity.
+- **Framing:** in a tall panel the constellation centres at 40% height, in the open sky above the caption. In a short band (under 500px tall: phones) it sits small at 72% across and 42% down, clear of the caption. Scale follows the panel (width/560, height/700, clamped 0.3–1.25).
+- **Role card and attendee panel:** the complete figure, all picked stars lit, lines drawn. The card is static: no drift, no twinkle.
+- **Reduced motion:** no animation loop. The sky snaps to each new state and is redrawn once; no drift, no twinkle, no line sequence.
+
+### Field caption
+Bottom-left on the field, in a polite live region: the status (Label, lichen, uppercase; "No status yet" before one is chosen), the role title (Display XL; when empty a generic placeholder at Display L in soft on-spruce), and a details line (Body L, soft on-spruce). In the 240px phone band: title at Display L compact, placeholder at Body L, details at Small, 16px insets.
 
 ### Copy and voice
-Interface copy is generic, practically built product text that holds for any company and any answer: "No answers yet", "Intent submitted", "Choose an answer to continue", "Question 4 of 6". Labels, buttons, empty states, errors and status lines never comment on the user's particular choices. Summaries assembled from answers are plain templates with slots (the intent sentence, the result heading). Frank, characterful language belongs where a team authors it once: question wording and per-question help text. Copy describes the product on its own terms and never carries contrasts with alternatives or traces of how it was designed. Sample content is always labelled as sample.
+Interface copy is generic, practically built product text that holds for any company and any answer: "No answers yet", "Step 4 of 8", "Not decided yet", "Not answered". Labels, buttons, empty states, errors and status lines never comment on the user's particular choices. Summaries assembled from answers are plain templates with slots (the caption, ledger summaries, the role page, "Matches n of m requirements"). Frank, characterful language belongs where a team authors it once: step titles, sentence leads and help text. The one exception is the quick check's questions, which are AI-generated: they are always labelled as generated by AI wherever they appear (source tag for the employer, a note and a privacy statement for the attendee), and everything around them stays fixed copy. Copy describes the product on its own terms and never carries contrasts with alternatives or traces of how it was designed. Sample content is always labelled as sample.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** keep lichen to the shape, selection, changed state and focus on spruce (The One Bright Ink Rule).
+- **Do** keep lichen to picked stars and lines, the role's status, selection, the changed state and focus on spruce (The One Bright Ink Rule).
 - **Do** use the 2px radius and the 8px module (4px half-step) for every new component.
-- **Do** show state through ink: white fill and spruce border for chosen, dashed edges for empty, solid edges once filled.
+- **Do** show state through ink: white fill and spruce border for chosen, dashed edges for not yet, solid edges once decided.
+- **Do** carry "Not decided yet" through every view: dashed chip, dashed field, gap tag, dim star with dashed lines.
 - **Do** switch the focus ring to lichen on any spruce surface, spruce on granite.
-- **Do** reserve height for status, error and intent text so nothing jumps.
-- **Do** draw icons as filled inline SVG on the 16-unit emblem grid.
-- **Do** write labels, empty states and errors as generic templates; put characterful language in question wording and static help text.
+- **Do** reserve height for status, error and caption text so nothing jumps.
+- **Do** draw icons as filled inline SVG on the 16-unit grid.
+- **Do** label AI-generated content as generated by AI wherever it appears, and put a privacy note before anything attendees answer.
+- **Do** write labels, empty states and errors as generic templates; put characterful language in step titles, sentence leads and static help text.
 
 ### Don't:
-- **Don't** add drop shadows, glows, blur or gradients; depth is tonal only. The intent shape's focus blur is the one sanctioned blur (The Flat Ink Rule).
+- **Don't** add drop shadows, glows, blur or gradients outside the night sky; interface depth is tonal only (The Flat Ink Rule).
+- **Don't** draw constellation lines before the profile is complete, or show the status as anything but text outside the sky.
 - **Don't** use rowan for anything but errors.
 - **Don't** add a second display face, italic emphasis, or fluid display sizes between the fixed steps.
-- **Don't** add motion beyond short state transitions (120ms / 220ms); the shape morph is the one authored moment.
+- **Don't** add motion beyond short state transitions (120ms / 220ms); the night sky is the one authored moment.
+- **Don't** put invented uppercase kickers above headings; tracked labels carry section names or real values.
 - **Don't** write UI copy that reacts to the user's specific answers, or that explains what the product is not.
-- **Don't** present sample events or answers without a sample label, or show invented outcomes or match numbers.
+- **Don't** present sample events or answers without a sample label, or show invented outcomes or match statistics; the attendee result counts only the attendee's own answers and is labelled a self-check.
