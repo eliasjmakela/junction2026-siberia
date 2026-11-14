@@ -1,32 +1,32 @@
-# React + TypeScript + Vite
+# Plainly
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+*Just say it plainly.* A Junction 2026 project for the City of Espoo challenge: helping companies and talent find each other at Espoo recruitment events when job ads, CVs and screening are increasingly AI-generated.
 
-Currently, two official plugins are available:
+Typical job fairs are aimless. Plainly asks the company to describe each role plainly before the event: whether it is open now, opening soon or a talent pipeline, what the first month looks like, one recent problem the person would help solve, must-have versus teachable skills, language, location and relocation terms. Honest gaps are allowed ("Not decided yet"). From the answers it builds:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **a role page** attendees can scan in seconds, with "You'd fit if" and "Probably not for you if" lists;
+- **a role card**: the role and its constellation on one card;
+- **a 60-second quick check** for attendees: yes/no and number questions drafted by AI from the role, reviewed by the company, answered privately by attendees as a self-check (GDPR-compliant by design: no personal data leaves the attendee's device).
 
-## React Compiler
+While the company answers, the left panel's night sky zooms in on the role's constellation, one star per completed step, and joins the stars once the profile is complete.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Run it
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```sh
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Open the printed URL. The attendee quick check lives at `#/check` after a company has published one in the same browser.
+
+To have the quick check drafted by Claude, copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY`. Without a key it is built from the answers with fixed rules.
+
+Other scripts: `npm run build`, `npm run lint`, `npm run capture` (screenshots of every main state; see `scripts/capture.mjs`).
+
+## Project docs
+
+- `PRODUCT.md`: product context, constraints, copy and GDPR rules
+- `DESIGN.md`: the design system
+- `CLAUDE.md`: code map and conventions for anyone (human or agent) picking this up
+
+Built with React 19, TypeScript and Vite. All sample companies, roles and answers are synthetic.
