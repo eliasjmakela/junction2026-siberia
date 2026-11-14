@@ -128,6 +128,15 @@ export const SCREENS: Screen[] = [
         placeholder: 'e.g. shadow two senior technicians and run their first service visits.',
       },
       {
+        id: 'problem',
+        kind: 'text',
+        multiline: true,
+        label: 'A real problem',
+        lead: 'A recent problem this person would help solve:',
+        hint: 'One specific problem from the last few months, not a list of duties.',
+        placeholder: 'e.g. our scheduling service went down twice during the spring rush and technicians missed visits.',
+      },
+      {
         id: 'tuesday',
         kind: 'text',
         multiline: true,

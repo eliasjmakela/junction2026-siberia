@@ -100,6 +100,10 @@ export function RolePreview({ values }: { values: Values }) {
           <h3>The first month</h3>
           <Sentence id="month1" values={values} />
         </section>
+        <section>
+          <h3>A problem you would tackle</h3>
+          <Sentence id="problem" values={values} />
+        </section>
         {hasValue(FIELD_BY_ID.tuesday, values.tuesday) || values.tuesday?.undecided ? (
           <section>
             <h3>A normal day</h3>

@@ -14,7 +14,7 @@ const ERROR = 'Answer this, or choose Not decided yet.'
 const ERROR_NO_UNDECIDED = 'This is needed to continue.'
 
 function Label({ field, htmlFor, as = 'label' }: { field: Field; htmlFor?: string; as?: 'label' | 'legend' }) {
-  const text = field.kind === 'text' && field.lead ? `${field.lead} …` : field.label
+  const text = field.kind === 'text' && field.lead ? (field.lead.endsWith(':') ? field.lead : `${field.lead} …`) : field.label
   const inner = (
     <>
       <span>{text}</span>
