@@ -39,7 +39,8 @@ const MAX_BODY = 64 * 1024
 
 type Options = { apiKey?: string; model?: string }
 
-async function callClaude(opts: Required<Options>, system: string, prompt: string, schema: object, effort: 'low' | 'medium'): Promise<unknown> {
+/** Returns the parsed JSON output and the model that served it (a fallback model when the first declined). */
+async function callClaude(opts: Required<Options>, system: string, prompt: string, schema: object, effort: 'low' | 'medium'): Promise<{ out: unknown; model: string }> {
   const { default: Anthropic } = await import('@anthropic-ai/sdk')
   const client = new Anthropic({ apiKey: opts.apiKey, timeout: 80_000, maxRetries: 1 })
   const response = await client.beta.messages.create({
@@ -53,9 +54,9 @@ async function callClaude(opts: Required<Options>, system: string, prompt: strin
     fallbacks: 'default',
   })
   if (response.stop_reason !== 'end_turn') throw new Error(`stop_reason ${response.stop_reason}`)
-  const text = response.content.find((b) => b.type === 'text')
+  const text = response.content.findLast((b) => b.type === 'text')
   if (!text || text.type !== 'text') throw new Error('No text block')
-  return JSON.parse(text.text)
+  return { out: JSON.parse(text.text), model: response.model }
 }
 
 async function reasonOf(error: unknown) {
@@ -72,10 +73,10 @@ export async function generateQuestions(rawBrief: unknown, opts: Options): Promi
   if (!opts.apiKey || !brief.sources.length) return { source: 'rules' }
   const model = opts.model || DEFAULT_MODEL
   try {
-    const out = await callClaude({ apiKey: opts.apiKey, model }, QUESTIONS_SYSTEM, questionsPrompt(brief), QUESTIONS_SCHEMA, 'medium')
+    const { out, model: served } = await callClaude({ apiKey: opts.apiKey, model }, QUESTIONS_SYSTEM, questionsPrompt(brief), QUESTIONS_SCHEMA, 'medium')
     const set = validateQuestionSet(out, brief)
     if (!set) throw new Error('Too few grounded attributes or questions')
-    return { ...set, source: 'ai', model }
+    return { ...set, source: 'ai', model: served }
   } catch (error) {
     // Log the failure type only: never the brief or the model output.
     console.warn(`[questions] AI generation unavailable (${await reasonOf(error)}); using rules.`)
@@ -88,8 +89,8 @@ export async function assess(rawInput: unknown, opts: Options): Promise<Assessme
   if (!opts.apiKey || !input) return { source: 'rules' }
   const model = opts.model || DEFAULT_MODEL
   try {
-    const out = (await callClaude({ apiKey: opts.apiKey, model }, ASSESS_SYSTEM, assessPrompt(input), ASSESS_SCHEMA, 'medium')) as { scores?: unknown }
-    return { scores: validateScores(out.scores, input), source: 'ai', model }
+    const { out, model: served } = await callClaude({ apiKey: opts.apiKey, model }, ASSESS_SYSTEM, assessPrompt(input), ASSESS_SCHEMA, 'medium')
+    return { scores: validateScores((out as { scores?: unknown }).scores, input), source: 'ai', model: served }
   } catch (error) {
     console.warn(`[assess] AI scoring unavailable (${await reasonOf(error)}); using rules.`)
     return { source: 'rules' }

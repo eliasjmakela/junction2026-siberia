@@ -85,7 +85,11 @@ export type Score = {
   /** The question the evidence comes from, when known. */
   question?: string
   rationale: string
+  /** True when the topic filter withheld the evidence: a person reads the answer instead. Left out of the overall score. */
+  withheld?: boolean
 }
+
+const WITHHELD = 'Evidence withheld by the topic filter. Read the answers to judge this attribute.'
 
 export type AssessmentResult = { scores: Score[]; source: Producer; model?: string }
 
@@ -110,19 +114,19 @@ export function scrub(text: unknown, max = 600): string {
  */
 const FORBIDDEN: RegExp[] = [
   // Age
-  /\bage\b|\baged\b|how old|\byoung(er)?\b|\bborn\b|birth|retire|\bikä|syntym|nuori/i,
+  /your age|how old|\bage (group|range|limit|requirement)|years old|date of birth|birth ?(date|year)|\bborn (in|on)\b|retirement age|\byoung(er)? (person|people|candidate|applicant)|\bikä|syntym|nuori/i,
   // Gender, sex, pregnancy, family status
-  /gender|\bsex\b|\bmale\b|female|\bwom[ae]n\b|pregnan|maternity|paternity|parental leave|your family|family (plans|status|situation)|\bchildren\b|\bkids?\b|childcare|married|marital|spouse|husband|wife|girlfriend|boyfriend|sukupuol|raskau|perhe|lapsi|lapse|naimisi|puoliso/i,
+  /gender|\bsex\b|\bmale\b|female|\bwom[ae]n\b|pregnan|maternity|paternity|parental leave|your family|family (plans|status|situation)|(your|have|has|with) (children|kids)|childcare|married|marital|spouse|husband|wife|girlfriend|boyfriend|sukupuol|raskau|perhe|lapsi|lapse|naimisi|puoliso/i,
   // Origin, nationality, ethnicity, native language
-  /ethnic|\brac(e|ial)\b|skin colou?r|nationalit|citizen|passport|country of origin|where are you from|immigra|native (speaker|language|finnish|english|swedish|tongue)|mother tongue|first language|heritage|etni|kansalais|syntyper|äidinkiel|maahanmuut|alkuperä/i,
+  /ethnic|\bracial\b|\brace (or|and) ethnic|your race|skin colou?r|nationalit|citizenship|are you a citizen|passport|country of origin|where are you from|immigra|native (speaker|language|finnish|english|swedish|tongue)|mother tongue|first language|heritage|etni|kansalais|syntyper|äidinkiel|maahanmuut|alkuperä/i,
   // Religion and beliefs, politics, union membership
   /religio|church|mosque|synagogue|\bfaith\b|\bpray|political (view|opinion|part)|\bvot(e|es|ing)\b|trade union|labou?r union|union member|uskon|kirkko|poliitt|ammattiliit/i,
   // Health and disability
-  /your health|\bhealthy\b|health (condition|issue|problem|status)|medical (condition|history|issue)|medicat|illness|\bsick|disab|diagnosed with|chronic (illness|condition|pain)|mental health|injur|handicap|wheelchair|terveydentil|sairau|sairas|vamma|lääkity/i,
+  /your health|health (condition|issue|problem|status)|medical (condition|history|issue)|medicat|illness|\bsick (leave|days|note)|been sick|disab|diagnosed with|chronic (illness|condition|pain)|mental health|your injur|handicap|wheelchair|terveydentil|sairau|sairas|vamma|lääkity/i,
   // Sexual orientation, biometrics, criminal records
-  /sexual|orientation|lgbt|\bgay\b|lesbian|biometric|fingerprint|photo of you|criminal|convict|police record|seksuaal|suuntautum|rikos|sormenjä/i,
+  /sexual|lgbt|\bgay\b|lesbian|biometric|fingerprint|photo of you|criminal|convict|police record|seksuaal|suuntautum|rikos|sormenjä/i,
   // Identifiers and contact details
-  /your (full )?name|e-?mail|phone number|home address|linkedin|social security|personal (id|identity)|henkilötunnus|nimesi|puhelin|sähköposti/i,
+  /your (full )?name|your e-?mail|e-?mail address|phone number|home address|linkedin|social security|personal (id|identity)|henkilötunnus|nimesi|puhelin|sähköposti/i,
 ]
 
 export function touchesForbidden(text: string): boolean {
@@ -180,7 +184,7 @@ export function validateQuestionSet(raw: unknown, brief: CompanyBrief): Omit<Que
     const name = clean(a.name, 60)
     const looksLike = clean(a.looks_like ?? a.looksLike, 220)
     const rawId = clean(a.id, 20)
-    if (name.length < 3 || looksLike.length < 10 || !rawId) continue
+    if (name.length < 2 || looksLike.length < 10 || !rawId) continue
     if (touchesForbidden(name) || touchesForbidden(looksLike)) continue
     if (seenNames.has(fold(name))) continue
     const sources: SourceRef[] = []
@@ -188,7 +192,7 @@ export function validateQuestionSet(raw: unknown, brief: CompanyBrief): Omit<Que
       const ref = (s && typeof s === 'object' ? s : {}) as Record<string, unknown>
       const src = byField.get(clean(ref.field, 30))
       const quote = trimQuote(clean(ref.quote, 240))
-      if (!src || quote.length < 3 || !fold(src.text).includes(fold(quote))) continue
+      if (!src || quote.length < 2 || !fold(src.text).includes(fold(quote))) continue
       if (sources.some((x) => x.field === src.field && fold(x.quote) === fold(quote))) continue
       sources.push({ field: src.field, label: src.label, quote })
       if (sources.length >= 3) break
@@ -205,7 +209,7 @@ export function validateQuestionSet(raw: unknown, brief: CompanyBrief): Omit<Que
   for (const item of Array.isArray(r.questions) ? r.questions : []) {
     if (questions.length >= MAX_QUESTIONS) break
     const q = (item && typeof item === 'object' ? item : {}) as Record<string, unknown>
-    const text = clean(q.text, 260)
+    const text = clean(q.text, 320)
     if (text.length < 15 || !/[?.]$/.test(text) || touchesForbidden(text) || seenQ.has(fold(text))) continue
     const attrs = [...new Set((Array.isArray(q.attributes) ? q.attributes : []).map((x) => idMap.get(clean(x, 20))).filter((x): x is string => Boolean(x)))]
     if (!attrs.length) continue
@@ -226,9 +230,13 @@ export function pruneSet<T extends { attributes: Attribute[]; questions: OpenQue
 
 /* ---------- Fixed-rule question set ---------- */
 
-const firstSentence = (s: string, max = 200) => {
-  const cut = s.length <= max ? s : s.slice(0, max).replace(/\s+\S*$/, '')
-  return cut.replace(/[.\s]+$/, '')
+/** The first clause of a company text, short enough to quote inside a question. */
+const firstSentence = (s: string, max = 120) => {
+  const sentence = s.split(/(?<=[.!?])\s/)[0]
+  if (sentence.length <= max) return sentence.replace(/[.\s]+$/, '')
+  const head = sentence.slice(0, max)
+  const cut = Math.max(head.lastIndexOf(', '), head.lastIndexOf(' and '), head.lastIndexOf(' when '), head.lastIndexOf(' because '))
+  return (cut > 40 ? head.slice(0, cut) : head.replace(/\s+\S*$/, '')).replace(/[,.\s]+$/, '')
 }
 
 /**
@@ -306,7 +314,7 @@ export function sanitizeAssessmentInput(raw: unknown): AssessmentInput | null {
   const questions: OpenQuestion[] = (Array.isArray(r.questions) ? r.questions : []).slice(0, MAX_QUESTIONS).flatMap((x) => {
     const q = (x && typeof x === 'object' ? x : {}) as Record<string, unknown>
     const id = clean(q.id, 8)
-    const text = clean(q.text, 260)
+    const text = clean(q.text, 320)
     const attrs = (Array.isArray(q.attributes) ? q.attributes : []).map((v) => clean(v, 8)).filter((v) => ids.has(v))
     return /^q\d$/.test(id) && text && attrs.length ? [{ id, text, attributes: attrs }] : []
   })
@@ -333,7 +341,8 @@ export function validateScores(raw: unknown, input: AssessmentInput): Score[] {
     const evidence = trimQuote(clean(found.evidence, 400))
     const rationale = clean(found.rationale, 280)
     if (typeof score !== 'number' || !Number.isInteger(score) || score < 0 || score > 10) return none
-    if (!evidence || evidence.length < 4 || touchesForbidden(evidence) || touchesForbidden(rationale)) return none
+    if (!evidence || evidence.length < 4) return none
+    if (touchesForbidden(evidence) || touchesForbidden(rationale)) return { ...none, rationale: WITHHELD, withheld: true }
     const linked = input.questions.filter((q) => q.attributes.includes(a.id)).map((q) => q.id)
     const order = [...linked, ...input.questions.map((q) => q.id).filter((id) => !linked.includes(id))]
     const question = order.find((qid) => fold(answerOf(qid)).includes(fold(evidence)))
@@ -377,9 +386,10 @@ export function rulesScores(input: AssessmentInput): Score[] {
         if (h > best.hits && sentence.trim().length >= 4) best = { sentence: sentence.trim(), hits: h, question: q.id }
       }
     }
-    if (!words || !best.sentence || touchesForbidden(best.sentence)) {
+    if (!words || !best.sentence) {
       return { attribute: a.id, score: null, evidence: '', rationale: 'No usable evidence in the answers.' }
     }
+    if (touchesForbidden(best.sentence)) return { attribute: a.id, score: null, evidence: '', rationale: WITHHELD, withheld: true }
     const raw = Math.min(1, words / 80) * 3 + Math.min(1, concrete / 5) * 4 + Math.min(1, hits / 4) * 3 - Math.min(3, stock)
     const score = Math.max(0, Math.min(10, Math.round(raw)))
     return {
@@ -392,10 +402,14 @@ export function rulesScores(input: AssessmentInput): Score[] {
   })
 }
 
-/** Mean over every attribute; an attribute without evidence counts as 0. */
+/**
+ * Mean over the attributes; an attribute without evidence counts as 0, and
+ * one whose evidence the topic filter withheld is left out for a person to judge.
+ */
 export function overallOf(scores: Score[]): number | null {
-  if (!scores.length) return null
-  return Math.round((scores.reduce((s, x) => s + (x.score ?? 0), 0) / scores.length) * 10) / 10
+  const counted = scores.filter((x) => !x.withheld)
+  if (!counted.length) return null
+  return Math.round((counted.reduce((s, x) => s + (x.score ?? 0), 0) / counted.length) * 10) / 10
 }
 
 /* ---------- Model contracts ---------- */

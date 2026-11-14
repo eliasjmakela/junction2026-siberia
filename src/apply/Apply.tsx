@@ -3,7 +3,7 @@ import { Arrow } from '../components/Arrow'
 import { SiteHeader } from '../components/SiteHeader'
 import { Sky } from '../components/Sky'
 import { ANSWER_MAX, MAX_PICKS } from '../event/core'
-import { deleteApplication, EVENT, newCode, newId, submitApplication, useEvent, type Application, type Listing } from '../event/store'
+import { deleteApplication, EVENT, newCode, newId, setKeyOf, submitApplication, useEvent, type Application, type Listing } from '../event/store'
 import { goalOf } from '../form/logic'
 import { GOALS } from '../form/schema'
 import { roleFingerprint, skyStars } from '../sky/input'
@@ -298,6 +298,7 @@ export function Apply() {
       ),
       email: email.trim(),
       consentAt: now,
+      sets: Object.fromEntries(picked.map((l) => [l.id, setKeyOf(l.set)])),
     }
     if (!submitApplication(app)) {
       setError('Could not submit the application. Try again.')

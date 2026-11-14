@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react'
 import type { Values } from '../form/schema'
 import { DEFAULT_SLOTS, overallOf, type CompanyBrief, type Producer, type QuestionSet, type Score, type Status } from './core'
 import { SAMPLE_APPLICATIONS, SAMPLE_LISTINGS } from './sample'
+import { SAMPLE_SCORES } from './sampleAssessments'
 
 /**
  * Event state for the shortlisting flow, kept in this browser's localStorage
@@ -40,6 +41,8 @@ export type Application = {
   /** Used only to send the invitation; never shown in rankings or sent to AI. */
   email: string
   consentAt: string
+  /** Fingerprint of each listing's questions when answered (setKeyOf), to notice republished questions. */
+  sets?: Record<string, string>
   sample?: boolean
 }
 
@@ -90,11 +93,26 @@ function read(): Stored {
 let snapshot: EventState | null = null
 const listeners = new Set<() => void>()
 
+const roleKey = (l: Pick<Listing, 'company' | 'title'>) => `${l.company}|${l.title}`.toLowerCase().replace(/\s+/g, ' ').trim()
+
+/** Hand-written assessments for the sample applicants, used until a pair is scored again. */
+const SAMPLE_ASSESSMENTS: Assessment[] = Object.entries(SAMPLE_SCORES).flatMap(([key, scores]) => {
+  const [applicationId, listingId] = key.split(':')
+  const listing = SAMPLE_LISTINGS.find((l) => l.id === listingId)
+  const app = SAMPLE_APPLICATIONS.find((a) => a.id === applicationId)
+  if (!listing || !app) return []
+  return [{ applicationId, listingId, scores, overall: overallOf(scores), source: 'sample' as const, assessedAt: app.submittedAt, setKey: setKeyOf(listing.set) }]
+})
+
 function derive(s: Stored): EventState {
   const hidden = new Set(s.hiddenSamples)
+  // A published role with the same company and title replaces its sample.
+  const published = new Set(s.listings.map(roleKey))
+  const stored = new Set(s.assessments.map((a) => pairKey(a.applicationId, a.listingId)))
   return {
     ...s,
-    allListings: [...s.listings, ...SAMPLE_LISTINGS.filter((l) => !hidden.has(l.id))],
+    assessments: [...s.assessments, ...SAMPLE_ASSESSMENTS.filter((a) => !hidden.has(a.applicationId) && !stored.has(pairKey(a.applicationId, a.listingId)))],
+    allListings: [...s.listings, ...SAMPLE_LISTINGS.filter((l) => !hidden.has(l.id) && !published.has(roleKey(l)))],
     allApplications: [...s.applications, ...SAMPLE_APPLICATIONS.filter((a) => !hidden.has(a.id))],
   }
 }
@@ -137,9 +155,12 @@ export function useEvent(): EventState {
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
 }
 
-export const pairKey = (applicationId: string, listingId: string) => `${applicationId}:${listingId}`
-export const setKeyOf = (set: Pick<QuestionSet, 'questions' | 'attributes'>) =>
-  JSON.stringify([set.attributes.map((a) => [a.id, a.name]), set.questions.map((q) => [q.id, q.text])])
+export function pairKey(applicationId: string, listingId: string) {
+  return `${applicationId}:${listingId}`
+}
+export function setKeyOf(set: Pick<QuestionSet, 'questions' | 'attributes'>) {
+  return JSON.stringify([set.attributes.map((a) => [a.id, a.name]), set.questions.map((q) => [q.id, q.text])])
+}
 
 export function slotsFor(state: EventState, listingId: string) {
   return state.slots[listingId] ?? DEFAULT_SLOTS
@@ -161,10 +182,21 @@ export function submitApplication(app: Application) {
 
 export function saveAssessment(a: Omit<Assessment, 'overall'>) {
   const full: Assessment = { ...a, overall: overallOf(a.scores) }
-  return update((s) => ({
+  return update((s) => {
+    // The application may have been deleted while it was being scored.
+    const exists = s.applications.some((x) => x.id === a.applicationId) || (SAMPLE_APPLICATIONS.some((x) => x.id === a.applicationId) && !s.hiddenSamples.includes(a.applicationId))
+    if (!exists) return s
+    return {
     ...s,
     assessments: [full, ...s.assessments.filter((x) => !(x.applicationId === a.applicationId && x.listingId === a.listingId))],
-  }))
+    }
+  })
+}
+
+/** True when the applicant answered an earlier version of this listing's questions. */
+export function answeredEarlier(app: Application, listing: Listing) {
+  const key = app.sets?.[listing.id]
+  return Boolean(key && key !== setKeyOf(listing.set))
 }
 
 export function setDecision(applicationId: string, listingId: string, decision: Decision | null) {

@@ -85,10 +85,11 @@ export async function requestAssessment(listing: Listing, answers: Record<string
     const data = (await post('/api/assess', { input })) as Partial<AssessmentResult> | null
     if (data && data.source === 'ai' && Array.isArray(data.scores)) {
       // Re-check on this side: evidence must still be verbatim and in bounds.
+      const raw = data.scores
       const scores = validateScores(
-        data.scores.map((s) => ({ ...s, score: s.score ?? -1 })),
+        raw.map((s) => ({ ...s, score: s.score ?? -1 })),
         input,
-      )
+      ).map((sc) => (sc.score === null && raw.find((x) => x.attribute === sc.attribute)?.withheld ? { ...sc, rationale: raw.find((x) => x.attribute === sc.attribute)!.rationale, withheld: true } : sc))
       return { scores, source: 'ai', model: data.model }
     }
   } catch {

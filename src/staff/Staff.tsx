@@ -3,6 +3,7 @@ import { SiteHeader } from '../components/SiteHeader'
 import { GOALS } from '../form/schema'
 import type { Attribute, Score } from '../event/core'
 import {
+  answeredEarlier,
   EVENT,
   deleteApplication,
   pairKey,
@@ -42,6 +43,7 @@ const invitesFor = (state: EventState, listingId: string) =>
   applicantsOf(state, listingId).filter((a) => decisionOf(state, a.id, listingId) === 'invite').length
 
 function ProducerTag({ a }: { a: Pick<Assessment, 'source' | 'model'> }) {
+  if (a.source === 'sample') return <span className="staff-tag">Sample assessment</span>
   return a.source === 'ai' ? (
     <span className="staff-tag staff-tag--ai">
       <b>AI-drafted</b>
@@ -53,7 +55,7 @@ function ProducerTag({ a }: { a: Pick<Assessment, 'source' | 'model'> }) {
 }
 
 /** One attribute score as a compact 0–10 bar with its number. */
-function ScoreBar({ score, name }: { score: number | null; name: string }) {
+function ScoreBar({ score, name, withheld }: { score: number | null; name: string; withheld?: boolean }) {
   return (
     <span className="staff-bar">
       <span className="staff-bar__label">{name}</span>
@@ -63,8 +65,8 @@ function ScoreBar({ score, name }: { score: number | null; name: string }) {
       <span className="staff-bar__value">
         {score === null ? (
           <>
-            <span aria-hidden="true">–</span>
-            <span className="visually-hidden">No evidence</span>
+            <span aria-hidden="true">{withheld ? '?' : '–'}</span>
+            <span className="visually-hidden">{withheld ? 'Evidence withheld, read the answers' : 'No evidence'}</span>
           </>
         ) : (
           <>
@@ -96,7 +98,7 @@ function AttributeDetail({ attribute, score, listing, answers }: { attribute: At
     <section className="staff-attr" aria-label={attribute.name}>
       <header className="staff-attr__head">
         <h4>{attribute.name}</h4>
-        {score && score.score !== null ? <p className="staff-attr__score">{score.score} / 10</p> : <p className="staff-gap">No evidence</p>}
+        {score && score.score !== null ? <p className="staff-attr__score">{score.score} / 10</p> : <p className="staff-gap">{score?.withheld ? 'Read the answers' : 'No evidence'}</p>}
       </header>
       <p className="staff-attr__looks">Strong answers show: {attribute.looksLike}</p>
       {score && <p className="staff-attr__rationale">{score.rationale}</p>}
@@ -274,7 +276,7 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
                   {i === slots && scored > slots && (
                     <tr className="staff-cutoff">
                       <td colSpan={cols}>
-                        <span>Event slots: {slots}</span>
+                        <span>{slots} event slots · for reference</span>
                       </td>
                     </tr>
                   )}
@@ -293,12 +295,17 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
                           <span className="visually-hidden"> of 10</span>
                         </span>
                       ) : (
-                        <span className="staff-gap">{scoring || isScoring(row.app.id, listing.id) ? 'Scoring…' : 'Not scored'}</span>
+                        <span className="staff-gap">
+                          {answeredEarlier(row.app, listing) ? 'Answered earlier questions' : scoring || isScoring(row.app.id, listing.id) ? 'Scoring…' : 'Not scored'}
+                        </span>
                       )}
                     </td>
                     {listing.set.attributes.map((a) => (
                       <td key={a.id} className="staff-table__attr">
-                        {row.assessment ? <ScoreBar name={a.name} score={row.assessment.scores.find((s) => s.attribute === a.id)?.score ?? null} /> : null}
+                        {row.assessment ? (() => {
+                          const s = row.assessment.scores.find((x) => x.attribute === a.id)
+                          return <ScoreBar name={a.name} score={s?.score ?? null} withheld={s?.withheld} />
+                        })() : null}
                       </td>
                     ))}
                     <td className="staff-table__decision">
@@ -395,13 +402,14 @@ export function Staff() {
   const { progress, score } = useScoring()
   const listings = state.allListings
   const [chosen, setChosen] = useState<string | null>(null)
-  const fallback = listings.find((l) => applicantsOf(state, l.id).length) ?? listings[0]
+  // The most recently published company role first, then the first role with applicants.
+  const fallback = state.listings[0] ?? listings.find((l) => applicantsOf(state, l.id).length) ?? listings[0]
   const listing = listings.find((l) => l.id === chosen) ?? fallback
 
   // Score every application for the selected role that has no current score.
   useEffect(() => {
     if (!listing) return
-    const pending = applicantsOf(state, listing.id).filter((app) => !isCurrent(assessmentOf(state, app.id, listing.id), listing))
+    const pending = applicantsOf(state, listing.id).filter((app) => !answeredEarlier(app, listing) && !isCurrent(assessmentOf(state, app.id, listing.id), listing))
     if (pending.length) void score(listing, pending)
   }, [state, listing, score])
 
@@ -434,7 +442,7 @@ export function Staff() {
           <li>Scores are drafted by AI from the applicant’s answers to that company’s questions, or estimated by fixed rules when AI is unavailable. Each score shows the quote it is based on.</li>
           <li>A person decides every invitation. Check the evidence before deciding: a score is a suggestion, never a decision.</li>
           <li>Scoring never sees e-mail addresses or application codes. Attributes come only from the company’s own description of the role.</li>
-          <li>An attribute without evidence counts as 0 in the overall score.</li>
+          <li>An attribute without evidence counts as 0 in the overall score. When the topic filter withholds the evidence, the attribute is left out of the overall score and shown as “Read the answers”.</li>
         </ul>
       </aside>
 
@@ -494,7 +502,7 @@ export function Staff() {
                 </span>
               </p>
             </div>
-            <button type="button" className="btn-quiet" disabled={Boolean(run)} onClick={() => void score(listing, applicantsOf(state, listing.id), true)}>
+            <button type="button" className="btn-quiet" disabled={Boolean(run)} onClick={() => void score(listing, applicantsOf(state, listing.id).filter((app) => !answeredEarlier(app, listing)), true)}>
               Score again
             </button>
           </div>
