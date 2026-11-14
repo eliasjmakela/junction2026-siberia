@@ -1,0 +1,212 @@
+/* The attendee-facing role page, shown as a sheet on the review screen. */
+.preview {
+  margin-top: var(--s-5);
+  max-width: 880px;
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: var(--s-6) var(--s-6) var(--s-5);
+}
+
+.preview__company {
+  font-size: var(--type-small);
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.preview__title {
+  margin-top: var(--s-1);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--type-display-l);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.preview__status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: 12px;
+  padding: var(--s-1) 10px;
+  background: var(--spruce);
+  color: var(--on-spruce);
+  font-size: var(--type-label);
+  font-weight: 600;
+  border-radius: var(--radius);
+}
+
+.preview__status .emblem {
+  fill: var(--lichen);
+  width: 12px;
+  height: 12px;
+}
+
+.preview__purpose {
+  margin-top: var(--s-3);
+  max-width: 62ch;
+  font-size: var(--type-body-l);
+}
+
+.preview__lead {
+  color: var(--ink-soft);
+}
+
+.preview__facts {
+  margin-top: var(--s-5);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-3) var(--s-4);
+  padding-top: var(--s-3);
+  border-top: var(--rule);
+}
+
+.preview__facts dt,
+.preview__pairs dt {
+  font-size: var(--type-label);
+  color: var(--ink-soft);
+}
+
+.preview__facts dd {
+  font-weight: 600;
+  font-size: var(--type-body);
+}
+
+.preview__fit {
+  margin-top: var(--s-5);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+}
+
+.fit {
+  padding: var(--s-4);
+  border-radius: var(--radius);
+}
+
+.fit h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--type-display-l-compact);
+  letter-spacing: -0.02em;
+}
+
+.fit ul {
+  margin-top: 12px;
+  list-style: none;
+  display: grid;
+  gap: var(--s-2);
+}
+
+.fit li {
+  position: relative;
+  padding-left: 20px;
+  line-height: 1.4;
+}
+
+.fit li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.45em;
+  width: 8px;
+  height: 8px;
+}
+
+.fit--yes {
+  background: var(--spruce);
+  color: var(--on-spruce);
+}
+
+.fit--yes h3 {
+  color: var(--lichen);
+}
+
+.fit--yes li::before {
+  background: var(--lichen);
+}
+
+.fit--no {
+  background: var(--granite-light);
+}
+
+.fit--no li::before {
+  border: 2px solid var(--ink-soft);
+}
+
+.fit__empty {
+  margin-top: 12px;
+  opacity: 0.8;
+}
+
+.preview__body {
+  margin-top: var(--s-5);
+  display: grid;
+  gap: var(--s-4);
+}
+
+.preview__body h3 {
+  font-size: var(--type-label);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+
+.preview__body p {
+  max-width: 68ch;
+}
+
+.preview__skills {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+
+.preview__skills h4 {
+  font-size: var(--type-small);
+  font-weight: 600;
+}
+
+.preview__small {
+  margin-top: var(--s-2);
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+.preview__pairs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px var(--s-4);
+}
+
+.preview__pairs dd {
+  font-weight: 600;
+}
+
+/* Honest gaps: dashed, like everything not decided yet. */
+.gap-tag {
+  display: inline-block;
+  padding: 0 6px;
+  border: 1px dashed var(--ink-soft);
+  border-radius: var(--radius);
+  font-size: var(--type-small);
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 900px) {
+  .preview {
+    padding: var(--s-4) var(--s-3);
+  }
+
+  .preview__facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .preview__fit,
+  .preview__skills,
+  .preview__pairs {
+    grid-template-columns: 1fr;
+  }
+}

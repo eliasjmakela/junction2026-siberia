@@ -1,20 +1,21 @@
-import { useId, useMemo, useRef, useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 import { Arrow, Emblem, IntentShape } from './components/IntentShape'
-import { DRILL_LENGTH, FIRST, GOALS, PATHS, type Goal, type Question } from './drill/questions'
+import { FieldView } from './form/fields'
+import { goalOf, intentSentence, isAnswered, missingOn, screenSummary, specificity } from './form/logic'
+import { RolePreview } from './form/RolePreview'
+import { ALL_FIELDS, GOALS, SCREENS, type Goal, type Value, type Values } from './form/schema'
 import './App.css'
 
-type Answer = { optionId?: string; text?: string }
-type Answers = Record<string, Answer>
-
 const EVENT = { name: 'Espoo Matchmaking Day', date: '4 Mar 2027' }
-const STORAGE_KEY = 'plainly:intent:v1'
+const STORAGE_KEY = 'plainly:role:v2'
+const REVIEW = SCREENS.length
 
-type Saved = { answers: Answers; savedAt: string }
+type Stored = { values: Values; savedAt: string }
 
-function loadSaved(): Saved | null {
+function loadStored(): Stored | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? (JSON.parse(raw) as Saved) : null
+    return raw ? (JSON.parse(raw) as Stored) : null
   } catch {
     return null
   }
@@ -24,164 +25,117 @@ function formatTime(iso: string) {
   return new Date(iso).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
 }
 
-function answerLabel(q: Question, a: Answer | undefined): string | null {
-  if (!a) return null
-  if (a.text?.trim()) return a.text.trim()
-  return q.options.find((o) => o.id === a.optionId)?.label ?? null
-}
-
-function isAnswered(a: Answer | undefined) {
-  return Boolean(a && (a.optionId || a.text?.trim()))
-}
-
-function lower(s: string | null) {
-  return s ? s.charAt(0).toLowerCase() + s.slice(1) : null
-}
-
-/** The answer as it reads inside the summary sentence. */
-function summaryLabel(q: Question, a: Answer | undefined): string | null {
-  if (!a) return null
-  if (a.text?.trim()) return lower(a.text.trim())
-  const o = q.options.find((x) => x.id === a.optionId)
-  return o ? (o.summary ?? lower(o.label)) : null
-}
-
-function intentSentence(goal: Goal | null, seq: Question[], answers: Answers): { lead: string; rest: string } {
-  const get = (id: string) => {
-    const q = seq.find((x) => x.id === id)
-    return q ? summaryLabel(q, answers[id]) : null
-  }
-  if (!goal) return { lead: 'No goal yet.', rest: 'Your intent appears here as you answer.' }
-  if (goal === 'need') {
-    const parts = [get('role'), get('headcount') && `${get('headcount')} of them`, get('start')].filter(Boolean)
-    return { lead: 'Hire for a specific need', rest: parts.length ? `: ${parts.join(', ')}.` : '.' }
-  }
-  if (goal === 'visibility') {
-    const who = get('who')
-    const what = get('what')
-    const rest = [who && ` by ${who}`, what && `, remembered for ${what}`].filter(Boolean).join('')
-    return { lead: 'Be seen', rest: `${rest}.` }
-  }
-  const good = get('good')
-  const team = get('teams')
-  const rest = [good && `: ${good}`, team && `, in ${team}`].filter(Boolean).join('')
-  return { lead: 'Hire in general', rest: `${rest}.` }
+function focusFirstIn(id: string) {
+  const el = document
+    .getElementById(id)
+    ?.querySelector<HTMLElement>('input:not([disabled]), textarea:not([disabled]), button:not([disabled])')
+  el?.focus()
 }
 
 export default function App() {
-  const [initial] = useState(loadSaved)
-  const [answers, setAnswers] = useState<Answers>(initial?.answers ?? {})
-  // A restored intent opens on its summary.
-  const [index, setIndex] = useState(initial ? Number.MAX_SAFE_INTEGER : 0)
-  const [error, setError] = useState<string | null>(null)
+  const [initial] = useState(loadStored)
+  const [values, setValues] = useState<Values>(initial?.values ?? {})
+  // A restored role opens on its review.
+  const [index, setIndex] = useState(initial ? REVIEW : 0)
+  const [invalid, setInvalid] = useState<Set<string>>(new Set())
+  const [visited, setVisited] = useState<Set<string>>(new Set(initial ? SCREENS.map((s) => s.id) : []))
   const [changed, setChanged] = useState<Set<string>>(new Set())
-  const [submitted, setSubmitted] = useState<Set<string>>(new Set())
   const [savedAt, setSavedAt] = useState<string | null>(initial?.savedAt ?? null)
   const [submitError, setSubmitError] = useState(false)
-  const firstInput = useRef<HTMLInputElement>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
-  const ownId = useId()
 
-  const goal = (FIRST.options.find((o) => o.id === answers[FIRST.id]?.optionId)?.goal ?? null) as Goal | null
-  const seq = useMemo<Question[]>(() => (goal ? [FIRST, ...PATHS[goal]] : [FIRST]), [goal])
-  const pathAnswered = goal ? PATHS[goal].filter((q) => isAnswered(answers[q.id])).length : 0
-  const specificity = goal ? pathAnswered / PATHS[goal].length : 0
-  const answeredCount = seq.filter((q) => isAnswered(answers[q.id])).length
-  const done = goal !== null && answeredCount === seq.length && index >= seq.length
-  const q = seq[Math.min(index, seq.length - 1)]
-  const current = answers[q.id]
-  const sentence = intentSentence(goal, seq, answers)
+  const goal = goalOf(values)
+  const spec = goal ? specificity(values) : 0
+  const sentence = intentSentence(values)
+  const onReview = index >= REVIEW
+  const screen = SCREENS[Math.min(index, REVIEW - 1)]
+  const isDone = (i: number) => visited.has(SCREENS[i].id) && missingOn(SCREENS[i], values).length === 0
+  const doneCount = SCREENS.filter((_, i) => isDone(i)).length
+  const lastToFill = SCREENS.every((_, i) => i === index || isDone(i))
 
-  function focusQuestion() {
+  function goTo(i: number) {
+    setInvalid(new Set())
+    setIndex(i)
+    window.scrollTo({ top: 0 })
     requestAnimationFrame(() => headingRef.current?.focus())
   }
 
-  function setAnswer(next: Answer) {
-    setError(null)
+  function setField(id: string, v: Value) {
+    setValues((prev) => ({ ...prev, [id]: v }))
     setSavedAt(null)
-    setAnswers((prev) => {
-      const out = { ...prev, [q.id]: next }
-      // Changing the goal changes the path: drop answers the new path does not ask.
-      if (q.id === FIRST.id && next.optionId !== prev[FIRST.id]?.optionId) {
-        const g = FIRST.options.find((o) => o.id === next.optionId)?.goal
-        const keep = new Set([FIRST.id, ...(g ? PATHS[g].map((x) => x.id) : [])])
-        for (const k of Object.keys(out)) if (!keep.has(k)) delete out[k]
-      }
-      return out
+    setInvalid((prev) => {
+      if (!prev.has(id)) return prev
+      const next = new Set(prev)
+      next.delete(id)
+      return next
     })
-    if (submitted.has(q.id)) setChanged((prev) => new Set(prev).add(q.id))
+    const owner = SCREENS.find((s) => s.fields.some((f) => f.id === id))
+    if (owner && visited.has(owner.id)) setChanged((prev) => new Set(prev).add(owner.id))
   }
 
-  function submit(e: FormEvent) {
+  function next(e: FormEvent) {
     e.preventDefault()
-    if (!isAnswered(current)) {
-      setError(q.allowOwnWords ? 'Choose an answer or write your own to continue.' : 'Choose an answer to continue.')
-      firstInput.current?.focus()
+    const missing = missingOn(screen, values)
+    if (missing.length) {
+      setInvalid(new Set(missing.map((f) => f.id)))
+      focusFirstIn(`field-${missing[0].id}`)
       return
     }
-    setSubmitted((prev) => new Set(prev).add(q.id))
-    // Go to the first unanswered question after this one, then any earlier gap, or finish.
-    const nextIndex = seq.findIndex((x, i) => i > index && !isAnswered(answers[x.id]))
-    const firstGap = seq.findIndex((x) => !isAnswered(answers[x.id]))
-    setIndex(nextIndex !== -1 ? nextIndex : firstGap !== -1 ? firstGap : seq.length)
-    focusQuestion()
+    setVisited((prev) => new Set(prev).add(screen.id))
+    const after = SCREENS.findIndex((_, i) => i > index && !isDone(i))
+    goTo(after === -1 ? REVIEW : after)
   }
 
   function back() {
-    setError(null)
-    setIndex((i) => Math.max(0, Math.min(i, seq.length) - 1))
-    focusQuestion()
+    goTo(Math.max(0, Math.min(index, REVIEW) - 1))
   }
 
-  function edit(i: number) {
-    setError(null)
-    setIndex(i)
-    focusQuestion()
-  }
-
-  function submitIntent() {
+  function submit() {
     const at = new Date().toISOString()
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers, savedAt: at } satisfies Saved))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ values, savedAt: at } satisfies Stored))
       setSubmitError(false)
       setSavedAt(at)
+      setChanged(new Set())
     } catch {
       setSubmitError(true)
     }
   }
 
-  function restart() {
+  function addAnotherRole() {
     try {
       localStorage.removeItem(STORAGE_KEY)
     } catch {
       /* storage unavailable: nothing to clear */
     }
-    setAnswers({})
+    // Company answers are shared by every role, so they carry over.
+    const kept: Values = {}
+    for (const f of ALL_FIELDS) if (f.company && values[f.id]) kept[f.id] = values[f.id]
+    setValues(kept)
+    setVisited(new Set())
     setChanged(new Set())
-    setSubmitted(new Set())
     setSavedAt(null)
-    setError(null)
-    setIndex(0)
-    focusQuestion()
+    setSubmitError(false)
+    goTo(0)
   }
 
-  const progressTotal = goal ? seq.length : DRILL_LENGTH
+  const anyAnswer = ALL_FIELDS.some((f) => isAnswered(f, values[f.id]))
 
   return (
     <div className="shell">
-      <aside className="field" aria-label="Your intent">
+      <aside className="field" aria-label="Your role">
         <div className="field__brand">
           <span className="wordmark">Plainly</span>
           <span className="field__tagline">for Espoo recruitment events</span>
         </div>
         <div className="field__figure">
-          <IntentShape goal={goal} specificity={done ? 1 : specificity} />
+          <IntentShape goal={goal} specificity={spec} />
         </div>
         <p className="intent" aria-live="polite">
           {goal ? <em>{sentence.lead}</em> : sentence.lead}
           <span className={goal ? undefined : 'intent__quiet'}>{goal ? sentence.rest : ` ${sentence.rest}`}</span>
         </p>
-        <ul className="legend" aria-label="The three goals">
+        <ul className="legend" aria-label="Role status">
           {(Object.keys(GOALS) as Goal[]).map((g) => (
             <li key={g} className={g === goal ? 'is-on' : undefined} aria-current={g === goal ? 'true' : undefined}>
               <Emblem goal={g} />
@@ -194,14 +148,14 @@ export default function App() {
       <main className="work">
         <header className="topbar">
           <nav aria-label="Sections" className="tabs">
-            <a href="#drill" aria-current="page">
-              Drill
+            <a href="#form" aria-current="page">
+              Role
             </a>
             <span aria-disabled="true">
               Events <small>soon</small>
             </span>
             <span aria-disabled="true">
-              Company profile <small>soon</small>
+              Company page <small>soon</small>
             </span>
           </nav>
           <p className="event-chip">
@@ -209,90 +163,69 @@ export default function App() {
           </p>
         </header>
 
-        <div className="progress" aria-label={`${Math.min(answeredCount, progressTotal)} of ${progressTotal} answered`}>
+        <div className="progress" aria-label={`${doneCount} of ${SCREENS.length} steps complete`}>
           <ol className="progress__bars" aria-hidden="true">
-            {Array.from({ length: progressTotal }, (_, i) => (
-              <li
-                key={i}
-                className={
-                  !done && i === index ? 'is-current' : isAnswered(answers[seq[i]?.id ?? '']) ? 'is-done' : undefined
-                }
-              />
+            {SCREENS.map((s, i) => (
+              <li key={s.id} className={!onReview && i === index ? 'is-current' : isDone(i) ? 'is-done' : undefined} />
             ))}
           </ol>
-          <span>{done ? 'All answered' : `Question ${index + 1} of ${progressTotal}`}</span>
+          <span>{onReview ? 'Review' : `Step ${index + 1} of ${SCREENS.length}`}</span>
         </div>
 
-        {done ? (
-          <section className="result" id="drill" aria-labelledby="result-title">
-            <h1 id="result-title" ref={headingRef} tabIndex={-1}>
-              <Emblem goal={goal} size={32} />
-              {sentence.lead}
-              {sentence.rest}
+        {onReview ? (
+          <section className="review" id="form" aria-labelledby="review-title">
+            <h1 id="review-title" ref={headingRef} tabIndex={-1}>
+              Review your role page
             </h1>
             <p className="hint">
-              Summary for {EVENT.name}. You can change any answer below before submitting.
+              This is how the role appears to attendees of {EVENT.name}. You can change any step before submitting.
             </p>
-            <div className="actions">
-              <button type="button" className="btn" onClick={submitIntent} disabled={savedAt !== null}>
-                {savedAt ? 'Submitted' : 'Submit intent'} {!savedAt && <Arrow />}
+            <RolePreview values={values} />
+            <div className="actions actions--review">
+              <button type="button" className="btn" onClick={submit} disabled={savedAt !== null}>
+                {savedAt ? 'Submitted' : 'Submit role'} {!savedAt && <Arrow />}
               </button>
-              <button type="button" className="btn-quiet" onClick={restart}>
-                Start over
-              </button>
+              {savedAt ? (
+                <button type="button" className="btn-quiet" onClick={addAnotherRole}>
+                  Add another role
+                </button>
+              ) : (
+                <button type="button" className="btn-quiet" onClick={back}>
+                  Back
+                </button>
+              )}
             </div>
             <p className="status" role="status">
               {submitError
-                ? 'Could not submit your intent. Try again.'
+                ? 'Could not submit the role. Try again.'
                 : savedAt
-                  ? `Intent submitted ${formatTime(savedAt)}. Change an answer to submit an update.`
+                  ? `Role submitted ${formatTime(savedAt)}. Change an answer to submit an update.`
                   : ''}
             </p>
           </section>
         ) : (
-          <form className="question" id="drill" onSubmit={submit} noValidate>
-            <h1 id="q-title" ref={headingRef} tabIndex={-1}>
-              {q.prompt}
+          <form className="question" id="form" onSubmit={next} noValidate>
+            <h1 ref={headingRef} tabIndex={-1}>
+              {screen.title}
             </h1>
-            {q.hint && <p className="hint">{q.hint}</p>}
-            <fieldset aria-labelledby="q-title" aria-describedby={error ? 'q-error' : undefined}>
-              <div className={`options${q.options.length === 3 ? ' options--three' : ''}`}>
-                {q.options.map((o, i) => (
-                  <label key={o.id} className="option">
-                    <input
-                      ref={i === 0 ? firstInput : undefined}
-                      type="radio"
-                      name={q.id}
-                      value={o.id}
-                      checked={current?.optionId === o.id && !current?.text?.trim()}
-                      onChange={() => setAnswer({ optionId: o.id })}
-                    />
-                    <span>{o.label}</span>
-                  </label>
-                ))}
-              </div>
-              {q.allowOwnWords && (
-                <div className="own">
-                  <label htmlFor={ownId} className="visually-hidden">
-                    Or answer in your own words
-                  </label>
-                  <input
-                    id={ownId}
-                    type="text"
-                    autoComplete="off"
-                    placeholder="Or say it in your own words"
-                    value={current?.text ?? ''}
-                    onChange={(e) => setAnswer({ text: e.target.value })}
-                  />
-                </div>
-              )}
-            </fieldset>
-            <p className="error" id="q-error" role="alert">
-              {error}
+            {screen.hint && <p className="hint">{screen.hint}</p>}
+            <p className="error" role="alert">
+              {invalid.size === 0 ? '' : invalid.size === 1 ? 'One answer is missing.' : `${invalid.size} answers are missing.`}
             </p>
+            <div className="fields">
+              {screen.fields.map((f) => (
+                <FieldView
+                  key={f.id}
+                  field={f}
+                  value={values[f.id]}
+                  invalid={invalid.has(f.id)}
+                  onChange={(v) => setField(f.id, v)}
+                />
+              ))}
+            </div>
             <div className="actions">
               <button type="submit" className="btn">
-                {index === seq.length - 1 && goal ? 'See your intent' : 'Next question'} <Arrow />
+                {lastToFill ? 'Review role page' : 'Next'} <Arrow />
               </button>
               <button type="button" className="btn-quiet" onClick={back} disabled={index === 0}>
                 Back
@@ -303,7 +236,7 @@ export default function App() {
 
         <section className="ledger" aria-labelledby="ledger-title">
           <h2 id="ledger-title">Your answers</h2>
-          {answeredCount === 0 ? (
+          {!anyAnswer && visited.size === 0 ? (
             <p className="ledger__empty">No answers yet.</p>
           ) : (
             <table>
@@ -315,30 +248,32 @@ export default function App() {
               </colgroup>
               <thead className="visually-hidden">
                 <tr>
-                  <th scope="col">Number</th>
-                  <th scope="col">Question</th>
-                  <th scope="col">Your answer</th>
+                  <th scope="col">Step</th>
+                  <th scope="col">Section</th>
+                  <th scope="col">Your answers</th>
                   <th scope="col">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {seq.map((sq, i) =>
-                  isAnswered(answers[sq.id]) ? (
-                    <tr key={sq.id} className={!done && i === index ? 'is-current' : undefined}>
+                {SCREENS.map((s, i) => {
+                  const summary = screenSummary(s, values)
+                  if (!visited.has(s.id) && !summary) return null
+                  return (
+                    <tr key={s.id} className={!onReview && i === index ? 'is-current' : undefined}>
                       <td className="ledger__n">{i + 1}</td>
-                      <td className="ledger__q">{sq.prompt}</td>
+                      <td className="ledger__q">{s.name}</td>
                       <td className="ledger__a">
-                        {answerLabel(sq, answers[sq.id])}
-                        {changed.has(sq.id) && <span className="tag">changed</span>}
+                        <span className="ledger__clamp">{summary || 'Not answered yet'}</span>
+                        {changed.has(s.id) && <span className="tag">changed</span>}
                       </td>
                       <td className="ledger__edit">
-                        <button type="button" onClick={() => edit(i)} aria-label={`Change answer to: ${sq.short}`}>
+                        <button type="button" onClick={() => goTo(i)} aria-label={`Change: ${s.name}`}>
                           Change
                         </button>
                       </td>
                     </tr>
-                  ) : null,
-                )}
+                  )
+                })}
               </tbody>
             </table>
           )}

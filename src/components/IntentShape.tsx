@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { H, SHAPES, W, blurFor, easeOutExpo, lerpShape, shapeFor, toPoints, type Pt } from '../drill/shapes'
-import type { Goal } from '../drill/questions'
+import type { Goal } from '../form/schema'
 import './IntentShape.css'
 
 type Props = {
@@ -77,9 +77,9 @@ export function IntentShape({ goal, specificity, className }: Props) {
       <polygon ref={polyRef} className="intent-shape__ink" points={initialPoints} filter={`url(#${filterId})`} />
       {/* Before any answer: the three possible cuts, marked on the stock like a pattern. */}
       <g className={`intent-shape__guides${goal ? ' is-hidden' : ''}`}>
-        <polygon points={toPoints(SHAPES.visibility)} />
-        <polygon points={toPoints(SHAPES.need)} />
-        <polygon points={toPoints(SHAPES.general)} />
+        <polygon points={toPoints(SHAPES.now)} />
+        <polygon points={toPoints(SHAPES.soon)} />
+        <polygon points={toPoints(SHAPES.pipeline)} />
       </g>
     </svg>
   )
@@ -98,9 +98,9 @@ export function Arrow() {
 export function Emblem({ goal, size = 16 }: { goal: Goal; size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" aria-hidden="true" focusable="false" className="emblem">
-      {goal === 'visibility' && <circle cx="8" cy="8" r="7" />}
-      {goal === 'need' && <path d="M1 2 L15 8 L1 14 Z" />}
-      {goal === 'general' && <rect x="1" y="5" width="14" height="6" />}
+      {goal === 'now' && <path d="M1 2 L15 8 L1 14 Z" />}
+      {goal === 'soon' && <path d="M1 2 L15 6 L15 10 L1 14 Z" />}
+      {goal === 'pipeline' && <rect x="1" y="5" width="14" height="6" />}
     </svg>
   )
 }

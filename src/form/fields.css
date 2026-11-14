@@ -1,0 +1,513 @@
+/* ---------- Field frame ---------- */
+.qfield {
+  border: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.qfield + .qfield {
+  margin-top: var(--s-5);
+}
+
+.qfield__label {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  padding: 0;
+  font-size: var(--type-body-l);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.qfield__optional {
+  font-size: var(--type-micro);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.qfield__hint {
+  margin-top: var(--s-1);
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+.qfield__label + .chips,
+.qfield__label + .input,
+.qfield__label + .qfield__row,
+.qfield__label + .scale,
+.qfield__label + .skills,
+.qfield__hint + .chips,
+.qfield__hint + .input,
+.qfield__hint + .qfield__row,
+.qfield__hint + .skills {
+  margin-top: 12px;
+}
+
+.qfield__sub {
+  margin-top: var(--s-2);
+}
+
+.qfield__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+}
+
+.qfield__error {
+  margin-top: var(--s-2);
+  font-size: var(--type-small);
+  font-weight: 600;
+  color: var(--rowan);
+}
+
+/* ---------- Chips: radio and checkbox choices ---------- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 var(--s-3) 0 14px;
+  background: var(--granite-light);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  font-size: var(--type-body);
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    background-color var(--t-fast) var(--ease-out);
+}
+
+.chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chip__mark {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--ink-soft);
+  border-radius: 50%;
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    background-color var(--t-fast) var(--ease-out);
+}
+
+.chip--multi .chip__mark {
+  border-radius: 0;
+}
+
+.chip:hover {
+  border-color: var(--granite-line);
+  background: var(--white);
+}
+
+.chip:has(input:checked),
+.chip[aria-pressed='true'] {
+  background: var(--white);
+  border-color: var(--spruce);
+}
+
+.chip:has(input:checked) .chip__mark,
+.chip[aria-pressed='true'] .chip__mark {
+  border-color: var(--spruce);
+  background: var(--lichen);
+}
+
+.chip:has(input:focus-visible) {
+  outline: var(--focus);
+  outline-offset: 2px;
+}
+
+/* "Not decided yet": dashed, because dashed means not yet. */
+.chip--undecided {
+  background: transparent;
+  border: 2px dashed var(--granite-line);
+  color: var(--ink-soft);
+  font-family: inherit;
+}
+
+.chip--undecided .chip__mark {
+  border-style: dashed;
+  border-radius: 0;
+}
+
+.chip--undecided:hover {
+  background: transparent;
+  border-color: var(--ink-soft);
+}
+
+.chip--undecided[aria-pressed='true'] {
+  border-style: dashed;
+  color: var(--ink);
+}
+
+/* ---------- Text inputs ---------- */
+.input {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  min-height: var(--s-7);
+  padding: 12px var(--s-3);
+  background: var(--granite-light);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  font-size: var(--type-body);
+  line-height: 1.4;
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    background-color var(--t-fast) var(--ease-out);
+}
+
+.input--area {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.input--date {
+  width: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.input::placeholder {
+  color: var(--ink-soft);
+}
+
+.input:hover:not(:disabled) {
+  border-color: var(--granite-line);
+}
+
+.input:focus {
+  outline: none;
+  background: var(--white);
+  border-color: var(--spruce);
+}
+
+.input:disabled {
+  background: transparent;
+  border: 2px dashed var(--granite-line);
+  cursor: not-allowed;
+}
+
+.qfield.is-invalid .input,
+.qfield.is-invalid .stepper,
+.qfield.is-invalid .money {
+  border-color: var(--rowan);
+}
+
+/* ---------- Number stepper ---------- */
+.stepper {
+  display: inline-flex;
+  align-items: stretch;
+  height: var(--s-7);
+  background: var(--granite-light);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+}
+
+.stepper:focus-within {
+  border-color: var(--spruce);
+  background: var(--white);
+}
+
+.stepper button {
+  width: var(--s-7);
+  display: grid;
+  place-items: center;
+  fill: var(--spruce);
+}
+
+.stepper button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.stepper button:hover:not(:disabled) {
+  background: var(--granite);
+}
+
+.stepper button:disabled {
+  fill: var(--granite-line);
+  cursor: not-allowed;
+}
+
+.stepper input {
+  width: 56px;
+  border: 0;
+  background: transparent;
+  text-align: center;
+  font-size: var(--type-body-l);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.stepper input::-webkit-inner-spin-button,
+.stepper input::-webkit-outer-spin-button,
+.money input::-webkit-inner-spin-button,
+.money input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stepper input:focus {
+  outline: none;
+}
+
+.stepper.is-off {
+  background: transparent;
+  border: 2px dashed var(--granite-line);
+}
+
+/* ---------- Solo / team scale ---------- */
+.scale {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  max-width: 640px;
+}
+
+.scale__end {
+  flex: none;
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+.scale__steps {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--s-1);
+}
+
+.scale__step {
+  position: relative;
+  height: var(--s-6);
+  background: var(--granite-light);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    background-color var(--t-fast) var(--ease-out);
+}
+
+.scale__step input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.scale__step:hover {
+  border-color: var(--granite-line);
+}
+
+.scale__step:has(input:checked) {
+  background: var(--spruce);
+  border-color: var(--spruce);
+  box-shadow: inset 0 -6px 0 var(--lichen);
+}
+
+.scale__step:has(input:focus-visible) {
+  outline: var(--focus);
+  outline-offset: 2px;
+}
+
+/* ---------- Salary ---------- */
+.salary {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.salary__to {
+  color: var(--ink-soft);
+}
+
+.money {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--s-7);
+  padding: 0 12px 0 14px;
+  background: var(--granite-light);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.money:focus-within {
+  background: var(--white);
+  border-color: var(--spruce);
+}
+
+.money input {
+  width: 96px;
+  border: 0;
+  background: transparent;
+  font-size: var(--type-body);
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.money input:focus {
+  outline: none;
+}
+
+.money:has(input:disabled) {
+  background: transparent;
+  border: 2px dashed var(--granite-line);
+}
+
+/* ---------- Skill sorter ---------- */
+.skills__add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  max-width: 880px;
+}
+
+.skills__add .input {
+  flex: 1 1 280px;
+  max-width: none;
+}
+
+.skills__buttons {
+  display: flex;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+
+.btn-chip {
+  min-height: var(--s-7);
+  padding: 0 var(--s-3);
+  background: var(--spruce);
+  color: var(--on-spruce);
+  font-size: var(--type-small);
+  font-weight: 600;
+  border-radius: var(--radius);
+  transition: background-color var(--t-fast) var(--ease-out);
+}
+
+.btn-chip:hover:not(:disabled) {
+  background: var(--spruce-raised);
+}
+
+.btn-chip:disabled {
+  background: var(--granite-light);
+  color: var(--ink-soft);
+  cursor: not-allowed;
+}
+
+.skills__lists {
+  margin-top: var(--s-3);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-3);
+  max-width: 880px;
+}
+
+.skills__list {
+  border-top: var(--rule);
+  padding-top: 10px;
+}
+
+.skills__list h3 {
+  font-size: var(--type-label);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.skills__list ul {
+  list-style: none;
+  margin-top: var(--s-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.skills__empty {
+  margin-top: var(--s-2);
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+.tag-skill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding-left: 10px;
+  background: var(--white);
+  border: 2px solid var(--spruce);
+  border-radius: var(--radius);
+  font-size: var(--type-small);
+  font-weight: 600;
+}
+
+.tag-skill button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  fill: var(--ink-soft);
+}
+
+.tag-skill button:hover {
+  fill: var(--rowan);
+}
+
+.tag-skill svg {
+  width: 12px;
+  height: 12px;
+}
+
+.skills.is-off .skills__lists {
+  opacity: 0.5;
+}
+
+@media (max-width: 900px) {
+  .skills__lists {
+    grid-template-columns: 1fr;
+    gap: var(--s-2);
+  }
+
+  .scale {
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .scale__steps {
+    order: 3;
+    flex-basis: 100%;
+  }
+
+  .scale__end:last-child {
+    margin-left: auto;
+  }
+
+  .salary {
+    flex-wrap: wrap;
+  }
+}

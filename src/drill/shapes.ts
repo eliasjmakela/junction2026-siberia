@@ -1,4 +1,4 @@
-import type { Goal } from './questions'
+import type { Goal } from '../form/schema'
 
 /** Shape canvas: 400 x 320, on the 8px module. */
 export const W = 400
@@ -30,28 +30,18 @@ const L = PAD
 const R = W - PAD
 const T = PAD
 const B = H - PAD
-const CX = W / 2
 const CY = H / 2
 
 const blunt = quad([L, T], [R, T], [R, B], [L, B])
 const band = quad([L, CY - 48], [R, CY - 48], [R, CY + 48], [L, CY + 48])
 const wedge = quad([L, T + 32], [R, CY], [R, CY], [L, B - 32])
-
-function circle(): Pt[] {
-  const r = 144
-  const pts: Pt[] = []
-  for (let i = 0; i < N; i++) {
-    const a = (-3 * Math.PI) / 4 + (i / N) * Math.PI * 2
-    pts.push([CX + r * Math.cos(a), CY + r * Math.sin(a)])
-  }
-  return pts
-}
+const blunted = quad([L, T + 32], [R, CY - 40], [R, CY + 40], [L, B - 32])
 
 export const SHAPES: Record<'blunt' | Goal, Pt[]> = {
   blunt,
-  visibility: circle(),
-  need: wedge,
-  general: band,
+  now: wedge,
+  soon: blunted,
+  pipeline: band,
 }
 
 export function lerpShape(a: Pt[], b: Pt[], t: number): Pt[] {

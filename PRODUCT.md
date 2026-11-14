@@ -16,10 +16,7 @@ Secondary (implied by the challenge, not yet designed for): the talent those com
 
 Built for the Junction 2026 hackathon, City of Espoo challenge: *"How can recruitment and matchmaking events organized by City of Espoo help companies and talent relevantly find and connect with each other, despite AI-generated job search materials and AI-assisted recruitment processes becoming common?"*
 
-The tool drills a company on what it actually wants from an event before it attends:
-- name recognition and visibility,
-- recruiting for a specific need it has now or expects soon, or
-- recruiting in general.
+The tool has a company describe each role plainly before the event: whether it is open now, opening soon, or a talent pipeline, what the first month and a normal day look like, which skills are must-have versus teachable, language, location and relocation terms. Attendees then see at a glance whether a role is for them.
 
 Typical job fairs fail because they are aimless and nobody really benefits. Success means a company arrives at an Espoo event knowing its goal, and the event can match it with the right people because of that clarity.
 
@@ -35,13 +32,18 @@ Most recruitment tools optimize the candidate side or automate screening. This o
 
 ## Capabilities and Constraints
 
-- Core capability: an interactive drill or interview that narrows a company's intent into one of the three goals above, with specifics.
+- Core capability: a company form with guiding questions and answer chips, filled in once per role (about 8 minutes). Company answers (name, size and stage, who thrives here) are asked once and carried over to every role.
+- The form's first question sets the role status: open now, opening soon, or talent pipeline.
+- Every required question can be answered "Not decided yet"; the role page shows these as honest gaps instead of filler.
+- Output: a role page generated from the answers by one template, including "You'd fit if" and "Probably not for you if" lists assembled by fixed rules (no LLM).
+- Planned next: an event page listing all companies with filters (skills, language, remote, relocation); optionally, pasting a job ad to have an LLM draft answers for the company to correct.
+- Hard limit: a company finishes one role in 10 minutes at most. Question count and question types are chosen for that budget.
 - Stack: React 19 + TypeScript + Vite (already scaffolded).
-- Undecided: what the drill outputs (a profile, a match list, an event plan), whether talent sees anything, how matching works, and the language set (Finnish, Swedish, English).
+- Undecided: how attendees are matched to roles, and the language set (Finnish, Swedish, English).
 
 ## Brand Commitments
 
-- Product name: **Plainly**.
+- Product name: **Plainly**. Tagline from the team's brief: "Just say it plainly."
 - Own product identity that clearly belongs in Espoo, without copying the city's official visual identity or logo.
 - User requirement: the design language must not look like generic AI-generated UI.
 
