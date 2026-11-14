@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@700&family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--spruce:#173a30;--lichen:#e4cb3a;--granite:#d6d9d5;--granite-light:#f0f2ef;--line:#c4c8c3;--ink:#121614;--ink-soft:#464b47;--on:#eef0ec;--dur:900ms;--bg:#173a30;--ink-mark:#e4cb3a;--star:#eef0ec}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Schibsted Grotesk",system-ui,sans-serif;background:var(--granite);color:var(--ink);display:grid;grid-template-columns:340px minmax(0,1fr);min-height:100vh}
+aside{background:var(--granite-light);padding:24px;overflow:auto;max-height:100vh;position:sticky;top:0}
+h1{font-family:"Familjen Grotesk";font-size:28px;letter-spacing:-.02em;line-height:1}
+.sub{font-size:13px;color:var(--ink-soft);margin-top:6px}
+fieldset{border:0;border-top:1px solid var(--line);padding-top:14px;margin-top:16px}
+legend{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);padding-right:8px}
+.row{display:grid;grid-template-columns:120px 1fr 44px;align-items:center;gap:8px;margin-top:8px;font-size:13px}
+.row input[type=range]{width:100%;accent-color:var(--spruce)}
+.row output{font-variant-numeric:tabular-nums;text-align:right;color:var(--ink-soft)}
+.seg{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.seg button,.preset{font:inherit;font-size:13px;font-weight:500;padding:6px 10px;background:#fff;border:2px solid transparent;border-radius:2px;cursor:pointer}
+.seg button[aria-pressed=true]{border-color:var(--spruce)}
+.check{display:flex;gap:8px;align-items:center;font-size:13px;margin-top:8px}
+.check input{accent-color:var(--spruce)}
+main{padding:24px 32px 48px}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.play{font:inherit;font-weight:600;background:var(--spruce);color:var(--on);border:0;border-radius:2px;padding:10px 18px;cursor:pointer}
+.steps{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600}
+.steps input{width:320px;accent-color:var(--spruce)}
+.steplabel{font-weight:500;color:var(--ink-soft);min-width:22ch}
+.stage{margin-top:16px;background:var(--bg);border-radius:2px;padding:32px;max-width:860px}
+.stage svg{width:100%;height:auto;display:block;overflow:visible}
+.caption{margin-top:12px;color:var(--ink);font-family:"Familjen Grotesk";font-size:22px;letter-spacing:-.02em;max-width:860px}
+.caption em{font-style:normal;color:#8a7618}
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:860px;margin-top:24px}
+.strip figure{background:var(--bg);border-radius:2px;padding:12px}
+.strip figcaption{font-size:12px;color:#b4c2bb;margin-top:6px}
+.strip h2{grid-column:1/-1;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.mv{transition:transform var(--dur) cubic-bezier(.16,1,.3,1),opacity var(--dur) cubic-bezier(.16,1,.3,1)}
+.tw{animation:tw 3.2s ease-in-out infinite}
+@keyframes tw{50%{opacity:.15}}
+.lbl{font-family:"Schibsted Grotesk";font-weight:600;letter-spacing:.12em;font-size:10px}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.preset{background:var(--spruce);color:var(--on)}
+@media (max-width:900px){body{grid-template-columns:1fr}aside{position:static;max-height:none}}
+@media (prefers-reduced-motion:reduce){.mv{transition:none}.tw{animation:none}}
+</style>
+</head>
+<body>
+<aside>
+  <h1>Hero lab</h1>
+  <p class="sub">Starry sky → poster marks. Tweak, then compare roles below the stage.</p>
+  <div class="presets" id="presets"></div>
+
+  <fieldset><legend>Role</legend>
+    <div class="seg" id="role"></div>
+    <div class="seg" id="status"></div>
+    <div class="row"><span>Undecided answers</span><input type="range" id="undecided" min="0" max="6" value="0"><output></output></div>
+  </fieldset>
+
+  <fieldset><legend>Sky</legend>
+    <div class="row"><span>Noise stars</span><input type="range" id="stars" min="0" max="400" value="180"><output></output></div>
+    <div class="row"><span>Star size</span><input type="range" id="starSize" min="0.4" max="3" step="0.1" value="1.1"><output></output></div>
+    <div class="row"><span>Dim at the end</span><input type="range" id="dim" min="0" max="1" step="0.05" value="0.8"><output></output></div>
+    <label class="check"><input type="checkbox" id="twinkle" checked> Twinkle</label>
+  </fieldset>
+
+  <fieldset><legend>Arrival</legend>
+    <div class="seg" id="arrival"></div>
+    <div class="row"><span>Dust per mark</span><input type="range" id="dust" min="0" max="40" value="14"><output></output></div>
+    <div class="row"><span>Speed (ms)</span><input type="range" id="dur" min="200" max="2400" step="50" value="900"><output></output></div>
+    <label class="check"><input type="checkbox" id="blanks" checked> Show blurred blanks</label>
+    <div class="row"><span>Blank blur</span><input type="range" id="blankBlur" min="0" max="20" value="9"><output></output></div>
+    <div class="row"><span>Focus pull</span><input type="range" id="focus" min="0" max="12" step="0.5" value="0"><output></output></div>
+  </fieldset>
+
+  <fieldset><legend>Composition</legend>
+    <div class="seg" id="layout"></div>
+    <div class="row"><span>Mark scale</span><input type="range" id="scale" min="0.4" max="1.2" step="0.05" value="0.85"><output></output></div>
+    <div class="seg" id="markStyle"></div>
+    <label class="check"><input type="checkbox" id="lines"> Constellation lines</label>
+    <label class="check"><input type="checkbox" id="dashLines"> Dashed lines</label>
+    <div class="seg" id="lineMode"></div>
+    <label class="check"><input type="checkbox" id="label" checked> Label when finished</label>
+    <div class="seg" id="rules"></div>
+  </fieldset>
+
+  <fieldset><legend>Palette</legend>
+    <div class="seg" id="palette"></div>
+  </fieldset>
+</aside>
+
+<main>
+  <div class="top">
+    <button class="play" id="play">Play</button>
+    <label class="steps">Step <input type="range" id="step" min="0" max="8" value="0"> <span class="steplabel" id="steplabel"></span></label>
+  </div>
+  <div class="stage" id="stageWrap"><svg id="stage" viewBox="0 0 400 320" aria-label="Hero preview"></svg></div>
+  <p class="caption" id="caption"></p>
+  <div class="strip" id="strip"><h2>Same settings, finished, per role</h2></div>
+</main>
+
+<script>
+const NS='http://www.w3.org/2000/svg'
+const el=(t,a={},p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e}
+function hash(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19}return h>>>0}
+function rng(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+/* Sample answer sets (synthetic). */
+const ROLES={
+  backend:{title:'Backend developer',company:'Sample Oy',status:'now',type:'full',positions:2,start:'3m',solo:4,teamsize:'4-10',must:2,teach:1,hours:'flexible',langs:2,mode:'hybrid'},
+  tech:{title:'Field service technician',company:'Sample Oy',status:'now',type:'full',positions:4,start:'asap',solo:2,teamsize:'1-3',must:3,teach:0,hours:'shift',langs:1,mode:'onsite'},
+  trainee:{title:'Summer trainee',company:'Sample Oy',status:'soon',type:'summer',positions:6,start:'date',solo:5,teamsize:'11-30',must:0,teach:2,hours:'fixed',langs:3,mode:'onsite'},
+}
+const STEPS=['Nothing answered','Vacancy','The role','The work','The team','Skills','Language','Location','Company']
+/* Cells: grid index -> which answer and at which step it appears. Centre (4) is the status. */
+const CELLS=[{k:'type',step:2},{k:'positions',step:2},{k:'start',step:2},{k:'team',step:4},{k:'status',step:1},{k:'skills',step:5},{k:'hours',step:3},{k:'language',step:6},{k:'location',step:7}]
+
+const S={role:'backend',status:null,step:0,undecided:0,stars:180,starSize:1.1,dim:.8,twinkle:true,arrival:'condense',dust:14,dur:900,blanks:true,blankBlur:9,focus:0,layout:'grid',scale:.85,markStyle:'fill',lines:false,dashLines:false,lineMode:'hub',label:true,rules:'answers',palette:'spruce'}
+const PALETTES={spruce:{bg:'#173a30',mark:'#e4cb3a',star:'#eef0ec',blank:'#2f5a4c'},night:{bg:'#0f1d22',mark:'#e4cb3a',star:'#dfe7ea',blank:'#24363c'},granite:{bg:'#173a30',mark:'#eef0ec',star:'#b4c2bb',blank:'#2f5a4c'},paper:{bg:'#d6d9d5',mark:'#173a30',star:'#464b47',blank:'#c4c8c3'}}
+
+/* ---- primitives, drawn in a 80x80 box centred on 0,0 ---- */
+function primitive(g,kind,opt={}){
+  const f=S.markStyle==='outline'||opt.outline
+  const st=f?{fill:'none',stroke:'currentColor','stroke-width':6}:{fill:'currentColor'}
+  const P=(t,a)=>el(t,{...st,...a},g)
+  switch(kind){
+    case 'square':P('rect',{x:-36,y:-36,width:72,height:72});break
+    case 'half':P('rect',{x:-36,y:-36,width:36,height:72});el('rect',{x:0,y:-36,width:36,height:72,fill:'none',stroke:'currentColor','stroke-width':4},g);break
+    case 'quarter':P('path',{d:'M-36 36 L-36 -36 A72 72 0 0 1 36 36 Z'});break
+    case 'bars':for(let i=0;i<(opt.n||3);i++)P('rect',{x:-36+i*(72/(opt.n||3))+4,y:-36,width:72/(opt.n||3)-8,height:72});break
+    case 'outlineBars':for(let i=0;i<(opt.n||1);i++)el('rect',{x:-36+i*24+4,y:-36,width:16,height:72,fill:'none',stroke:'currentColor','stroke-width':4},g);break
+    case 'dots':{const n=Math.min(9,opt.n||1);for(let i=0;i<n;i++){const c=i%3,r=Math.floor(i/3);P('circle',{cx:-24+c*24,cy:-24+r*24,r:8})}break}
+    case 'wedge':P('polygon',{points:'-36,-36 36,0 -36,36',transform:`rotate(${opt.rot||0})`});break
+    case 'blunt':P('polygon',{points:'-36,-36 36,-14 36,14 -36,36'});break
+    case 'band':P('rect',{x:-40,y:-14,width:80,height:28});break
+    case 'circle':P('circle',{r:34});break
+    case 'ring':el('circle',{r:28,fill:'none',stroke:'currentColor','stroke-width':12},g);break
+    case 'arc':P('path',{d:'M-34 20 A34 34 0 0 1 34 20 L18 20 A18 18 0 0 0 -18 20 Z'});break
+    case 'cluster':{const n=opt.n||3;const r=n===1?32:Math.max(9,22-n*2);for(let i=0;i<n;i++){const a=i/n*Math.PI*2-Math.PI/2,d=n===1?0:22;P('circle',{cx:Math.cos(a)*d,cy:Math.sin(a)*d,r})}break}
+    case 'stripes':{const n=opt.n||1,h=72/(n*2-1);for(let i=0;i<n;i++)P('rect',{x:-36,y:-36+i*h*2,width:72,height:h});break}
+    case 'diag':for(let i=0;i<3;i++)P('rect',{x:-40+i*28,y:-40,width:12,height:80,transform:'skewX(-20)'});break
+    case 'gap':el('rect',{x:-34,y:-34,width:68,height:68,fill:'none',stroke:'currentColor','stroke-width':3,'stroke-dasharray':'6 6',opacity:.7},g);break
+  }
+}
+function kindFor(cell,role,status,r){
+  if(cell.k==='status')return [{now:'wedge',soon:'blunt',pipeline:'band'}[status],{}]
+  if(S.rules==='random'){const K=['square','half','quarter','circle','dots','bars','arc','wedge','ring','stripes'];return [K[Math.floor(r()*K.length)],{rot:[0,90,180,270][Math.floor(r()*4)],n:1+Math.floor(r()*4)}]}
+  switch(cell.k){
+    case 'type':return [{full:'square',part:'half',intern:'quarter',thesis:'quarter',summer:'quarter',contract:'bars'}[role.type],{}]
+    case 'positions':return ['dots',{n:role.positions}]
+    case 'start':return role.start==='asap'?['wedge',{}]:role.start==='3m'?['wedge',{rot:35}]:role.start==='date'?['arc',{}]:['circle',{}]
+    case 'team':return ['cluster',{n:role.solo}]
+    case 'skills':return role.must?['bars',{n:role.must}]:['outlineBars',{n:role.teach}]
+    case 'hours':return role.hours==='fixed'?['band',{}]:role.hours==='shift'?['diag',{}]:['quarter',{}]
+    case 'language':return ['stripes',{n:role.langs}]
+    case 'location':return role.mode==='remote'?['ring',{}]:role.mode==='hybrid'?['half',{}]:['square',{}]
+  }
+}
+function positions(roleKey){
+  if(S.layout==='grid')return CELLS.map((_,i)=>[80+(i%3)*120,64+Math.floor(i/3)*96])
+  const r=rng(hash(roleKey+'sky'))
+  if(S.layout==='row')return CELLS.map((_,i)=>[30+i*42.5,160+(r()-.5)*40])
+  // constellation: loose figure around the status mark
+  const pts=[[200,160]],ang=r()*Math.PI
+  for(let i=1;i<9;i++){const a=ang+i*(Math.PI*2/8)+(r()-.5)*.6,d=70+r()*70;pts.push([200+Math.cos(a)*d*1.35,160+Math.sin(a)*d*.85])}
+  // place status (cell 4) at centre
+  const out=[];let j=1;for(let i=0;i<9;i++)out.push(i===4?pts[0]:pts[j++]);return out
+}
+
+/* ---- render ---- */
+function render(svg,roleKey,step,{animate=true,thumb=false}={}){
+  const pal=PALETTES[S.palette],role=ROLES[roleKey],status=S.status||role.status
+  svg.innerHTML='';svg.style.color=pal.mark
+  const r=rng(hash(roleKey))
+  const defs=el('defs',{},svg)
+  const fb=el('filter',{id:'blank'+(thumb?'t':''),x:-1,y:-1,width:3,height:3},defs);el('feGaussianBlur',{stdDeviation:S.blankBlur},fb)
+  const ff=el('filter',{id:'focus'+(thumb?'t':''),x:-.5,y:-.5,width:2,height:2},defs);el('feGaussianBlur',{stdDeviation:S.focus*(1-step/8)},ff)
+  const p=step/8
+  const pos=positions(roleKey),sc=S.layout==='grid'?S.scale:S.scale*.6
+  // sky
+  const sr=rng(hash(roleKey+'stars'))
+  const sky=el('g',{class:'mv',style:`opacity:${(1-S.dim*p).toFixed(2)}`},svg)
+  for(let i=0;i<S.stars;i++){const o=(.2+sr()*.5);el('circle',{cx:sr()*400,cy:sr()*320,r:(.4+sr()*.8)*S.starSize,fill:pal.star,opacity:o.toFixed(2),class:S.twinkle&&!thumb?'tw':'',style:`animation-delay:${(sr()*3).toFixed(2)}s`},sky)}
+  // lines between revealed marks, in reveal order
+  const revealed=CELLS.map((c,i)=>({...c,i})).filter(c=>step>=c.step).sort((a,b)=>a.step-b.step||a.i-b.i)
+  const undecidedSet=new Set(revealed.filter(c=>c.k!=='status').slice(S.undecided?-S.undecided:revealed.length).map(c=>c.i))
+  if(S.lines&&revealed.length>1){
+    const g=el('g',{opacity:.7},svg),c=pos[4],dash=S.dashLines?'4 6':''
+    const others=revealed.filter(x=>x.i!==4).map(x=>pos[x.i]).sort((a,b)=>Math.atan2(a[1]-c[1],a[0]-c[0])-Math.atan2(b[1]-c[1],b[0]-c[0]))
+    if(S.lineMode==='hub'&&step>=1)others.forEach(a=>el('line',{x1:c[0],y1:c[1],x2:a[0],y2:a[1],stroke:pal.mark,'stroke-width':1.5,'stroke-dasharray':dash},g))
+    else if(others.length>1){const pts=others.map(p=>p.join(',')).join(' ');el(others.length>2?'polygon':'polyline',{points:pts,fill:'none',stroke:pal.mark,'stroke-width':1.5,'stroke-dasharray':dash},g)}
+  }
+  const marks=el('g',{filter:S.focus?`url(#focus${thumb?'t':''})`:''},svg)
+  CELLS.forEach((c,i)=>{
+    const[x,y]=pos[i],on=step>=c.step
+    const [kind,opt]=kindFor(c,role,status,r)
+    if(S.blanks){el('rect',{x:x-34*sc,y:y-34*sc,width:68*sc,height:68*sc,fill:pal.blank,filter:`url(#blank${thumb?'t':''})`,class:'mv',style:`opacity:${on?0:1}`},marks)}
+    // dust: particles that live in the sky and condense into the mark
+    const dr=rng(hash(roleKey+'dust'+i))
+    if(S.arrival==='condense'&&!thumb)for(let d=0;d<S.dust;d++){const sx=dr()*400,sy=dr()*320;el('circle',{r:(.6+dr()*.9)*S.starSize,fill:pal.star,class:'mv',style:`transform:translate(${on?x:sx}px,${on?y:sy}px);opacity:${on?0:.6};transition-delay:${(dr()*.25*S.dur).toFixed(0)}ms`},marks)}
+    const fx=S.arrival==='fly'?dr()*400:x,fy=S.arrival==='fly'?dr()*320:y
+    const g=el('g',{class:'mv',style:`transform:translate(${on?x:fx}px,${on?y:fy}px) scale(${on?sc:sc*(S.arrival==='fade'?1:.3)});opacity:${on?1:0};transition-delay:${S.arrival==='condense'?Math.round(S.dur*.45):0}ms`},marks)
+    if(undecidedSet.has(i))primitive(g,'gap')
+    else primitive(g,kind,opt)
+  })
+  if(S.label&&step===8){const t=el('text',{x:16,y:312,class:'lbl',fill:pal.mark},svg);t.textContent=`${role.title.toUpperCase()} · ${role.company.toUpperCase()}`}
+  if(!animate)[...svg.querySelectorAll('.mv')].forEach(n=>n.style.transition='none')
+}
+
+/* ---- two-frame render so transitions run from the previous step ---- */
+let prevStep=0
+const stage=document.getElementById('stage')
+function draw(){
+  document.documentElement.style.setProperty('--dur',S.dur+'ms')
+  document.documentElement.style.setProperty('--bg',PALETTES[S.palette].bg)
+  render(stage,S.role,S.step,{animate:false});prevStep=S.step
+  document.getElementById('steplabel').textContent=`${S.step} of 8 · ${STEPS[S.step]}`
+  const role=ROLES[S.role],st=S.status||role.status
+  document.getElementById('caption').innerHTML=S.step?`<em>${{now:'Open now',soon:'Opening soon',pipeline:'Talent pipeline'}[st]}</em>: ${role.title}`:'No status yet.'
+  const strip=document.getElementById('strip');[...strip.querySelectorAll('figure')].forEach(f=>f.remove())
+  for(const k of Object.keys(ROLES)){const f=document.createElement('figure');const s=document.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 400 320');s.style.width='100%';s.style.overflow='visible';f.appendChild(s);const c=document.createElement('figcaption');c.textContent=ROLES[k].title;f.appendChild(c);strip.appendChild(f);render(s,k,8,{animate:false,thumb:true})}
+}
+/* Render the old step, then copy the new step's styles onto the same nodes so CSS transitions run. */
+function animateTo(step){
+  render(stage,S.role,prevStep,{animate:false})
+  const old=[...stage.querySelectorAll('.mv')]
+  const tmp=document.createElementNS(NS,'svg');render(tmp,S.role,step)
+  const neu=[...tmp.querySelectorAll('.mv')]
+  // structure matches when step changes only; copy target style/opacity across
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    old.forEach((n,i)=>{const t=neu[i];if(!t)return;n.setAttribute('style',t.getAttribute('style')||'')})
+    // non-animated layers (sky dim, lines, label, gaps) follow after the move
+    setTimeout(()=>{if(S.step===step){render(stage,S.role,step,{animate:false})}},S.dur*1.05)
+  }))
+  prevStep=step
+}
+
+/* ---- controls ---- */
+function seg(id,items,key,after){const box=document.getElementById(id);box.innerHTML='';items.forEach(([v,l])=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.setAttribute('aria-pressed',S[key]===v);b.onclick=()=>{S[key]=v;[...box.children].forEach(x=>x.setAttribute('aria-pressed',x===b));after?after():full()};box.appendChild(b)})}
+function full(){prevStep=S.step;draw()}
+seg('role',Object.entries(ROLES).map(([k,v])=>[k,v.title]),'role')
+seg('status',[[null,'Role default'],['now','Open now'],['soon','Opening soon'],['pipeline','Talent pipeline']],'status')
+seg('arrival',[['condense','Condense from stars'],['fly','Fly in'],['fade','Fade in']],'arrival')
+seg('layout',[['grid','Grid 3×3'],['constellation','Constellation'],['row','Row']],'layout')
+seg('lineMode',[['hub','Lines from the status'],['ring','Lines around']],'lineMode')
+seg('markStyle',[['fill','Filled'],['outline','Outline']],'markStyle')
+seg('rules',[['answers','Marks from answers'],['random','Random marks']],'rules')
+seg('palette',[['spruce','Spruce'],['night','Night'],['granite','Pale marks'],['paper','Paper']],'palette')
+for(const id of ['undecided','stars','starSize','dim','dust','dur','blankBlur','focus','scale']){const inp=document.getElementById(id),out=inp.nextElementSibling;inp.value=S[id];out.textContent=S[id];inp.oninput=()=>{S[id]=+inp.value;out.textContent=inp.value;full()}}
+for(const id of ['twinkle','blanks','lines','dashLines','label']){const c=document.getElementById(id);c.checked=S[id];c.onchange=()=>{S[id]=c.checked;full()}}
+const stepInput=document.getElementById('step')
+stepInput.oninput=()=>{S.step=+stepInput.value;animateTo(S.step);updateText()}
+function updateText(){document.getElementById('steplabel').textContent=`${S.step} of 8 · ${STEPS[S.step]}`;const role=ROLES[S.role],st=S.status||role.status;document.getElementById('caption').innerHTML=S.step?`<em>${{now:'Open now',soon:'Opening soon',pipeline:'Talent pipeline'}[st]}</em>: ${role.title}`:'No status yet.'}
+let timer=null
+document.getElementById('play').onclick=e=>{clearInterval(timer);S.step=0;stepInput.value=0;prevStep=0;draw();e.target.textContent='Playing…';timer=setInterval(()=>{S.step++;stepInput.value=S.step;animateTo(S.step);updateText();if(S.step>=8){clearInterval(timer);e.target.textContent='Play'}},Math.max(700,S.dur*1.15))}
+
+const PRESETS={
+  'Sky → tiles':{layout:'grid',arrival:'condense',stars:180,dust:14,lines:false,blanks:true,focus:0,palette:'spruce',markStyle:'fill',scale:.85},
+  'Constellation of marks':{layout:'constellation',arrival:'condense',stars:260,dust:10,lines:true,dashLines:false,blanks:false,focus:0,palette:'night',scale:.85},
+  'Quiet tiles':{layout:'grid',arrival:'fade',stars:0,dust:0,lines:false,blanks:true,focus:6,palette:'spruce'},
+  'Dense sky':{layout:'grid',arrival:'condense',stars:400,dust:30,lines:false,blanks:false,dim:.9,palette:'night',scale:.75},
+}
+const pbox=document.getElementById('presets')
+for(const [name,cfg] of Object.entries(PRESETS)){const b=document.createElement('button');b.className='preset';b.type='button';b.textContent=name;b.onclick=()=>{Object.assign(S,cfg);sync();full()};pbox.appendChild(b)}
+function sync(){
+  for(const id of ['undecided','stars','starSize','dim','dust','dur','blankBlur','focus','scale']){const i=document.getElementById(id);i.value=S[id];i.nextElementSibling.textContent=S[id]}
+  for(const id of ['twinkle','blanks','lines','dashLines','label'])document.getElementById(id).checked=S[id]
+  for(const [id,key] of [['lineMode','lineMode'],['arrival','arrival'],['layout','layout'],['markStyle','markStyle'],['rules','rules'],['palette','palette']]){const box=document.getElementById(id);[...box.children].forEach(b=>{const map={'Condense from stars':'condense','Fly in':'fly','Fade in':'fade','Grid 3×3':'grid','Constellation':'constellation','Row':'row','Filled':'fill','Outline':'outline','Marks from answers':'answers','Random marks':'random','Spruce':'spruce','Night':'night','Pale marks':'granite','Paper':'paper','Lines from the status':'hub','Lines around':'ring'};b.setAttribute('aria-pressed',map[b.textContent]===S[key])})}
+}
+draw()
+</script>
+</body>
+</html>
