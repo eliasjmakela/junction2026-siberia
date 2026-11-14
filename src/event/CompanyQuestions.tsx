@@ -149,7 +149,7 @@ export function CompanyQuestions({ values, seed }: { values: Values; seed: strin
   }
 
   return (
-    <section className="cq" aria-labelledby="cq-title">
+    <section className="cq" id="application-questions" aria-labelledby="cq-title">
       <h2 id="cq-title" className="cq__title">Application questions</h2>
       <p className="cq__lede">
         Job seekers apply to meet up to {MAX_PICKS} companies at {EVENT.name} by answering their questions. From your role texts, AI drafts what
@@ -166,7 +166,7 @@ export function CompanyQuestions({ values, seed }: { values: Values; seed: strin
           </p>
           <SetView set={draft} onRemove={remove} />
           <div className="cq__actions">
-            <button type="button" className="btn" onClick={publish}>
+            <button type="button" className="btn" data-cq-primary onClick={publish}>
               Publish to the event <Arrow />
             </button>
             <button type="button" className="btn-quiet" onClick={generate} disabled={busy}>
@@ -190,7 +190,7 @@ export function CompanyQuestions({ values, seed }: { values: Values; seed: strin
           )}
           <SetView set={published.set} />
           <div className="cq__actions">
-            <a className="btn" href="#/apply">
+            <a className="btn" href="#/apply" data-cq-primary>
               Open applicant view <Arrow />
             </a>
             <a className="btn-quiet" href="#/staff">
@@ -209,7 +209,7 @@ export function CompanyQuestions({ values, seed }: { values: Values; seed: strin
         </div>
       ) : (
         <div className="cq__actions">
-          <button type="button" className="btn" onClick={generate} disabled={busy}>
+          <button type="button" className="btn" data-cq-primary data-cq-start onClick={generate} disabled={busy}>
             {busy ? 'Drafting…' : 'Draft application questions'} <Arrow />
           </button>
         </div>

@@ -75,7 +75,7 @@ const s8 = async p => {
 }
 const all = async p => { await s1(p); for (const s of [s2, s3, s4, s5, s6, s7, s8]) { await s(p); await next(p) } }
 const submit = async (p) => { await all(p); await p.getByRole('button', { name: /Submit role/ }).click() }
-const questions = async (p) => { await submit(p); await p.getByRole('button', { name: /Draft application questions/ }).click(); await p.getByRole('button', { name: /Publish to the event/ }).waitFor({ timeout: 95000 }) }
+const questions = async (p) => { await submit(p); await p.getByRole('button', { name: /Draft application questions/ }).first().click(); await p.getByRole('button', { name: /Publish to the event/ }).waitFor({ timeout: 95000 }) }
 const view = (hash) => async (p) => { await p.evaluate((h) => { location.hash = h }, hash); await p.waitForTimeout(1200) }
 
 for (const [sfx, vp] of [['desktop', D], ['mobile', M]]) {

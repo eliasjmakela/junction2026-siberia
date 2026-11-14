@@ -68,13 +68,11 @@
     display: none;
   }
 
-  /* One scrolling row of links, as on the company page. */
+  /* Links wrap onto a second row so every tab stays visible. */
   .site-header__nav {
     flex-basis: 100%;
-    flex-wrap: nowrap;
-    gap: var(--s-4);
+    flex-wrap: wrap;
+    gap: var(--s-1) var(--s-4);
     max-width: 100%;
-    overflow-x: auto;
-    scrollbar-width: none;
   }
 }

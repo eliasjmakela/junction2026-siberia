@@ -567,11 +567,9 @@
   }
 
   .tabs {
-    gap: var(--s-4);
-    white-space: nowrap;
+    flex-wrap: wrap;
+    gap: var(--s-1) var(--s-4);
     max-width: 100%;
-    overflow-x: auto;
-    scrollbar-width: none;
   }
 
   .progress {

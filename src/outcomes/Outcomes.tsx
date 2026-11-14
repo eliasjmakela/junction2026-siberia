@@ -226,7 +226,7 @@ export function Outcomes() {
       <div className="out-controls">
         <div className="out-field">
           <label htmlFor="out-event" className="out-label">Event</label>
-          <select id="out-event" className="out-select" value={eventId} onChange={(e) => choose(() => setEventId(e.target.value))}>
+          <select autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other" id="out-event" className="out-select" value={eventId} onChange={(e) => choose(() => setEventId(e.target.value))}>
             {EVENTS.map((e) => (
               <option key={e.id} value={e.id}>{eventLabel(e)}</option>
             ))}
@@ -237,7 +237,7 @@ export function Outcomes() {
           <div className="out-switch__chips">
             {([3, 6] as const).map((c) => (
               <label key={c} className="chip">
-                <input type="radio" name="checkpoint" value={c} checked={cp === c} onChange={() => choose(() => setCp(c))} />
+                <input autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other" type="radio" name="checkpoint" value={c} checked={cp === c} onChange={() => choose(() => setCp(c))} />
                 <span className="chip__mark" aria-hidden="true" />
                 {c} months
               </label>

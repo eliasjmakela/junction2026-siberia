@@ -7,7 +7,7 @@ import { display, fieldsFor, goalOf, hasValue, isAnswered, missingOn, screenSumm
 import { RoleCard } from './form/RoleCard'
 import { RolePreview } from './form/RolePreview'
 import { CompanyQuestions } from './event/CompanyQuestions'
-import { EVENT } from './event/store'
+import { EVENT, useEvent } from './event/store'
 import { ALL_FIELDS, FIELD_BY_ID, GOALS, SCREENS, type Value, type Values } from './form/schema'
 import { newSeed, roleFingerprint, skyStars } from './sky/input'
 import './App.css'
@@ -25,7 +25,7 @@ const SAMPLE_ANSWERS: Values = {
   purpose: { text: 'customers get reliable equipment repairs on the first visit.' },
   type: { choice: 'full' },
   positions: { number: 2 },
-  start: { choice: 'asap' },
+  start: { choice: 'flex' },
   month1: { text: 'shadow a senior technician, then lead scheduled visits with support.' },
   problem: { text: 'spring service visits are delayed when technicians receive incomplete equipment histories.' },
   tuesday: { text: 'check the route, visit two customer sites, update service notes, and review parts needed for tomorrow.' },
@@ -34,7 +34,7 @@ const SAMPLE_ANSWERS: Values = {
   with: { choices: ['customers', 'engineers'] },
   solo: { number: 3 },
   teamsize: { choice: '4-10' },
-  skills: { skills: { must: ['Electrical diagnostics', 'Customer communication'], teach: ['Northline service system'], nice: ['Heat pump experience'] } },
+  skills: { skills: { must: ['Electrical diagnostics', 'Customer communication'], teach: ['Lumo service system'], nice: ['Heat pump experience'] } },
   education: { choice: 'preferred' },
   worklang: { choices: ['fi', 'en'] },
   finnish: { choice: 'basic' },
@@ -44,7 +44,7 @@ const SAMPLE_ANSWERS: Values = {
   fromAbroad: { choice: 'case' },
   visa: { choice: 'depends' },
   relocation: { choices: ['admin', 'travel'] },
-  company: { text: 'Northline Service Oy' },
+  company: { text: 'Lumo Kiinteistöhuolto Oy' },
   size: { choice: 'growing' },
   thrive: { text: 'solve practical problems and enjoy meeting customers' },
   career: { text: 'service specialist, then technical lead or trainer.' },
@@ -89,6 +89,8 @@ export default function App() {
   const demoCursor = useRef<HTMLDivElement>(null)
   // The random seed identifies the noise field; reviewed geometry uses roleFingerprint(values).
   const [seed, setSeed] = useState(() => initial?.seed ?? newSeed())
+  const eventState = useEvent()
+  const questionsPublished = eventState.listings.some((l) => l.id === `role-${seed}`)
   const headingRef = useRef<HTMLHeadingElement>(null)
 
   const goal = goalOf(values)
@@ -313,6 +315,14 @@ export default function App() {
     cursor?.classList.remove('is-visible')
   }
 
+  function startQuestions() {
+    const panel = document.getElementById('application-questions')
+    panel?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })
+    const start = panel?.querySelector<HTMLButtonElement>('[data-cq-start]')
+    if (start && !start.disabled) start.click()
+    else panel?.querySelector<HTMLElement>('[data-cq-primary]')?.focus({ preventScroll: true })
+  }
+
   function addAnotherRole() {
     try {
       localStorage.removeItem(STORAGE_KEY)
@@ -420,8 +430,17 @@ export default function App() {
               <RoleCard values={values} seed={seed} fingerprint={roleFingerprint(values)} event={EVENT} />
               <div className="submitted__next">
                 <h2>Next</h2>
-                <button type="button" className="btn" onClick={addAnotherRole}>
-                  Submit another role <Arrow />
+                {questionsPublished ? (
+                  <a className="btn" href="#/apply">
+                    Open applicant view <Arrow />
+                  </a>
+                ) : (
+                  <button type="button" className="btn" onClick={startQuestions}>
+                    Draft application questions <Arrow />
+                  </button>
+                )}
+                <button type="button" className="btn-quiet" onClick={addAnotherRole}>
+                  Submit another role
                 </button>
                 <p className="submitted__note">Company details are filled in for you.</p>
                 <button type="button" className="btn-quiet" onClick={() => goTo(REVIEW)}>

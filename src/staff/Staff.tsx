@@ -256,6 +256,8 @@ function Evidence({
 function AnswersDetail({ row, listing, last }: { row: Row; listing: Listing; last?: string }) {
   const answers = row.app.answers[listing.id] ?? {}
   const a = row.assessment
+  const state = useEvent()
+  const others = state.allListings.filter((l) => l.id !== listing.id && row.app.picks.includes(l.id))
   const lastScore = last ? a?.scores.find((x) => x.attribute === last) : undefined
   function remove() {
     if (window.confirm(`Delete application ${row.app.code}? Its answers, scores and decisions are removed from this browser.`)) deleteApplication(row.app.id)
@@ -271,6 +273,11 @@ function AnswersDetail({ row, listing, last }: { row: Row; listing: Listing; las
           </>
         )}
       </p>
+      {others.length > 0 && (
+        <p className="staff-detail__meta">
+          <span>Also applied to: {others.map((l) => `${l.company} · ${l.title}`).join('; ')}</span>
+        </p>
+      )}
       <h4 className="staff-label staff-detail__all">All answers</h4>
       <ol className="staff-qa">
         {listing.set.questions.map((q, i) => (
@@ -321,7 +328,7 @@ function SlotStepper({ listingId, slots }: { listingId: string; slots: number })
             <rect x="3" y="7" width="10" height="2" />
           </svg>
         </button>
-        <input
+        <input autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other"
           id="staff-slots-input"
           type="number"
           inputMode="numeric"
@@ -691,8 +698,8 @@ export function Staff() {
   const { progress, score } = useScoring()
   const listings = state.allListings
   const [chosen, setChosen] = useState<string | null>(null)
-  // The most recently published company role first, then the first role with applicants.
-  const fallback = state.listings[0] ?? listings.find((l) => applicantsOf(state, l.id).length) ?? listings[0]
+  // The role with the most applicants (ties: first in the list).
+  const fallback = listings.reduce<Listing | undefined>((best, l) => (!best || applicantsOf(state, l.id).length > applicantsOf(state, best.id).length ? l : best), undefined)
   const listing = listings.find((l) => l.id === chosen) ?? fallback
 
   // Score every application for the selected role that has no current score.
@@ -723,17 +730,18 @@ export function Staff() {
         </p>
       </section>
 
-      <aside className="staff-notice" aria-labelledby="staff-notice-title">
-        <h2 id="staff-notice-title" className="staff-label">
-          Before you decide
-        </h2>
+      <details className="staff-notice">
+        <summary>
+          <span className="staff-label">Before you decide</span> A person decides every invitation. How scores work
+        </summary>
         <ul>
           <li>Scores are drafted by AI from the applicant’s answers to that company’s questions, or estimated by fixed rules when AI is unavailable. Select a score to see the quote it is based on.</li>
           <li>A person decides every invitation. Check the evidence before deciding: a score is a suggestion, never a decision.</li>
+          <li>Questions come from the company’s own recent problem, and scores reward concrete examples of the applicant’s own work, so generic or AI-polished answers score low.</li>
           <li>Scoring never sees e-mail addresses or application codes. Attributes come only from the company’s own description of the role.</li>
           <li>An attribute without evidence counts as 0 in the overall score. When the topic filter withholds the evidence, the attribute is left out of the overall score and shown as “Read the answers”.</li>
         </ul>
-      </aside>
+      </details>
 
       <section className="staff-section" aria-labelledby="staff-roles-title">
         <h2 id="staff-roles-title" className="staff-h2">

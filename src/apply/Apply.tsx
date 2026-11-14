@@ -57,7 +57,7 @@ function ListingCard({ listing, checked, disabled, onToggle }: { listing: Listin
   const goal = goalOf(listing.values)
   return (
     <label className={`apply-card${checked ? ' is-checked' : ''}${disabled ? ' is-disabled' : ''}`} data-listing={listing.id}>
-      <input type="checkbox" checked={checked} disabled={disabled} onChange={onToggle} />
+      <input autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other" type="checkbox" checked={checked} disabled={disabled} onChange={onToggle} />
       <span className="apply-card__top">
         <span className="apply-card__status">{status ?? ''}</span>
         <span className="apply-card__mark" aria-hidden="true" />
@@ -454,6 +454,7 @@ export function Apply() {
             <ol className="apply-how">
               <li>Choose up to {MAX_PICKS} companies.</li>
               <li>Answer each company's questions with examples from your own work.</li>
+              <li>Questions come from the company's own recent problem, and scores reward concrete examples of your own work, so generic or AI-polished text scores low.</li>
               <li>AI drafts a score from 0 to 10 for each thing the company is looking for, with a quote from your answer as evidence.</li>
               <li>City of Espoo staff review the answers and scores and decide who is invited. A person makes every decision.</li>
             </ol>
@@ -555,7 +556,7 @@ export function Apply() {
                       </span>
                       <span>{q.text}</span>
                     </label>
-                    <textarea
+                    <textarea autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other"
                       id={id}
                       className={`input input--area apply-q__input${bad ? ' is-invalid' : ''}`}
                       rows={5}
@@ -606,11 +607,10 @@ export function Apply() {
             <label className="qfield__label" htmlFor="apply-email">
               E-mail address
             </label>
-            <input
+            <input autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other"
               id="apply-email"
               className={`input apply-email${invalid.has('email') ? ' is-invalid' : ''}`}
               type="email"
-              autoComplete="email"
               inputMode="email"
               value={email}
               aria-invalid={invalid.has('email') || undefined}
@@ -627,7 +627,7 @@ export function Apply() {
           <div className="qfield">
             <p className="qfield__label">Consent</p>
             <label className={`chip chip--multi apply-consent${invalid.has('consent') ? ' is-invalid' : ''}`}>
-              <input
+              <input autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other"
                 id="apply-consent"
                 type="checkbox"
                 checked={consent}

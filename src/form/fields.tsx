@@ -108,7 +108,7 @@ export function FieldView({ field, value, onChange, invalid, roleTitle = '' }: P
           <div className="chips">
             {field.options.map((o) => (
               <label key={o.id} className="chip">
-                <input
+                <input autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other"
                   type="radio"
                   name={field.id}
                   checked={!undecided && value?.choice === o.id}
@@ -125,7 +125,7 @@ export function FieldView({ field, value, onChange, invalid, roleTitle = '' }: P
               <label className="visually-hidden" htmlFor={inputId}>
                 Date
               </label>
-              <input
+              <input autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other"
                 id={inputId}
                 className="input input--date"
                 type="date"
@@ -151,7 +151,7 @@ export function FieldView({ field, value, onChange, invalid, roleTitle = '' }: P
           <div className="chips">
             {field.options.map((o) => (
               <label key={o.id} className="chip chip--multi">
-                <input type="checkbox" checked={chosen.includes(o.id)} onChange={() => toggle(o.id)} />
+                <input autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other" type="checkbox" checked={chosen.includes(o.id)} onChange={() => toggle(o.id)} />
                 <span className="chip__mark" aria-hidden="true" />
                 {o.label}
               </label>
@@ -186,7 +186,6 @@ export function FieldView({ field, value, onChange, invalid, roleTitle = '' }: P
             value={undecided ? '' : (value?.text ?? '')}
             disabled={undecided}
             rows={field.multiline ? 2 : undefined}
-            autoComplete="off"
             aria-describedby={describedBy}
             aria-invalid={invalid || undefined}
             onChange={(e) => onChange({ text: e.target.value })}
@@ -241,7 +240,7 @@ export function FieldView({ field, value, onChange, invalid, roleTitle = '' }: P
               <button type="button" aria-label="Fewer" disabled={undecided || (n ?? field.min) <= field.min} onClick={() => set((n ?? field.min) - 1)}>
                 <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="2" /></svg>
               </button>
-              <input
+              <input autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other"
                 id={inputId}
                 type="number"
                 inputMode="numeric"
@@ -271,7 +270,7 @@ export function FieldView({ field, value, onChange, invalid, roleTitle = '' }: P
             <div className="scale__steps">
               {[1, 2, 3, 4, 5].map((i) => (
                 <label key={i} className="scale__step">
-                  <input
+                  <input autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other"
                     type="radio"
                     name={field.id}
                     checked={!undecided && value?.number === i}
@@ -307,13 +306,13 @@ export function FieldView({ field, value, onChange, invalid, roleTitle = '' }: P
               <label className="money">
                 <span className="visually-hidden">Lowest monthly salary</span>
                 <span aria-hidden="true">€</span>
-                <input type="number" inputMode="numeric" min={0} step={100} placeholder="3 200" value={s.min ?? ''} disabled={undecided} onChange={(e) => setPart('min', e.target.value)} />
+                <input autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other" type="number" inputMode="numeric" min={0} step={100} placeholder="3 200" value={s.min ?? ''} disabled={undecided} onChange={(e) => setPart('min', e.target.value)} />
               </label>
               <span className="salary__to" aria-hidden="true">to</span>
               <label className="money">
                 <span className="visually-hidden">Highest monthly salary</span>
                 <span aria-hidden="true">€</span>
-                <input type="number" inputMode="numeric" min={0} step={100} placeholder="4 000" value={s.max ?? ''} disabled={undecided} onChange={(e) => setPart('max', e.target.value)} />
+                <input autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other" type="number" inputMode="numeric" min={0} step={100} placeholder="4 000" value={s.max ?? ''} disabled={undecided} onChange={(e) => setPart('max', e.target.value)} />
               </label>
             </div>
             <Undecided value={value} onChange={onChange} />
@@ -366,13 +365,12 @@ function SkillsField({ field, value, onChange, invalid }: Props) {
     <Shell field={field} invalid={invalid} group={false} inputId={`${uid}-skill`}>
       <div className={`skills${undecided ? ' is-off' : ''}`}>
         <div className="skills__add">
-          <input
+          <input autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other"
             id={`${uid}-skill`}
             className="input"
             placeholder={undecided ? UNDECIDED : 'e.g. Kotlin or customer service'}
             value={draft}
             disabled={undecided}
-            autoComplete="off"
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={onKey}
             aria-describedby={`${uid}-skill-help`}
@@ -403,7 +401,7 @@ function SkillsField({ field, value, onChange, invalid }: Props) {
                     <li key={s} className="tag-skill">
                       {s}
                       <span className="tag-skill__move">
-                        <select
+                        <select autoComplete="off" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other"
                           aria-label={`Move ${s} to`}
                           value={b.key}
                           disabled={undecided}

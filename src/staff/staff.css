@@ -54,6 +54,16 @@
   border-top: 4px solid var(--spruce);
 }
 
+.staff-notice summary {
+  cursor: pointer;
+  font-size: var(--type-small);
+  min-height: 24px;
+}
+
+.staff-notice summary .staff-label {
+  margin-right: var(--s-1);
+}
+
 .staff-notice ul {
   margin-top: var(--s-2);
   list-style: none;
