@@ -391,7 +391,7 @@ fieldset {
   transition: transform var(--t-base) var(--ease-out);
 }
 
-.btn:hover {
+.btn:hover:not(:disabled) {
   background: var(--spruce-raised);
 }
 
@@ -399,8 +399,14 @@ fieldset {
   transform: translateX(3px);
 }
 
-.btn:active {
+.btn:active:not(:disabled) {
   background: var(--spruce-deep);
+}
+
+.btn:disabled {
+  background: var(--granite-light);
+  color: var(--ink-soft);
+  cursor: default;
 }
 
 .btn-quiet {

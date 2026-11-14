@@ -56,7 +56,7 @@ It sits alongside the bespoke-text rule. That rule covers text that reacts to th
 
 UI text must read like a real, practically built app, not a hand-tailored vertical slice. Real apps do not comment on the user's specific state (no "Nice, two roles is a great start!", no hints that react to what was just picked, no editorial asides written for one demo path) unless the feature is explicitly LLM-powered and labelled as such.
 
-- Labels, buttons, empty states, errors and status messages are generic templates that would hold for any company and any answer: "No answers yet", "Saved", "Choose an answer to continue".
+- Labels, buttons, empty states, errors and status messages are generic templates that would hold for any company and any answer: "No answers yet", "Intent submitted", "Choose an answer to continue".
 - Summaries built from data are fine when they are plainly assembled from the fields (a template with slots), not prose that pretends to understand.
 - Colourful, frank or interesting language is welcome where a product team would actually author it once: question wording, static help text per question, marketing and onboarding copy. Be deliberate about where each kind of language belongs.
 

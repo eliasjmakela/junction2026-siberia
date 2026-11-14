@@ -275,7 +275,7 @@ A single flat lichen polygon on the spruce field (400 × 320 viewBox), drawn wit
 - The shape is decorative (`aria-hidden`); the intent sentence carries the meaning in text.
 
 ### Copy and voice
-Interface copy is generic, practically built product text that holds for any company and any answer: "No answers yet", "Saved", "Choose an answer to continue", "Question 4 of 6". Labels, buttons, empty states, errors and status lines never comment on the user's particular choices. Summaries assembled from answers are plain templates with slots (the intent sentence, the result heading). Frank, characterful language belongs where a team authors it once: question wording and per-question help text. Copy describes the product on its own terms and never carries contrasts with alternatives or traces of how it was designed. Sample content is always labelled as sample.
+Interface copy is generic, practically built product text that holds for any company and any answer: "No answers yet", "Intent submitted", "Choose an answer to continue", "Question 4 of 6". Labels, buttons, empty states, errors and status lines never comment on the user's particular choices. Summaries assembled from answers are plain templates with slots (the intent sentence, the result heading). Frank, characterful language belongs where a team authors it once: question wording and per-question help text. Copy describes the product on its own terms and never carries contrasts with alternatives or traces of how it was designed. Sample content is always labelled as sample.
 
 ## Do's and Don'ts
 

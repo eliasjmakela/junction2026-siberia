@@ -77,7 +77,7 @@ export default function App() {
   const [changed, setChanged] = useState<Set<string>>(new Set())
   const [submitted, setSubmitted] = useState<Set<string>>(new Set())
   const [savedAt, setSavedAt] = useState<string | null>(initial?.savedAt ?? null)
-  const [saveError, setSaveError] = useState(false)
+  const [submitError, setSubmitError] = useState(false)
   const firstInput = useRef<HTMLInputElement>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const ownId = useId()
@@ -139,14 +139,14 @@ export default function App() {
     focusQuestion()
   }
 
-  function save() {
+  function submitIntent() {
     const at = new Date().toISOString()
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers, savedAt: at } satisfies Saved))
-      setSaveError(false)
+      setSubmitError(false)
       setSavedAt(at)
     } catch {
-      setSaveError(true)
+      setSubmitError(true)
     }
   }
 
@@ -231,21 +231,21 @@ export default function App() {
               {sentence.rest}
             </h1>
             <p className="hint">
-              Summary for {EVENT.name}. You can change any answer below before saving.
+              Summary for {EVENT.name}. You can change any answer below before submitting.
             </p>
             <div className="actions">
-              <button type="button" className="btn" onClick={save}>
-                Save intent <Arrow />
+              <button type="button" className="btn" onClick={submitIntent} disabled={savedAt !== null}>
+                {savedAt ? 'Submitted' : 'Submit intent'} {!savedAt && <Arrow />}
               </button>
               <button type="button" className="btn-quiet" onClick={restart}>
                 Start over
               </button>
             </div>
             <p className="status" role="status">
-              {saveError
-                ? 'Could not save in this browser. Check that site storage is allowed.'
+              {submitError
+                ? 'Could not submit your intent. Try again.'
                 : savedAt
-                  ? `Saved on this device, ${formatTime(savedAt)}.`
+                  ? `Intent submitted ${formatTime(savedAt)}. Change an answer to submit an update.`
                   : ''}
             </p>
           </section>
