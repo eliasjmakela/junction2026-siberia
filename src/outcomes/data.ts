@@ -30,7 +30,7 @@ export const EVENTS: FollowEvent[] = [
     date: '5 Mar 2026',
     seed: 20260305,
     cohort: 96,
-    hirePull: [0.9, 0.8, 1.1, 0.5, 0.7],
+    hirePull: [0.62, 0.80, 2.25, 0.84, 0.71],
     checks: { 3: { state: 'done', date: '5 Jun 2026' }, 6: { state: 'done', date: '5 Sep 2026' } },
   },
   {
@@ -39,7 +39,7 @@ export const EVENTS: FollowEvent[] = [
     date: '10 Sep 2026',
     seed: 20260910,
     cohort: 118,
-    hirePull: [1.0, 1.1, 0.8, 0.4, 1.0],
+    hirePull: [2.10, 0.52, 1.14, 2.17, 1.61],
     checks: { 3: { state: 'done', date: '10 Dec 2026' }, 6: { state: 'done', date: '10 Mar 2027' } },
   },
   {
@@ -48,7 +48,7 @@ export const EVENTS: FollowEvent[] = [
     date: '4 Mar 2027',
     seed: 20270304,
     cohort: 140,
-    hirePull: [1.2, 1.0, 0.9, 0.45, 0.8],
+    hirePull: [1.15, 2.17, 1.01, 2.33, 0.56],
     checks: { 3: { state: 'done', date: '4 Jun 2027' }, 6: { state: 'running', date: '18 Sep 2027' } },
   },
   {
@@ -197,8 +197,8 @@ function generate(event: FollowEvent): Person[] {
     const roll6 = rand()
     const hired3 = target !== null && roll3 < pPicked3 * pull(target) * candidates.length ** 0.4
     const hired6 = hired3 || (target !== null && roll6 < pPicked6 * pull(target) * candidates.length ** 0.4)
-    const other3 = !hired3 && rand() < 0.14
-    const other6 = !hired6 && (other3 || rand() < 0.13)
+    const other3 = !hired3 && rand() < 0.2
+    const other6 = !hired6 && (other3 || rand() < 0.15)
 
     const checkedRoll = extra()
     return {
@@ -253,16 +253,17 @@ function build(event: FollowEvent): Built {
   let b = built.get(event.id)
   if (!b) {
     const people = generate(event)
-    const r = rng(event.seed + 31)
-    const pickN = (k: number) => {
-      const out: number[] = []
-      while (out.length < k) {
-        const i = Math.floor(r() * COMPANIES.length)
-        if (!out.includes(i)) out.push(i)
-      }
+    const ids = COMPANIES.map((c) => c.id)
+    // Companies that have not yet reported: the smallest company with a hire, and while running also one with none.
+    const nullsFor = (k: Checkpoint): number[] => {
+      const hires = ids.map((id) => people.filter((p) => p.attended && p.employer[k] === id && p.invitedBy.includes(id)).length)
+      const withHire = hires.map((h, i) => ({ h, i })).filter((x) => x.h >= 1).sort((a, c) => a.h - c.h || a.i - c.i)
+      const none = hires.map((h, i) => ({ h, i })).filter((x) => x.h === 0)
+      const out = withHire.length ? [withHire[0].i] : []
+      if (event.checks[k].state === 'running' && none.length) out.push(none[0].i)
       return out
     }
-    b = { people, reportedNull: { 3: pickN(event.checks[3].state === 'running' ? 3 : 1), 6: pickN(event.checks[6].state === 'running' ? 3 : 1) } }
+    b = { people, reportedNull: { 3: nullsFor(3), 6: nullsFor(6) } }
     built.set(event.id, b)
   }
   return b
