@@ -40,10 +40,13 @@ function subscribe(onChange: () => void) {
   return () => window.removeEventListener('hashchange', onChange)
 }
 
-/** Whether the "After the event" stage is chosen, kept in the hash as ?view=after. */
-function useAfter() {
+type Stage = 'before' | 'day' | 'after'
+
+/** The chosen event stage, kept in the hash as ?view=day or ?view=after. */
+function useStage(): Stage {
   const hash = useSyncExternalStore(subscribe, () => window.location.hash, () => '')
-  return new URLSearchParams(hash.split('?')[1] ?? '').get('view') === 'after'
+  const v = new URLSearchParams(hash.split('?')[1] ?? '').get('view')
+  return v === 'after' || v === 'day' ? v : 'before'
 }
 
 function candidatesOf(state: EventState, listing: Listing): Candidate[] {
@@ -82,11 +85,38 @@ function Scores({ listing, c }: { listing: Listing; c: Candidate }) {
   )
 }
 
-function Answers({ listing, c }: { listing: Listing; c: Candidate }) {
+/** The two best-supported attributes with a quote, as the card's short reason to meet. */
+function FromAnswers({ listing, c }: { listing: Listing; c: Candidate }) {
+  const scores = c.assessment?.scores ?? []
+  const top = listing.set.attributes
+    .map((attr, i) => ({ attr, i, s: scores.find((x) => x.attribute === attr.id) }))
+    .filter((x) => !x.s?.withheld && x.s?.score != null && x.s.evidence)
+    .sort((x, y) => y.s!.score! - x.s!.score! || x.i - y.i)
+    .slice(0, 2)
+  if (!top.length) return null
+  return (
+    <div className="meet-from">
+      <p className="staff-label">From their answers</p>
+      <ul>
+        {top.map(({ attr, s }) => (
+          <li key={attr.id}>
+            <span className="meet-from__name">{attr.name}</span>
+            <q className="meet-score__quote">{s!.evidence}</q>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+function ScoresAndAnswers({ listing, c }: { listing: Listing; c: Candidate }) {
   const answers = c.app.answers[listing.id] ?? {}
   return (
     <details className="meet-answers">
-      <summary>Answers</summary>
+      <summary>Scores and answers</summary>
+      <p className="staff-label">AI-drafted scores</p>
+      <p className="meet-overall">{c.assessment?.overall != null ? <><b>{c.assessment.overall.toFixed(1)}</b> of 10</> : 'Not scored'}</p>
+      <Scores listing={listing} c={c} />
       <ol className="staff-qa">
         {listing.set.questions.map((q, i) => (
           <li key={q.id}>
@@ -101,10 +131,6 @@ function Answers({ listing, c }: { listing: Listing; c: Candidate }) {
     </details>
   )
 }
-
-const Overall = ({ c }: { c: Candidate }) => (
-  <p className="meet-overall">{c.assessment?.overall != null ? <><b>{c.assessment.overall.toFixed(1)}</b> of 10</> : 'Not scored'}</p>
-)
 
 /** The 20-minute times of event day; taken ones cannot be chosen. */
 function SlotGrid({
@@ -308,17 +334,25 @@ function RatingBox({ listing, c, announce }: { listing: Listing; c: Candidate; a
   )
 }
 
+const STAGES: { id: Stage; hash: string }[] = [
+  { id: 'before', hash: '#/meetings' },
+  { id: 'day', hash: '#/meetings?view=day' },
+  { id: 'after', hash: '#/meetings?view=after' },
+]
+
 export function Meetings() {
   const state = useEvent()
-  const after = useAfter()
+  const stage = useStage()
   const listings = state.allListings
   const [chosen, setChosen] = useState<string | null>(null)
   const listing = listings.find((l) => l.id === chosen) ?? state.listings[0] ?? listings[0]
   const [open, setOpen] = useState<string | null>(null)
+  const [switching, setSwitching] = useState(false)
   const [gridError, setGridError] = useState('')
   const [message, setMessage] = useState('')
   const [refocus, setRefocus] = useState<{ id: string; n: number } | null>(null)
   const pageRef = useRef<HTMLElement>(null)
+  const switchRef = useRef<HTMLButtonElement>(null)
 
   const candidates = useMemo(() => (listing ? candidatesOf(state, listing) : []), [state, listing])
   const place = listing ? standOf(listing) : ''
@@ -331,10 +365,10 @@ export function Meetings() {
     pageRef.current?.querySelector<HTMLElement>(`[data-trigger="${CSS.escape(refocus.id)}"]`)?.focus()
   }, [refocus])
 
-  const meta = (l: Listing) => {
-    const cs = candidatesOf(state, l)
-    const b = cs.filter((c) => c.booking)
-    return after ? `${b.length} met · ${b.filter((c) => c.rating).length} rated` : `${cs.length} invited · ${b.length} booked`
+  const rail: Record<Stage, { step: string; task: string; meta: string }> = {
+    before: { step: 'Before the event', task: 'Book meetings', meta: `${candidates.length} invited · ${booked.length} booked` },
+    day: { step: `Event day · ${EVENT.date}`, task: 'Meet at your stand', meta: `${held.length} meetings` },
+    after: { step: 'After the event', task: 'Rate the meetings', meta: `${rated} of ${held.length} rated` },
   }
 
   function close(id: string) {
@@ -364,165 +398,168 @@ export function Meetings() {
     setRefocus({ id: c.app.id, n: Date.now() })
   }
 
-  function setView(a: boolean) {
+  function setStage(next: Stage) {
     setOpen(null)
-    window.location.hash = a ? '#/meetings?view=after' : '#/meetings'
+    setGridError('')
+    window.location.hash = STAGES.find((x) => x.id === next)!.hash
   }
+
+  const toggle = (c: Candidate) => (open === c.app.id ? close(c.app.id) : (setGridError(''), setOpen(c.app.id)))
 
   return (
     <main className="page staff meet" ref={pageRef}>
       <SiteHeader area="meetings" />
 
       <section className="staff-intro" aria-labelledby="meet-title">
-        <h1 id="meet-title">Meetings</h1>
+        <h1 id="meet-title">Your meetings at {EVENT.name}</h1>
         <p className="hint">
-          {after
-            ? `Rate the candidates you met at ${EVENT.name}. Ratings stay with your company.`
-            : `Book 20-minute meetings at your stand with the candidates City of Espoo invited for your role. Meetings take place at ${EVENT.name}, ${EVENT.date}.`}
-        </p>
-        <div className="meet-stage chips" role="group" aria-label="Event stage">
-          <button type="button" className="chip" aria-pressed={!after} onClick={() => setView(false)}>
-            <span className="chip__mark" aria-hidden="true" />
-            Before the event
-          </button>
-          <button type="button" className="chip" aria-pressed={after} onClick={() => setView(true)}>
-            <span className="chip__mark" aria-hidden="true" />
-            After the event
-          </button>
-        </div>
-        <p className="status" role="status">
-          {message}
+          Book 20-minute meetings with the candidates City of Espoo invited for your role, meet them at your stand on {EVENT.date}, then rate each meeting.
         </p>
       </section>
 
-      <section className="staff-section" aria-labelledby="meet-roles-title">
-        <h2 id="meet-roles-title" className="staff-h2">
-          Your role
-        </h2>
-        {listings.length ? (
-          <ul className="staff-roles">
-            {listings.map((l) => (
-              <li key={l.id}>
-                <button
-                  type="button"
-                  className="staff-role"
-                  aria-pressed={l.id === listing?.id}
-                  onClick={() => {
-                    setChosen(l.id)
-                    setOpen(null)
-                  }}
-                >
-                  <span className="staff-role__company">{l.company}</span>
-                  <span className="staff-role__title">{l.title}</span>
-                  {l.status && <span className="staff-role__status">{GOALS[l.status].name}</span>}
-                  <span className="staff-role__meta">{meta(l)}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="staff-empty">No company roles are published for this event yet.</p>
-        )}
-      </section>
-
-      {listing && !after && (
-        <>
-          <section className="staff-section" aria-labelledby="meet-list-title">
-            <div className="meet-head">
-              <h2 id="meet-list-title" className="staff-h2">
-                Invited candidates
-              </h2>
-              <p className="meet-head__meta">
-                {candidates.length} invited · {booked.length} booked
-              </p>
+      {listing ? (
+        <section className="meet-band" aria-label="Your company">
+          <dl className="meet-who">
+            <div>
+              <dt className="staff-label">Your company</dt>
+              <dd className="meet-who__company">{listing.company}</dd>
             </div>
-            <p className="staff-lede">City of Espoo sends each meeting time to the candidate. Candidates are shown by application code.</p>
-            {candidates.length ? (
-              <ul className="meet-cards">
-                {candidates.map((c) => {
-                  const isOpen = open === c.app.id
-                  return (
-                    <li key={c.app.id} className="meet-card">
-                      <div className="meet-card__top">
-                        <h3 className="meet-code">{c.app.code}</h3>
-                        <Overall c={c} />
-                        <div className="meet-booking">
-                          {c.booking ? (
-                            <>
-                              <p className="meet-when">
-                                {timeRange(c.booking)} <span>·</span> {c.booking.place}
-                              </p>
-                              <div className="meet-actions">
-                                <button type="button" className="btn-quiet" data-trigger={c.app.id} aria-expanded={isOpen} onClick={() => (isOpen ? close(c.app.id) : (setGridError(''), setOpen(c.app.id)))}>
-                                  Reschedule
-                                </button>
-                                <button type="button" className="btn-quiet" onClick={() => cancel(c)}>
-                                  Cancel meeting
-                                </button>
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <p className="meet-notbooked">Not booked</p>
-                              <button type="button" className="btn meet-book" data-trigger={c.app.id} aria-expanded={isOpen} onClick={() => (isOpen ? close(c.app.id) : (setGridError(''), setOpen(c.app.id)))}>
-                                Book a meeting
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      {isOpen && (
-                        <SlotGrid
-                          key={c.booking?.start ?? 'new'}
-                          code={c.app.code}
-                          place={place}
-                          taken={takenFor(state, listing, c.app.id)}
-                          initial={c.booking?.start}
-                          error={gridError}
-                          onBook={(s) => book(c, s)}
-                          onClose={() => close(c.app.id)}
-                        />
-                      )}
-                      <Scores listing={listing} c={c} />
-                      <Answers listing={listing} c={c} />
-                    </li>
-                  )
-                })}
-              </ul>
-            ) : (
-              <p className="staff-empty">
-                No candidates are invited for this role yet. City of Espoo staff decide invitations in <a href="#/staff">Staff review</a>.
-              </p>
-            )}
-          </section>
-
-          <section className="staff-section" aria-labelledby="meet-sched-title">
-            <h2 id="meet-sched-title" className="staff-h2">
-              Event-day schedule
-            </h2>
-            {held.length ? (
-              <ul className="meet-schedule">
-                {held.map((c) => (
-                  <li key={c.app.id}>
-                    <span>{timeRange(c.booking!)}</span> {c.app.code}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="staff-empty">No meetings booked yet.</p>
-            )}
-          </section>
-        </>
+            <div>
+              <dt className="staff-label">Role</dt>
+              <dd>
+                {listing.title}
+                {listing.status && <span className="meet-who__status">{GOALS[listing.status].name}</span>}
+              </dd>
+            </div>
+            <div>
+              <dt className="staff-label">Stand</dt>
+              <dd>{place}</dd>
+            </div>
+          </dl>
+          <button ref={switchRef} type="button" className="btn-quiet meet-switch" aria-expanded={switching} aria-controls="meet-switch-panel" onClick={() => setSwitching((v) => !v)}>
+            Switch company
+          </button>
+          {switching && (
+            <ul id="meet-switch-panel" className="staff-roles meet-roles">
+              {listings.map((l) => (
+                <li key={l.id}>
+                  <button
+                    type="button"
+                    className="staff-role"
+                    aria-pressed={l.id === listing.id}
+                    onClick={() => {
+                      setChosen(l.id)
+                      setOpen(null)
+                      setGridError('')
+                      setSwitching(false)
+                      setTimeout(() => switchRef.current?.focus())
+                    }}
+                  >
+                    <span className="staff-role__company">{l.company}</span>
+                    <span className="staff-role__title">{l.title}</span>
+                    {l.status && <span className="staff-role__status">{GOALS[l.status].name}</span>}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ) : (
+        <p className="staff-empty">No company roles are published for this event yet.</p>
       )}
 
-      {listing && after && (
-        <section className="staff-section" aria-labelledby="meet-held-title">
+      <div className="meet-rail" role="group" aria-label="Event stage">
+        {STAGES.map((st, i) => (
+          <button key={st.id} type="button" className="meet-rail__step" aria-pressed={stage === st.id} onClick={() => setStage(st.id)}>
+            <span className="meet-rail__n" aria-hidden="true">{i + 1}</span>
+            <span className="meet-rail__text">
+              <span className="meet-rail__step-name">{rail[st.id].step}</span>
+              <span className="meet-rail__task">{rail[st.id].task}</span>
+            </span>
+            {listing && <span className="meet-rail__meta">{rail[st.id].meta}</span>}
+          </button>
+        ))}
+      </div>
+      <p className="status" role="status">
+        {message}
+      </p>
+
+      {listing && stage === 'before' && (
+        <section className="staff-section" aria-labelledby="meet-list-title">
           <div className="meet-head">
-            <h2 id="meet-held-title" className="staff-h2">
-              Meetings held
+            <h2 id="meet-list-title" className="staff-h2">
+              Book meetings
+            </h2>
+            <p className="meet-head__meta">{rail.before.meta}</p>
+          </div>
+          <p className="staff-lede">City of Espoo staff invited these candidates for your role and send each meeting time to the candidate. Candidates are shown by application code.</p>
+          {candidates.length ? (
+            <ul className="meet-cards">
+              {candidates.map((c) => {
+                const isOpen = open === c.app.id
+                return (
+                  <li key={c.app.id} className="meet-card">
+                    <div className="meet-card__top">
+                      <h3 className="meet-code">{c.app.code}</h3>
+                      <div className="meet-booking">
+                        {c.booking ? (
+                          <>
+                            <p className="meet-when">
+                              {timeRange(c.booking)} <span>·</span> {c.booking.place}
+                            </p>
+                            <div className="meet-actions">
+                              <button type="button" className="btn-quiet" data-trigger={c.app.id} aria-expanded={isOpen} onClick={() => toggle(c)}>
+                                Reschedule
+                              </button>
+                              <button type="button" className="btn-quiet" onClick={() => cancel(c)}>
+                                Cancel meeting
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <p className="meet-notbooked">Not booked</p>
+                            <button type="button" className="btn meet-book" data-trigger={c.app.id} aria-expanded={isOpen} onClick={() => toggle(c)}>
+                              Book a meeting
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    {isOpen && (
+                      <SlotGrid
+                        key={c.booking?.start ?? 'new'}
+                        code={c.app.code}
+                        place={place}
+                        taken={takenFor(state, listing, c.app.id)}
+                        initial={c.booking?.start}
+                        error={gridError}
+                        onBook={(s) => book(c, s)}
+                        onClose={() => close(c.app.id)}
+                      />
+                    )}
+                    <FromAnswers listing={listing} c={c} />
+                    <ScoresAndAnswers listing={listing} c={c} />
+                  </li>
+                )
+              })}
+            </ul>
+          ) : (
+            <p className="staff-empty">
+              No candidates are invited for this role yet. City of Espoo staff decide invitations in <a href="#/staff">Staff review</a>.
+            </p>
+          )}
+        </section>
+      )}
+
+      {listing && stage === 'day' && (
+        <section className="staff-section" aria-labelledby="meet-sched-title">
+          <div className="meet-head">
+            <h2 id="meet-sched-title" className="staff-h2">
+              Your schedule on {EVENT.date}
             </h2>
             <p className="meet-head__meta">
-              {rated} of {held.length} rated
+              {held.length} meetings · {place}
             </p>
           </div>
           {held.length ? (
@@ -531,18 +568,44 @@ export function Meetings() {
                 <li key={c.app.id} className="meet-card">
                   <div className="meet-card__top">
                     <h3 className="meet-code">{c.app.code}</h3>
-                    <p className="meet-when">
+                    <p className="meet-when meet-when--lead">
                       {timeRange(c.booking!)} <span>·</span> {c.booking!.place}
                     </p>
-                    {!c.rating && <p className="meet-notbooked">Not rated</p>}
+                  </div>
+                  <ScoresAndAnswers listing={listing} c={c} />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="staff-empty">No meetings booked yet.</p>
+          )}
+        </section>
+      )}
+
+      {listing && stage === 'after' && (
+        <section className="staff-section" aria-labelledby="meet-held-title">
+          <div className="meet-head">
+            <h2 id="meet-held-title" className="staff-h2">
+              Rate the meetings
+            </h2>
+            <p className="meet-head__meta">{rail.after.meta}</p>
+          </div>
+          <p className="staff-lede">Ratings stay with your company.</p>
+          {held.length ? (
+            <ul className="meet-cards">
+              {held.map((c) => (
+                <li key={c.app.id} className="meet-card">
+                  <div className="meet-card__top">
+                    <h3 className="meet-code">{c.app.code}</h3>
+                    <div className="meet-booking">
+                      <p className="meet-when">
+                        {timeRange(c.booking!)} <span>·</span> {c.booking!.place}
+                      </p>
+                      {!c.rating && <p className="meet-notbooked">Not rated</p>}
+                    </div>
                   </div>
                   <RatingBox listing={listing} c={c} announce={setMessage} />
-                  <details className="meet-answers">
-                    <summary>Scores and answers</summary>
-                    <Overall c={c} />
-                    <Scores listing={listing} c={c} />
-                    <Answers listing={listing} c={c} />
-                  </details>
+                  <ScoresAndAnswers listing={listing} c={c} />
                 </li>
               ))}
             </ul>

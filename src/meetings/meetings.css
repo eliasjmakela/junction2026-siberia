@@ -1,6 +1,117 @@
 /* ---------- Meetings (#/meetings): flat cards, lichen only on selection ---------- */
-.meet-stage {
-  margin-top: var(--s-4);
+/* Identity band */
+.meet-band {
+  margin-top: var(--s-3);
+  padding: var(--s-3);
+  background: var(--granite-light);
+  border-radius: var(--radius);
+}
+
+.meet-who {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: var(--s-2) var(--s-4);
+}
+
+.meet-who dd {
+  margin-top: var(--s-1);
+}
+
+.meet-who__company {
+  font-family: var(--font-display);
+  font-size: var(--type-display-l-compact);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.meet-who__status {
+  display: block;
+  color: var(--ink-soft);
+  font-size: var(--type-small);
+}
+
+.meet-switch {
+  min-height: 44px;
+  margin-top: var(--s-1);
+}
+
+.meet-roles {
+  margin-top: var(--s-2);
+}
+
+/* Stage rail: three joined steps */
+.meet-rail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: var(--s-3);
+  border: var(--rule);
+  border-radius: var(--radius);
+}
+
+.meet-rail__step {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--s-1) var(--s-2);
+  position: relative;
+  min-height: 44px;
+  padding: var(--s-2) var(--s-3);
+  background: transparent;
+  border: 0;
+  border-left: var(--rule);
+  border-radius: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.meet-rail__step:first-child {
+  border-left: 0;
+}
+
+.meet-rail__step:hover {
+  background: var(--granite-light);
+}
+
+.meet-rail__step[aria-pressed='true'] {
+  background: var(--white);
+}
+
+.meet-rail__step[aria-pressed='true']::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 4px;
+  background: var(--lichen);
+}
+
+.meet-rail__step:focus-visible {
+  outline: var(--focus);
+  outline-offset: -2px;
+}
+
+.meet-rail__n {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.meet-rail__text {
+  display: grid;
+}
+
+.meet-rail__step-name {
+  color: var(--ink-soft);
+  font-size: var(--type-small);
+}
+
+.meet-rail__task {
+  font-weight: 600;
+}
+
+.meet-rail__meta {
+  grid-column: 2;
+  color: var(--ink-soft);
+  font-size: var(--type-small);
+  font-variant-numeric: tabular-nums;
 }
 
 .meet-head {
@@ -32,7 +143,7 @@
 
 .meet-card__top {
   display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: baseline;
   gap: var(--s-1) var(--s-4);
 }
@@ -45,6 +156,7 @@
 }
 
 .meet-overall {
+  margin-top: var(--s-1);
   font-size: var(--type-small);
   color: var(--ink-soft);
   font-variant-numeric: tabular-nums;
@@ -81,10 +193,6 @@
   font-size: var(--type-small);
 }
 
-.meet-card__top > .meet-notbooked {
-  justify-self: start;
-}
-
 .meet-actions {
   display: flex;
   flex-wrap: wrap;
@@ -99,6 +207,36 @@
 
 .meet-book {
   min-height: 44px;
+}
+
+.meet-when--lead {
+  text-align: right;
+}
+
+.meet-from {
+  margin-top: var(--s-3);
+}
+
+.meet-from ul {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--s-2) var(--s-4);
+  margin-top: var(--s-1);
+}
+
+.meet-from__name {
+  display: block;
+  font-size: var(--type-small);
+  font-weight: 600;
+}
+
+.meet-answers > .staff-label {
+  margin-top: var(--s-1);
+}
+
+.meet-answers > .staff-qa {
+  margin-top: var(--s-3);
 }
 
 /* Scores: attribute name, bar and value on one line; the quote beneath. */
@@ -262,28 +400,30 @@
   min-height: 0;
 }
 
-.meet-schedule {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--s-1) var(--s-4);
-  margin-top: var(--s-3);
-}
+@media (max-width: 720px) {
+  .meet-who {
+    grid-template-columns: minmax(0, 1fr);
+  }
 
-.meet-schedule li {
-  padding: var(--s-1) 0;
-  border-top: var(--rule);
-}
+  .meet-rail {
+    grid-template-columns: minmax(0, 1fr);
+  }
 
-.meet-schedule span {
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  margin-right: var(--s-2);
-}
+  .meet-rail__step {
+    border-left: 0;
+    border-top: var(--rule);
+  }
 
-@media (max-width: 640px) {
+  .meet-rail__step:first-child {
+    border-top: 0;
+  }
+
+  .meet-when--lead {
+    text-align: left;
+  }
+
   .meet-card__top {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .meet-booking {
