@@ -37,11 +37,11 @@ export const NAV: Record<Role, { area: Area; href: string; label: string }[]> = 
 
 /** The hand-off to the next moment of the event, shown in the band. */
 export const NEXT: Record<Area, { href: string; label: string } | null> = {
-  profile: { href: '#/apply', label: 'Apply' },
-  questions: { href: '#/apply', label: 'Apply' },
-  apply: { href: '#/staff', label: 'Applications' },
-  mine: { href: '#/staff', label: 'Applications' },
-  staff: { href: '#/meetings', label: 'Meetings' },
-  meetings: { href: '#/outcomes', label: 'Follow-up' },
+  profile: { href: '#/apply', label: 'Job seeker · Apply' },
+  questions: { href: '#/apply', label: 'Job seeker · Apply' },
+  apply: { href: '#/staff', label: 'City of Espoo · Applications' },
+  mine: { href: '#/staff', label: 'City of Espoo · Applications' },
+  staff: { href: '#/meetings', label: 'Company · Meetings' },
+  meetings: { href: '#/outcomes', label: 'City of Espoo · Follow-up' },
   outcomes: null,
 }

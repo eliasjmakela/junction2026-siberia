@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { EVENT } from '../event/store'
 import { NAV, ROLE_OF_AREA, type Area } from './nav'
-import { hasOwnApplication, readOwnRole, useViewedCompany } from './viewing'
+import { hasOwnApplication, readOwnRole, setViewedCompany, useViewedCompany } from './viewing'
 import { ViewingBand } from './ViewingBand'
 import './SiteHeader.css'
 
@@ -47,7 +47,7 @@ export function SiteHeader({
     <>
       <ViewingBand area={area} action={action} nextCompanyId={nextCompanyId} />
       <header className="site-header">
-        <a className="site-header__brand" href="#/">
+        <a className="site-header__brand" href="#/" onClick={() => setViewedCompany(null)}>
           Plainly
         </a>
         <RoleNav area={area} className="site-header__nav" />

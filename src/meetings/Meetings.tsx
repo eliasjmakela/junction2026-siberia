@@ -436,9 +436,10 @@ export function Meetings() {
           </dl>
         </section>
       ) : (
-        <p className="staff-empty">No company role is published for this event yet. Choose a company in the band above to see its meetings.</p>
+        <p className="staff-empty">Your role is not published for this event yet. Meetings open once City of Espoo has invited candidates for it.</p>
       )}
 
+      {listing && (
       <div className="meet-rail" role="group" aria-label="Event stage">
         {STAGES.map((st, i) => (
           <button key={st.id} type="button" className="meet-rail__step" aria-pressed={stage === st.id} onClick={() => setStage(st.id)}>
@@ -451,6 +452,7 @@ export function Meetings() {
           </button>
         ))}
       </div>
+      )}
       <p className="status" role="status">
         {message}
       </p>

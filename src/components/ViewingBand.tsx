@@ -92,6 +92,8 @@ export function ViewingBand({
                           onClick={() => {
                             setViewedCompany(null)
                             close(true)
+                            // Choosing a company from another role's screens opens that company's view.
+                            if (role !== 'company') window.location.hash = '#/'
                           }}
                         >
                           <span className="band__menu-co">{own || 'New company'}</span>
@@ -106,6 +108,7 @@ export function ViewingBand({
                             onClick={() => {
                               setViewedCompany(l.id)
                               close(true)
+                              if (role !== 'company') window.location.hash = '#/'
                             }}
                           >
                             <span className="band__menu-co">{l.company}</span>
