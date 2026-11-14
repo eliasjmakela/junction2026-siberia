@@ -297,21 +297,26 @@ function AnswersDetail({ row, listing, last }: { row: Row; listing: Listing; las
   )
 }
 
-function DecisionGroup({ app, listingId, decision }: { app: Application; listingId: string; decision?: Decision }) {
+function DecisionGroup({ app, listingId, decision, onDeclineBelow }: { app: Application; listingId: string; decision?: Decision; onDeclineBelow: () => void }) {
   return (
-    <div className="staff-decision" role="group" aria-label={`Decision for ${app.code}`}>
-      {DECISIONS.map((d) => (
-        <button
-          key={d.id}
-          type="button"
-          className="chip staff-decision__chip"
-          aria-pressed={decision === d.id}
-          onClick={() => setDecision(app.id, listingId, decision === d.id ? null : d.id)}
-        >
-          <span className="chip__mark" aria-hidden="true" />
-          {d.label}
-        </button>
-      ))}
+    <div className="staff-decision-cell">
+      <div className="staff-decision" role="group" aria-label={`Decision for ${app.code}`}>
+        {DECISIONS.map((d) => (
+          <button
+            key={d.id}
+            type="button"
+            className="chip staff-decision__chip"
+            aria-pressed={decision === d.id}
+            onClick={() => setDecision(app.id, listingId, decision === d.id ? null : d.id)}
+          >
+            <span className="chip__mark" aria-hidden="true" />
+            {d.label}
+          </button>
+        ))}
+      </div>
+      <button type="button" className="staff-decline-below" onClick={onDeclineBelow}>
+        Decline this candidate and everybody below them
+      </button>
     </div>
   )
 }
@@ -439,6 +444,16 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
   function showAnswers(i: number) {
     pending.current = `.staff-who[data-row="${i}"]`
     setOpen(answersAt(i))
+  }
+
+  function declineBelow(i: number) {
+    const targets = ranked.slice(i)
+    if (!targets.length) return
+    const count = targets.filter((row) => decisionOf(state, row.app.id, listing.id) !== 'decline').length
+    if (!count) return
+    const label = count === 1 ? '1 candidate' : `${count} candidates`
+    if (!window.confirm(`Decline ${label}, including ${ranked[i].app.code}, and clear any meetings they have booked for this role?`)) return
+    targets.forEach((row) => setDecision(row.app.id, listing.id, 'decline'))
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLTableElement>) {
@@ -576,7 +591,7 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
                       )
                     })}
                     <td className="staff-table__decision">
-                      <DecisionGroup app={row.app} listingId={listing.id} decision={decisionOf(state, row.app.id, listing.id)} />
+                      <DecisionGroup app={row.app} listingId={listing.id} decision={decisionOf(state, row.app.id, listing.id)} onDeclineBelow={() => declineBelow(ranked.findIndex((r) => r.app.id === row.app.id))} />
                     </td>
                   </tr>
                   {(answersOpen || (openIndex >= 0 && !narrow)) && (

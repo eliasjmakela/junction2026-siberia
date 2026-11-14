@@ -442,6 +442,32 @@
   gap: var(--s-1);
 }
 
+.staff-decision-cell {
+  min-width: 190px;
+}
+
+.staff-decline-below {
+  margin-top: var(--s-1);
+  min-height: 36px;
+  max-width: 240px;
+  color: var(--ink-soft);
+  font-size: var(--type-label);
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.2em;
+}
+
+.staff-decline-below:hover {
+  color: var(--spruce);
+  text-decoration-color: currentColor;
+}
+
+.staff-decline-below:focus-visible {
+  outline: 2px solid var(--spruce);
+  outline-offset: 2px;
+}
+
 .staff-decision__chip {
   min-height: 40px;
   padding: 0 12px 0 10px;
@@ -895,6 +921,11 @@
 
   .staff-decision {
     flex-wrap: nowrap;
+  }
+
+  .staff-decision-cell {
+    min-width: 240px;
+    white-space: normal;
   }
 
   .staff-table .staff-table__rank {
