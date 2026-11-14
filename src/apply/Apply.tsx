@@ -451,7 +451,7 @@ export function Apply() {
             <ol className="apply-how">
               <li>Choose up to {MAX_PICKS} companies.</li>
               <li>Answer each company's questions with examples from your own work.</li>
-              <li>Questions come from the company's own recent problem, and scores reward concrete examples of your own work, so generic or AI-polished text scores low.</li>
+              <li>Questions come from the company's own recent problem, and scores reward concrete examples of your own work, so generic text scores low.</li>
               <li>AI drafts a score from 0 to 10 for each thing the company is looking for, with a quote from your answer as evidence.</li>
               <li>City of Espoo staff review the answers and scores and decide who is invited. A person makes every decision.</li>
             </ol>
