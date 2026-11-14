@@ -391,7 +391,7 @@ export default function App() {
           </nav>
           <div className="topbar__actions">
             <p className="event-chip">
-              {demoMode && <>Sample answers · </>}Sample event · <b>{EVENT.name}</b> · {EVENT.date}
+              <b>{EVENT.name}</b> · {EVENT.date}
             </p>
           <button type="button" className="btn-quiet demo-control" onClick={playSampleDemo} aria-pressed={demoRunning}>
               {demoRunning ? 'Stop sample demo' : demoMode ? 'Replay sample demo' : 'Play sample demo'}

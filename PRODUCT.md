@@ -76,7 +76,7 @@ UI text must read like a real, practically built app, not a hand-tailored vertic
 ## Evidence on Hand
 
 - Challenge statement (quoted above).
-- No real companies, testimonials, event data or match statistics exist yet. Demo content must be labeled as sample data, and no outcome claims may be invented.
+- No real companies, testimonials, event data or match statistics exist yet. All companies, applicants and follow-up figures in the app are synthetic. The interface does not carry "sample" or "demo" labels (the demo context is understood), but no outcome claims may be presented as real in the pitch or docs.
 
 ## Product Principles
 

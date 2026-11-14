@@ -245,14 +245,12 @@ export function Outcomes() {
 
   return (
     <main className="page">
-      <SiteHeader area="outcomes" note="Concept demo" event={s.event} />
+      <SiteHeader area="outcomes" event={s.event} />
 
       <section className="out-intro" aria-labelledby="out-title">
-        <p className="out-demo">Concept demo · simulated data</p>
         <h1 id="out-title">Event follow-up</h1>
         <p className="out-lede">
           3 and 6 months after an event, a check of attendees' and companies' LinkedIn profiles shows who now works at a company they applied to meet.
-          Every figure on this page is simulated sample data. Nothing is looked up or collected.
         </p>
       </section>
 
@@ -488,7 +486,7 @@ export function Outcomes() {
 
       <section className="out-section" aria-labelledby="out-h-across">
         <h2 id="out-h-across" className="out-h2">Across events</h2>
-        <p className="out-sub">The same checkpoint across sample events.</p>
+        <p className="out-sub">The same checkpoint across events.</p>
         <div className="out-table-wrap">
           <table className="out-table out-table--across">
             <thead>
@@ -536,7 +534,6 @@ export function Outcomes() {
         </ul>
       </section>
 
-      <p className="out-colophon">Simulated sample events, generated from fixed seeds.</p>
     </main>
   )
 }

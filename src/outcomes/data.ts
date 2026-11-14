@@ -410,7 +410,7 @@ function reportText(s: Summary): string {
   const e = s.event
   const cp = s.checkpoint
   if (s.state === 'scheduled') {
-    return `${e.name}, ${e.date}: the ${cp}-month profile check is scheduled for ${s.checkDate}. Simulated sample data.`
+    return `${e.name}, ${e.date}: the ${cp}-month profile check is scheduled for ${s.checkDate}.`
   }
   const a = s.attendance
   const prefix = s.state === 'running' ? 'Provisional, the profile check is still running. ' : ''
@@ -419,7 +419,7 @@ function reportText(s: Summary): string {
     `The ${cp}-month profile check matched ${a.matched} of ${a.attended} attendee profiles. ` +
     `${s.shown.picked} work at a company they applied to meet (${shareText(s)}), ` +
     `${s.shown.elsewhere} have a new employer elsewhere and ${s.shown.none} show no employer change. ` +
-    `Companies confirmed ${s.shown.confirmed} of ${s.shown.picked} hires.${previousText(s)} Simulated sample data.`
+    `Companies confirmed ${s.shown.confirmed} of ${s.shown.picked} hires.${previousText(s)}`
   )
 }
 
@@ -440,5 +440,5 @@ export function toCsv(eventId: string): string {
       rows.push(['company', s.event.name, s.event.date, cp, s.state, c.company, c.invited, c.attended, live ? c.matched : '', '', '', '', '', c.hires[cp] === null ? '' : band(c.hires[cp] as number), c.reported[cp] === null ? '' : band(c.reported[cp] as number)])
     }
   }
-  return ['# Simulated sample data', head.join(','), ...rows.map((r) => r.map(csvCell).join(','))].join('\n') + '\n'
+  return [head.join(','), ...rows.map((r) => r.map(csvCell).join(','))].join('\n') + '\n'
 }

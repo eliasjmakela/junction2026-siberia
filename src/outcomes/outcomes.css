@@ -6,19 +6,8 @@
 }
 
 /* Dashed means not yet: the follow-up is a concept, not a running service. */
-.out-demo {
-  display: inline-block;
-  padding: var(--s-1) var(--s-2);
-  border: 2px dashed var(--ink-soft);
-  border-radius: var(--radius);
-  font-size: var(--type-label);
-  font-weight: 600;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-}
-
 .out-intro h1 {
-  margin-top: var(--s-3);
+  margin-top: 0;
   font-family: var(--font-display);
   font-size: var(--type-display-xl);
   font-weight: 700;
@@ -596,12 +585,6 @@
 
 .out-live li + li {
   margin-top: var(--s-1);
-}
-
-.out-colophon {
-  margin-top: var(--s-7);
-  font-size: var(--type-small);
-  color: var(--ink-soft);
 }
 
 @media (max-width: 1120px) {

@@ -41,7 +41,7 @@ const statusOf = (l: Listing) => (l.status ? GOALS[l.status].name : null)
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`
 
 function SourceNote({ listing }: { listing: Listing }) {
-  if (listing.set.source === 'sample') return <p className="apply-source">Sample questions</p>
+  if (listing.set.source === 'sample') return null
   if (listing.set.source === 'ai')
     return (
       <p className="apply-source">
@@ -75,8 +75,7 @@ function ListingCard({ listing, checked, disabled, onToggle }: { listing: Listin
       )}
       <span className="apply-card__meta">
         <span>{plural(listing.set.questions.length, 'question', 'questions')}</span>
-        {listing.sample && <span className="apply-tag">Sample</span>}
-      </span>
+              </span>
     </label>
   )
 }
@@ -134,8 +133,7 @@ function Submitted({ app, listings, onDeleted }: { app: Application; listings: L
           {picked.map((l) => (
             <li key={l.id}>
               <b>{l.company}</b> · {l.title}
-              {l.sample && <span className="apply-tag">Sample</span>}
-            </li>
+                          </li>
           ))}
         </ul>
       </div>
@@ -420,7 +418,7 @@ export function Apply() {
   if (mine) {
     return (
       <main className="page apply">
-        <SiteHeader area="apply" note={mine.sample ? 'Sample answers' : undefined} action={demoButton} />
+        <SiteHeader area="apply" action={demoButton} />
         <Submitted app={mine} listings={listings} onDeleted={onDeleted} />
         {cursor}
       </main>
@@ -429,7 +427,7 @@ export function Apply() {
 
   return (
     <main className="page apply">
-      <SiteHeader area="apply" note={demoMode ? 'Sample answers' : undefined} action={demoButton} />
+      <SiteHeader area="apply" action={demoButton} />
       {step.kind !== 'intro' && (
         <Progress current={current} total={total} detail={step.kind === 'answer' ? `Company ${step.index + 1} of ${picked.length}` : undefined} />
       )}
@@ -522,8 +520,7 @@ export function Apply() {
             <p className="apply-byline">
               {l.title}
               {status && <span className="apply-byline__status"> · {status}</span>}
-              {l.sample && <span className="apply-tag">Sample</span>}
-            </p>
+                          </p>
             <p className="hint">Answer with concrete examples of your own work, in a few sentences each. Say what you did and what came of it.</p>
             <div className="apply-scored">
               <p className="apply-scored__label">Answers are scored on</p>

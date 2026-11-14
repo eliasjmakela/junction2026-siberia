@@ -14,12 +14,10 @@ const LINKS: { area: Area; href: string; label: string }[] = [
 /** The top bar for the applicant, staff and follow-up views. */
 export function SiteHeader({
   area,
-  note,
   action,
   event = EVENT,
 }: {
   area: Area
-  note?: string
   action?: ReactNode
   event?: { name: string; date: string }
 }) {
@@ -37,7 +35,7 @@ export function SiteHeader({
       </nav>
       <div className="site-header__actions">
         <p className="site-header__event">
-          {note && <>{note} · </>}Sample event · <b>{event.name}</b> · {event.date}
+          <b>{event.name}</b> · {event.date}
         </p>
         {action}
       </div>
