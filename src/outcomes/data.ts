@@ -239,6 +239,7 @@ export const TOO_FEW = 'Too few to show a share'
 
 export function actionFor(attended: number, hires: number, reported: number | null): Action {
   if (hires >= 1 && reported === null) return 'confirm'
+  if (hires === 0 && reported !== null && reported >= 1) return 'confirm'
   if (attended >= 5 && hires === 0) return 'ask'
   if (hires >= 1) return 'again'
   return 'none'

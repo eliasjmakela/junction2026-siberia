@@ -74,7 +74,7 @@ function Lane({ a, max, running }: { a: { id: number; assigned: number; done: nu
       </span>
       <span className="out-lane__count">{running ? `${a.done} of ${a.assigned} profiles` : `${a.done} profiles`}</span>
       <span className="out-lane__count">
-        {band(a.matched)} matched · {band(a.done - a.matched)} not matched
+        {a.matched} matched · {a.done - a.matched} not matched
       </span>
     </li>
   )
@@ -354,7 +354,7 @@ export function Outcomes() {
           <ul className="out-caveats">
             <li>Ranges are 95% Wilson intervals over matched profiles.</li>
             <li>Profiles are often updated weeks after a job starts.</li>
-            <li>Counts of 1–2 are shown as "1–2".</li>
+            <li>Outcome counts of 1–2 are shown as "1–2".</li>
           </ul>
         )}
       </section>
