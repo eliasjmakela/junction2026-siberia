@@ -75,7 +75,8 @@ const s8 = async p => {
 }
 const all = async p => { await s1(p); for (const s of [s2, s3, s4, s5, s6, s7, s8]) { await s(p); await next(p) } }
 const submit = async (p) => { await all(p); await p.getByRole('button', { name: /Submit role/ }).click() }
-const quickCheck = async (p) => { await submit(p); await p.getByRole('button', { name: /Generate|Create/ }).first().click(); await p.waitForTimeout(1500) }
+const questions = async (p) => { await submit(p); await p.getByRole('button', { name: /Draft application questions/ }).click(); await p.getByRole('button', { name: /Publish to the event/ }).waitFor({ timeout: 95000 }) }
+const view = (hash) => async (p) => { await p.evaluate((h) => { location.hash = h }, hash); await p.waitForTimeout(1200) }
 
 for (const [sfx, vp] of [['desktop', D], ['mobile', M]]) {
   await run(`01-empty-${sfx}`, vp, async () => {})
@@ -84,8 +85,10 @@ for (const [sfx, vp] of [['desktop', D], ['mobile', M]]) {
   await run(`04-skills-${sfx}`, vp, async (p) => { await s1(p); await s2(p); await next(p); await s3(p); await next(p); await s4(p); await next(p); await s5(p) })
   await run(`05-review-${sfx}`, vp, all)
   await run(`06-submitted-${sfx}`, vp, submit)
-  await run(`07-quick-check-review-${sfx}`, vp, quickCheck)
-  await run(`08-attendee-check-${sfx}`, vp, async (p) => { await quickCheck(p); await p.getByRole('button', { name: /Publish/ }).click(); await p.evaluate(() => { location.hash = '#/check' }); await p.waitForTimeout(800) })
+  await run(`07-questions-draft-${sfx}`, vp, questions)
+  await run(`08-apply-${sfx}`, vp, async (p) => { await questions(p); await p.getByRole('button', { name: /Publish to the event/ }).click(); await view('#/apply')(p) })
+  await run(`09-staff-${sfx}`, vp, async (p) => { await view('#/staff')(p); await p.waitForTimeout(1500) })
+  await run(`10-follow-up-${sfx}`, vp, view('#/outcomes'))
 }
 await browser.close()
 console.log(`Saved to ${out}/`)

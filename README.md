@@ -6,7 +6,9 @@ Typical job fairs are aimless. Plainly asks the company to describe each role pl
 
 - **a role page** attendees can scan in seconds, with "You'd fit if" and "Probably not for you if" lists;
 - **a role card**: the role and its constellation on one card;
-- **a 60-second quick check** for attendees: yes/no and number questions drafted by AI from the role, reviewed by the company, answered privately by attendees as a self-check (GDPR-compliant by design: no personal data leaves the attendee's device).
+- **application questions**: AI reads the company's own answers, picks out the attributes the role needs (each quoting the company's words) and drafts a few open questions about them; the company reviews and publishes them to the event.
+
+Job seekers then **apply to the event** by picking at most three companies and answering their questions. AI scores each answer set 0–10 per attribute, with a verbatim quote from the answer as evidence, and **City of Espoo staff** rank applicants within each company's pool and decide whom to invite. A **follow-up** concept demo shows, on simulated data, how the city could estimate 3 and 6 months later whether attendees got work at the companies they applied to meet.
 
 While the company answers, the left panel's night sky zooms in on the role's constellation, one star per completed step, and joins the stars once the profile is complete.
 At review, the constellation's bounded shape variation is derived from that role's answers, so the same role gets the same figure.
@@ -18,11 +20,11 @@ npm install
 npm run dev
 ```
 
-Open the printed URL. The sample attendee role list lives at `#/roles`; the quick check lives at `#/check` after a company has published one in the same browser.
+Open the printed URL. The company form is at `/`, applying at `#/apply`, staff review at `#/staff` and the follow-up demo at `#/outcomes`. Five synthetic sample companies and their sample applicants are always present; everything you add is kept in this browser's storage and shared between its tabs.
 
 Use **Play sample demo** in the top bar to watch a synthetic role fill through the questionnaire and arrive at its attendee-facing review page.
 
-To have the quick check drafted by Claude, copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY`. Without a key it is built from the answers with fixed rules.
+To have questions drafted and answers scored by Claude, copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` (default model `claude-opus-5-5`, override with `PLAINLY_AI_MODEL`). Without a key, questions come from fixed templates and scores are a labelled fixed-rule estimate.
 
 The company form also offers field-level writing help. Without `GEMINI_API_KEY`, it shows labelled demo suggestions; with a key, Gemini drafts a concise rewrite and role-focused follow-up questions. Suggested wording is applied only when the company chooses it.
 

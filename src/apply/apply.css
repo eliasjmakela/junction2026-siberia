@@ -1,0 +1,563 @@
+/* ---------- Applicant flow at #/apply ---------- */
+.apply-progress {
+  flex-wrap: wrap;
+  row-gap: var(--s-1);
+  margin-top: var(--s-6);
+}
+
+.apply-step {
+  margin-top: var(--s-4);
+  max-width: 880px;
+}
+
+.apply-step h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--type-display-xl);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  max-width: 19em;
+}
+
+.apply-step h1:focus {
+  outline: none;
+}
+
+.apply-intro {
+  margin-top: var(--s-7);
+}
+
+.apply-label {
+  font-size: var(--type-label);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.apply-section {
+  margin-top: var(--s-5);
+  max-width: 62ch;
+}
+
+.apply-how {
+  margin-top: 12px;
+  list-style: none;
+  counter-reset: how;
+  display: grid;
+  gap: var(--s-2);
+}
+
+.apply-how li {
+  counter-increment: how;
+  display: grid;
+  grid-template-columns: var(--s-4) 1fr;
+  line-height: 1.45;
+}
+
+.apply-how li::before {
+  content: counter(how);
+  color: var(--ink-soft);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.apply-actions {
+  margin-top: var(--s-5);
+}
+
+.apply-tag {
+  display: inline-block;
+  margin-left: var(--s-2);
+  padding: 0 6px;
+  border: 1px solid var(--granite-line);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  font-size: var(--type-label);
+  font-weight: 600;
+  line-height: 1.5;
+  vertical-align: 0.1em;
+}
+
+/* Privacy note: a block under the heavy rule, read before starting. */
+.apply-privacy {
+  margin-top: var(--s-5);
+  max-width: 62ch;
+  padding-top: var(--s-3);
+  border-top: 4px solid var(--spruce);
+}
+
+.apply-privacy h2 {
+  font-size: var(--type-label);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.apply-privacy ul {
+  margin-top: 12px;
+  list-style: none;
+  display: grid;
+  gap: var(--s-2);
+}
+
+.apply-privacy li {
+  position: relative;
+  padding-left: 20px;
+  line-height: 1.45;
+}
+
+.apply-privacy li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 8px;
+  height: 8px;
+  background: var(--spruce);
+}
+
+/* ---------- Company cards ---------- */
+.apply-cards {
+  margin-top: var(--s-2);
+  border: 0;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--s-3);
+}
+
+.apply-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--s-3) var(--s-3) var(--s-3);
+  background: var(--granite-light);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    background-color var(--t-fast) var(--ease-out);
+}
+
+.apply-card input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.apply-card:hover:not(.is-disabled) {
+  background: var(--white);
+  border-color: var(--granite-line);
+}
+
+.apply-card.is-checked,
+.apply-card.is-checked:hover {
+  background: var(--white);
+  border-color: var(--spruce);
+}
+
+.apply-card.is-disabled {
+  cursor: not-allowed;
+  color: var(--ink-soft);
+}
+
+.apply-card:has(input:focus-visible) {
+  outline: var(--focus);
+  outline-offset: 2px;
+}
+
+.apply-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+
+.apply-card__mark {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--ink-soft);
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    background-color var(--t-fast) var(--ease-out);
+}
+
+.apply-card.is-checked .apply-card__mark {
+  border-color: var(--spruce);
+  background: var(--lichen);
+}
+
+.apply-card.is-disabled .apply-card__mark {
+  border-color: var(--granite-line);
+}
+
+/* A miniature of the night field: the complete constellation on spruce, bled to the card edges. */
+.apply-card__sky {
+  display: block;
+  height: 144px;
+  margin: calc(var(--s-3) * -1) calc(var(--s-3) * -1) 0;
+  overflow: hidden;
+  background: var(--spruce);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.apply-card__sky svg {
+  width: 100%;
+  height: 100%;
+}
+
+.apply-card__status {
+  color: var(--spruce);
+  font-size: var(--type-small);
+  font-weight: 600;
+}
+
+.apply-card.is-disabled .apply-card__status {
+  color: var(--ink-soft);
+}
+
+.apply-card__title {
+  display: block;
+  margin-top: var(--s-1);
+  font-family: var(--font-display);
+  font-size: var(--type-display-l-compact);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.apply-card__company {
+  display: block;
+  margin-top: var(--s-1);
+  font-size: var(--type-small);
+  font-weight: 600;
+}
+
+.apply-card__purpose {
+  display: block;
+  margin-top: 12px;
+  font-size: var(--type-small);
+  line-height: 1.45;
+}
+
+.apply-card__lead {
+  color: var(--ink-soft);
+}
+
+.apply-card__meta {
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+  padding-top: var(--s-3);
+  color: var(--ink-soft);
+  font-size: var(--type-small);
+}
+
+.apply-empty {
+  margin-top: var(--s-3);
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+/* ---------- Answer screen ---------- */
+.apply-questions,
+.apply-step .error + .qfield {
+  margin-top: var(--s-1);
+}
+
+.apply-byline {
+  margin-top: var(--s-2);
+  font-size: var(--type-body-l);
+  font-weight: 500;
+}
+
+.apply-byline__status {
+  white-space: nowrap;
+  color: var(--spruce);
+  font-weight: 600;
+}
+
+.apply-scored {
+  margin-top: var(--s-4);
+  max-width: 720px;
+  padding: var(--s-3);
+  background: var(--granite-light);
+  border-radius: var(--radius);
+}
+
+.apply-scored__label {
+  font-size: var(--type-small);
+  font-weight: 600;
+}
+
+.apply-scored ul {
+  margin-top: var(--s-2);
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.apply-scored li {
+  padding: 2px var(--s-2);
+  background: var(--white);
+  border: 1px solid var(--granite-line);
+  border-radius: var(--radius);
+  font-size: var(--type-small);
+  font-weight: 500;
+}
+
+.apply-source {
+  margin-top: 12px;
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+/* AI output is marked so the reader knows how the questions were made. */
+.apply-source__ai {
+  padding: 0 6px;
+  border: 1px solid var(--spruce);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.apply-questions {
+  list-style: none;
+  max-width: 720px;
+}
+
+.apply-q + .apply-q {
+  margin-top: var(--s-5);
+}
+
+.apply-q__label {
+  display: grid;
+  grid-template-columns: var(--s-4) 1fr;
+  gap: 0;
+}
+
+.apply-q__n {
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.qfield__label + .apply-q__input {
+  margin-top: 12px;
+}
+
+.apply-q__input {
+  min-height: 136px;
+}
+
+.input.is-invalid,
+.chip.is-invalid {
+  border-color: var(--rowan);
+}
+
+.apply-q__foot {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  min-height: var(--s-4);
+  margin-top: var(--s-1);
+}
+
+.apply-q__foot .qfield__error {
+  margin-top: 0;
+}
+
+.apply-q__count {
+  margin-left: auto;
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Contact and consent ---------- */
+.apply-email {
+  max-width: 440px;
+}
+
+.qfield__label + .apply-email,
+.qfield__label + .apply-consent {
+  margin-top: 12px;
+}
+
+.apply-consent {
+  align-items: flex-start;
+  max-width: 720px;
+  padding: 12px var(--s-3) 12px 14px;
+  line-height: 1.45;
+}
+
+.apply-consent .chip__mark {
+  margin-top: 0.2em;
+}
+
+/* ---------- Review ---------- */
+.apply-sheet {
+  margin-top: var(--s-4);
+  padding: var(--s-4);
+  background: var(--granite-light);
+  border-radius: var(--radius);
+}
+
+.apply-sheet__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.apply-sheet__title {
+  font-family: var(--font-display);
+  font-size: var(--type-display-l-compact);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.apply-sheet__role {
+  font-family: var(--font-ui);
+  font-size: var(--type-body);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ink-soft);
+}
+
+.apply-change {
+  flex: none;
+  min-height: var(--s-5);
+  padding: 0 var(--s-1);
+  color: var(--spruce);
+  font-size: var(--type-small);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color var(--t-fast) var(--ease-out);
+}
+
+.apply-change:hover {
+  text-decoration-color: currentColor;
+}
+
+.apply-answers {
+  margin-top: var(--s-2);
+}
+
+.apply-answers > div {
+  padding: 12px 0;
+  border-top: var(--rule);
+}
+
+.apply-answers dt {
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+.apply-answers dd {
+  margin-top: var(--s-1);
+  font-weight: 500;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.apply-change-picks {
+  margin-top: var(--s-2);
+}
+
+/* ---------- Submitted ---------- */
+.apply-code {
+  margin-top: var(--s-5);
+}
+
+.apply-code__value {
+  margin-top: var(--s-1);
+  font-family: var(--font-display);
+  font-size: var(--type-display-m);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.apply-picked {
+  margin-top: 12px;
+  list-style: none;
+  display: grid;
+  gap: var(--s-2);
+}
+
+.apply-picked li {
+  padding-bottom: var(--s-2);
+  border-bottom: var(--rule);
+}
+
+.apply-picked b {
+  font-weight: 600;
+}
+
+.apply-next {
+  margin-top: var(--s-5);
+}
+
+.apply-delete {
+  margin-top: var(--s-5);
+  padding-top: var(--s-3);
+  border-top: var(--rule);
+  max-width: 62ch;
+}
+
+.apply-delete .btn-quiet {
+  margin-left: calc(var(--s-2) * -1);
+}
+
+.apply-delete__q {
+  font-weight: 600;
+}
+
+/* ---------- Phone ---------- */
+@media (max-width: 900px) {
+  .apply-step h1 {
+    font-size: var(--type-display-xl-compact);
+    line-height: 1.1;
+  }
+
+  .apply-intro {
+    margin-top: var(--s-5);
+  }
+
+  .apply-progress {
+    margin-top: var(--s-4);
+  }
+
+  .apply-progress .progress__bars li {
+    width: var(--s-4);
+  }
+
+  .apply-actions {
+    flex-wrap: wrap;
+  }
+
+  .apply-actions .btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+
+  .apply-sheet {
+    padding: var(--s-3);
+  }
+
+  .apply-sheet__head {
+    flex-wrap: wrap;
+  }
+}

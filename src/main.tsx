@@ -8,7 +8,7 @@ import '@fontsource/schibsted-grotesk/600.css'
 import './styles/tokens.css'
 import './styles/base.css'
 import App from './App.tsx'
-import { Root } from './screening/Root.tsx'
+import { Root } from './Root.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

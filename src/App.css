@@ -553,6 +553,9 @@
   .tabs {
     gap: var(--s-4);
     white-space: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
 
   .progress {

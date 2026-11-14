@@ -1,0 +1,219 @@
+/* ---------- Company: application questions for the event ---------- */
+.cq {
+  max-width: 880px;
+  padding-top: var(--s-3);
+  border-top: var(--rule);
+}
+
+.cq__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--type-display-l-compact);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.cq__lede {
+  margin-top: var(--s-2);
+  max-width: 62ch;
+  color: var(--ink-soft);
+}
+
+.cq__panel {
+  margin-top: var(--s-4);
+  padding: var(--s-4);
+  background: var(--granite-light);
+  border-radius: var(--radius);
+}
+
+.cq__panel:focus {
+  outline: none;
+}
+
+.cq__panel:focus-visible {
+  outline: var(--focus);
+  outline-offset: 2px;
+}
+
+.cq__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1) var(--s-3);
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+.cq-tag b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* AI output is outlined so it reads as a draft to check. */
+.cq-tag--ai {
+  padding: 0 6px;
+  border: 1px solid var(--spruce);
+  border-radius: var(--radius);
+}
+
+.cq-tag--live b {
+  color: var(--spruce);
+}
+
+.cq__notice {
+  margin-top: var(--s-3);
+  padding: var(--s-2) 12px;
+  border: 1px dashed var(--ink-soft);
+  border-radius: var(--radius);
+  font-size: var(--type-small);
+  max-width: 62ch;
+}
+
+.cq-h3 {
+  margin-top: var(--s-4);
+  font-size: var(--type-label);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.cq-sub {
+  margin-top: var(--s-1);
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+.cq-attrs {
+  list-style: none;
+  margin-top: var(--s-2);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-2);
+}
+
+.cq-attr {
+  padding: var(--s-2) 12px 12px;
+  background: var(--white);
+  border-radius: var(--radius);
+}
+
+.cq-attr__name {
+  font-size: var(--type-body-l);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.cq-attr__looks {
+  margin-top: 2px;
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+.cq-attr__sources {
+  list-style: none;
+  margin-top: var(--s-2);
+  display: grid;
+  gap: var(--s-1);
+  font-size: var(--type-small);
+}
+
+.cq-attr__sources li {
+  padding-left: var(--s-2);
+  border-left: 2px solid var(--spruce);
+}
+
+.cq-attr__label {
+  display: block;
+  font-size: var(--type-micro);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.cq-questions {
+  list-style: none;
+  margin-top: var(--s-2);
+}
+
+.cq-q {
+  display: grid;
+  grid-template-columns: var(--s-5) minmax(0, 1fr) auto;
+  gap: var(--s-2);
+  align-items: start;
+  padding: 12px 0;
+  border-top: var(--rule);
+}
+
+.cq-q__n {
+  font-size: var(--type-small);
+  font-weight: 600;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.6;
+}
+
+.cq-q__text {
+  font-size: var(--type-body-l);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.cq-q__meta {
+  margin-top: var(--s-1);
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+.cq-q__remove {
+  min-height: 32px;
+  padding: 0 var(--s-2);
+  font-size: var(--type-small);
+  font-weight: 600;
+  color: var(--spruce);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color var(--t-fast) var(--ease-out);
+}
+
+.cq-q__remove:hover {
+  text-decoration-color: currentColor;
+}
+
+.cq__actions {
+  margin-top: var(--s-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+}
+
+.cq__actions a {
+  text-decoration: none;
+}
+
+.cq__privacy {
+  margin-top: var(--s-2);
+  max-width: 68ch;
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+@media (max-width: 700px) {
+  .cq__panel {
+    padding: var(--s-3);
+  }
+
+  .cq-attrs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .cq__actions > .btn {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

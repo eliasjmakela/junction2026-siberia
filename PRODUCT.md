@@ -10,13 +10,15 @@ web
 
 Primary: companies considering taking part in recruitment and matchmaking events organized by the City of Espoo, typically the person at the company deciding whether and how to show up (HR, a recruiter, a hiring manager or a founder at a small company). They use it desktop-first, at a desk while preparing for an event, with full mobile support for checking in on the go.
 
-Secondary (implied by the challenge, not yet designed for): the talent those companies want to meet, and the City of Espoo staff who organize the events.
+Secondary: job seekers who want to attend an Espoo event. They pick at most three companies that are joining and answer each company's short open questions to apply.
+
+Third: City of Espoo staff who organise the event. They review the applications per company, ranked by AI-drafted attribute scores with evidence, and decide whom to invite.
 
 ## Product Purpose
 
 Built for the Junction 2026 hackathon, City of Espoo challenge: *"How can recruitment and matchmaking events organized by City of Espoo help companies and talent relevantly find and connect with each other, despite AI-generated job search materials and AI-assisted recruitment processes becoming common?"*
 
-The tool has a company describe each role plainly before the event: whether it is open now, expected to open within three months, or a talent pipeline, what the first month and a normal day look like, which skills are must-have versus teachable, language, location and relocation terms. Attendees then see at a glance whether a role is for them.
+The tool has a company describe each role plainly before the event: whether it is open now, expected to open within three months, or a talent pipeline, what the first month and a normal day look like, which skills are must-have versus teachable, language, location and relocation terms. From those answers, AI drafts the questions job seekers answer to apply for the event, and City of Espoo staff decide whom to invite with AI-drafted, evidence-backed scores as support.
 
 Typical job fairs fail because they are aimless and nobody really benefits. Success means a company arrives at an Espoo event knowing its goal, and the event can match it with the right people because of that clarity.
 
@@ -39,13 +41,16 @@ Most recruitment tools optimize the candidate side or automate screening. This o
 - Company writing help: on request, help clarify one text answer with a concise rewrite and job-related follow-up questions. The company chooses whether to apply suggested wording. Until Gemini is configured, the form shows clearly labelled demo suggestions.
 - Role card: the submitted role as one spruce card with its constellation, title, status and key facts.
 - The constellation figure is a clean, status-specific shape with bounded variations derived from the role's active answers, giving the same role a repeatable visual fingerprint.
-- Quick check for attendees (LLM-powered): from the submitted role, AI drafts a 60-second questionnaire of yes/no and number questions about the role's requirements. The company reviews, removes and publishes the questions; attendees answer them at #/check as a self-check. Without an API key, or if the model call fails, the questions come from fixed rules.
-- GDPR and non-discrimination (binding for anything attendees see): only job-relevant requirements; never special-category data, age, gender, family status, nationality or other protected grounds; no names or contact details; attendee answers stay in the attendee's browser, are never stored or sent, and the result is a self-check, never an automated decision. The model sees only the role profile.
-- Writing-help privacy: only the selected field's answer, role title and static field guidance are sent to Gemini, on request. E-mail addresses, URLs and phone-like strings are removed before sending; the Gemini request uses stateless mode. Never send attendee data or other role/company answers.
-- Planned next: live event role listings with filters (skills, language, remote, relocation); the attendee browser currently uses labelled synthetic sample roles. Optionally, pasting a job ad to have an LLM draft answers for the company to correct.
+- Application questions (LLM-powered): from the submitted role's own texts, AI drafts 2–5 attributes the company is looking for, each citing verbatim quotes from the company's answers, and 2–4 open questions that let applicants show them with concrete examples. The company reviews, removes and publishes them to the event. Without an API key, or if the model call fails, fixed templates draft them from the same texts.
+- Applying to the event: a job seeker picks at most three published companies, answers their questions, gives an e-mail for the invitation and consents to the processing. They get a pseudonymous application code and can delete the application.
+- Staff review (LLM-powered decision support): for each company, every application is scored 0–10 per attribute, each score with a verbatim quote from the applicant's answer as evidence and the company quotes that made the attribute matter. Applicants are ranked within each company's pool against its event slots. Staff record every invite, waitlist or decline decision by hand. Without an API key, scores are a labelled fixed-rule estimate.
+- Follow-up (concept demo only, simulated data): how the city could estimate, 3 and 6 months after the event, whether attendees got work at the companies they applied to meet. Nothing is collected; a real version would rely on opt-in consent, an approved data source or a survey, never scraping.
+- GDPR and non-discrimination (binding): attributes and questions come only from the company's job texts and must quote them; never special-category data, age, gender, family status, nationality or other protected grounds, in questions, attributes, scores, rationales or evidence; no names or contact details in questions or in anything sent to a model. The scoring model sees one company's questions and one applicant's answers to them, scrubbed of contact details, without the e-mail or application code. E-mails appear only in the staff invitation list. Scores are decision support under human review (GDPR art. 22; the EU AI Act treats candidate evaluation as high-risk): every score shows its evidence, a score without valid evidence is not given, and no invitation is automatic. Applicants are told this before they answer and give explicit consent.
+- Writing-help privacy: only the selected field's answer, role title and static field guidance are sent to Gemini, on request. E-mail addresses, URLs and phone-like strings are removed before sending; the Gemini request uses stateless mode. Never send applicant data or other role/company answers.
+- Planned next: a shared backend for event data (everything is in one browser's storage today), sending invitations, and Finnish and Swedish copy. Optionally, pasting a job ad to have an LLM draft answers for the company to correct.
 - Hard limit: a company finishes one role in 10 minutes at most. Question count and question types are chosen for that budget.
 - Stack: React 19 + TypeScript + Vite (already scaffolded).
-- Undecided: how attendees are matched to roles, and the language set (Finnish, Swedish, English).
+- Undecided: the language set (Finnish, Swedish, English) and the retention period for applications.
 
 ## Brand Commitments
 

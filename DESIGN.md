@@ -206,7 +206,7 @@ The signature is the night sky. Each completed step moves the camera, unevenly, 
 Two grounds, one bright ink, one warning colour: a landscape palette committed to in full.
 
 ### Primary
-- **Spruce Field** (spruce): the night. The shell's left region at full height, the attendee page side panel, the role card, the primary button and skill-bucket buttons, the selected scale step, selected-chip borders, done progress and time-budget segments, the active tab underline, heavy rules over the privacy note and "fit" list, and the focus ring on granite. It is a ground, not an accent.
+- **Spruce Field** (spruce): the night. The shell's left region at full height, the role card, the applicant picker's sky bands, the primary button and skill-bucket buttons, the selected scale step, selected-chip borders, done progress segments, the active tab underline, heavy rules over the privacy note and "fit" list, and the focus ring on granite. It is a ground, not an accent.
 - **Raised Spruce** (spruce-raised): hover on spruce surfaces and the scrollbar thumb.
 - **Deep Spruce** (spruce-deep): pressed state on spruce.
 
@@ -230,7 +230,7 @@ Two grounds, one bright ink, one warning colour: a landscape palette committed t
 
 **The Rowan Is Alarm Rule.** Rowan appears only on errors. It never marks emphasis, a brand moment or a destructive-looking button.
 
-**The Field Owns a Region Rule.** Spruce is applied as a whole region: the field, the attendee side panel, the role card (a miniature of the field carrying its own sky) and solid actions. Never as a thin tint or a generic card background on granite.
+**The Field Owns a Region Rule.** Spruce is applied as a whole region: the field, the role card, the picker's sky bands (a miniature of the field carrying its own sky) and solid actions. Never as a thin tint or a generic card background on granite.
 
 ## Typography
 
@@ -240,15 +240,15 @@ Two grounds, one bright ink, one warning colour: a landscape palette committed t
 **Character:** A compact, slightly quirky grotesk set bold and tight for poster headlines, against a plain, sturdy grotesk for everything operational. Both are self-hosted (weights 500/700 display; 400/500/600 UI).
 
 ### Hierarchy
-- **Display XL** (700, 46px, 1.06, -0.025em): the role title in the field caption, step titles, the review and submitted headings, the attendee page heading. Max about 19em.
-- **Display XL compact** (700, 30px, 1.1): step, submitted and attendee headings at 900px and below.
-- **Display L** (700, 34px, 1.1, -0.02em): the empty-title placeholder in the caption (in soft on-spruce), the role card title, the review sheet title, the role title in the attendee side panel.
+- **Display XL** (700, 46px, 1.06, -0.025em): the role title in the field caption, step titles, the review and submitted headings, the applicant, staff and follow-up page headings. Max about 19em.
+- **Display XL compact** (700, 30px, 1.1): step, submitted and site-page headings at 900px and below.
+- **Display L** (700, 34px, 1.1, -0.02em): the empty-title placeholder in the caption (in soft on-spruce), the role card title, the review sheet title.
 - **Display L compact** (700, 22px, 1.1): in-page section headings (the "fit" lists, the quick-check title) and the caption and side-panel titles in the phone band.
-- **Display M** (700, 28px, 1, -0.02em): the wordmark, in lichen; the attendee question-stage heading.
+- **Display M** (700, 28px, 1, -0.02em): the wordmark, in lichen on spruce and spruce on granite.
 - **Body L** (500, 17px, 1.3): field labels and sentence leads (600), the caption details line, the role purpose, quick-check questions, stepper values.
 - **Body** (400, 16px, 1.5): hints (max 62ch), inputs, chips (500), buttons (600).
 - **Small** (14px): ledger, progress and budget counts (tabular numerals), status and error lines, field hints, meta and notes.
-- **Label** (600, 13px, 0.08em, uppercase): the field-caption status, section headings (ledger, skill buckets, review sections, "What next", "Before you start"), the company line in the attendee panel. Definition terms and card meta use 13px without tracking or case change. The "changed" tag is 13px/600.
+- **Label** (600, 13px, 0.08em, uppercase): the field-caption status, section headings (ledger, skill buckets, review sections, "What next", "Before you decide"). Definition terms and card meta use 13px without tracking or case change. The "changed" tag is 13px/600.
 - **Micro** (600, 11px, 0.08em, uppercase): status suffixes such as "soon" and "Optional".
 
 ### Named Rules
@@ -262,16 +262,16 @@ Two grounds, one bright ink, one warning colour: a landscape palette committed t
 
 **Company shell.** Two regions. The spruce field is a fixed-width left column (560px) that stays sticky at full viewport height while the granite work area scrolls; the field colour is painted the full page height behind it. The sky fills the whole field. The wordmark and tagline sit at the top (24px down, 48px in); the caption sits at the bottom (40px up, 48px in): status, role title, details line.
 
-The work area runs top to bottom: section tabs and the sample-event chip, progress segments with "Step n of 8", the step title, hint, error line, fields, actions, a status line, and the ledger pushed to the foot with auto margin. Content widths cap at 800px (step), 880px (ledger, review sheet, submitted page, quick check) and 720px (inputs).
+The work area runs top to bottom: section tabs and the sample-event chip, progress segments with "Step n of 8", the step title, hint, error line, fields, actions, a status line, and the ledger pushed to the foot with auto margin. Content widths cap at 800px (step), 880px (ledger, review sheet, submitted page, application questions) and 720px (inputs).
 
-**Attendee shell.** The same two-region model with a 440px spruce side panel (360px at 1120px and below): wordmark and "Quick check" tag at top, the submitted role's complete sky behind, the company and role title pushed to the foot, then a footer under a faint rule (`--rule-on-spruce`) with question count and time. The work column caps at 880px with 64px padding.
+**Site pages.** The applicant (`#/apply`), staff review (`#/staff`) and follow-up (`#/outcomes`) views share one granite page with a top bar: the spruce wordmark, text tabs with the spruce underline for the current page, and the sample-event chip. Spruce appears as whole regions only: the constellation band on each company card in the applicant picker, primary actions and heavy rules.
 
 Spacing is an 8px module with a 4px half-step (s-1 to s-9, 4–64px). Fields stack 32px apart; chip sets wrap with 8px gaps. Status and error lines reserve their height so the layout never jumps.
 
 **Breakpoints:**
 - **1360px and below:** company field narrows to 440px; caption and brand insets 32px, work padding 40px.
-- **1120px and below:** event chip hidden; submitted page stacks the role card over the next steps; attendee panel narrows to 360px.
-- **900px and below:** the company field becomes a 240px band (brand and caption inset 16px; title at Display L compact, empty placeholder at Body L, details at Small) with the constellation small on the right. The attendee panel becomes a top band (min 200px, footer hidden). Tabs scroll horizontally; skill buckets, fit lists and preview grids go single column; primary actions stretch; ledger rows stack into a number / question-over-answer / edit grid.
+- **1120px and below:** event chip hidden; submitted page stacks the role card over the next steps.
+- **900px and below:** the company field becomes a 240px band (brand and caption inset 16px; title at Display L compact, empty placeholder at Body L, details at Small) with the constellation small on the right. Tabs scroll horizontally inside their row; skill buckets, fit lists and preview grids go single column; primary actions stretch; ledger rows stack into a number / question-over-answer / edit grid.
 
 ## Elevation & Depth
 
@@ -309,7 +309,6 @@ Light granite choices that turn to paper when chosen; the form's answer primitiv
 - **Hover:** white with a granite-line border.
 - **Selected:** white chip, spruce border; the mark fills lichen inside a spruce ring.
 - **Not decided yet:** transparent with a 2px dashed granite-line border, soft-ink text, dashed square mark; stays dashed when pressed, text darkens to ink. Choosing it disables and dashes the field it belongs to.
-- **Large (attendee yes/no):** 56px, Body L, in two 160px columns.
 - **Focus:** the whole chip takes the 3px spruce outline.
 
 ### Inputs / Fields
@@ -325,7 +324,7 @@ Light granite choices that turn to paper when chosen; the form's answer primitiv
 Section tabs at 16px/500 in soft ink with 32px gaps. The current tab is ink with a 3px spruce underline. Unavailable tabs stay in place with a micro "soon" label and a default cursor.
 
 ### Progress
-One 32px × 6px segment per step with 4px gaps (24px wide on phones): spruce when done, lichen for the current step, granite-line when ahead. A Small count sits beside it. The attendee time budget is the same bar with segments sized by each question's estimated seconds, spruce when answered, sticky at the top of the question list.
+One 32px × 6px segment per step with 4px gaps (24px wide on phones): spruce when done, lichen for the current step, granite-line when ahead. A Small count sits beside it.
 
 ### Chips and tags
 - **Event chip:** light granite, 13px soft-ink text with the event name in 600 ink, 8px/12px padding, labelled as sample data.
@@ -342,35 +341,22 @@ The attendee-facing role page shown on the review screen: a light granite sheet 
 ### Role card
 A 400px spruce card on the submitted page: lichen wordmark and the event in 13px soft on-spruce at top, a 4:3 bleed of the complete static sky, the role title in Display L, status in lichen and company in Small/600, a two-column facts grid under a faint rule (`--rule-on-spruce`) and the must-have skills. Next to it, a top-ruled column with a label heading, the primary "Submit another role" action, a Small note and a quiet "View or edit this role" action.
 
-### Quick check (company review)
-A top-ruled section after submission: Display L compact title, lede, then a light granite panel holding the draft. A Small meta line shows the source (AI source tag, or spruce "Published"). Questions are numbered rows with 1px rules: Body L/500 question, Small meta (answer type, the requirement it checks, what counts as a match), a spruce "Remove" text action. A dashed notice appears when the role has changed since publishing. Actions: primary publish or open, quiet regenerate/edit/unpublish. A Small soft-ink privacy paragraph closes the section.
+### Application questions (company)
+A top-ruled section on the submitted page: Display L compact title, lede, then a light granite panel holding the draft. A Small meta line shows the producer (outlined "AI-drafted · model" tag, "Drafted from your answers · fixed templates", or spruce "Published"). "What applicants are scored on" lists the attributes as white tiles in a two-column grid: Body L/600 name, Small soft-ink "strong answers show", and each source quote under a 2px spruce left rule with its micro label (the company field it quotes). Questions are numbered rows with 1px rules: Body L/500 question, Small "Shows:" line, a spruce "Remove" text action. A dashed notice appears when the role has changed since publishing. A Small soft-ink privacy paragraph closes the section.
 
-### Quick check (attendee page)
-- **Privacy note:** read before starting. A block under the 4px spruce heavy rule with a label heading ("Before you start") and short statements marked by 8px spruce squares: answers stay on the device, no contact details are asked, how the questions were made (stating AI generation when it applies), and that the result is a self-check, never a decision.
-- **Questions:** a ruled list of fieldsets, legend in Body L/600 with its number in soft ink, answered with large yes/no chips or an enlarged 56px stepper with its unit.
-- **Result:** heading "Matches n of m requirements" (a template), then ruled rows with a 12px square mark: lichen in spruce border for a match, soft-ink outline for a miss, dashed for not answered, and a Small/600 state word (spruce for a match).
+### Applicant flow
+Progress segments as in the company form, Display XL step headings. The picker is a grid of company cards: a spruce sky band with the complete constellation on top, status, title, company, purpose and question count below; a chosen card takes the white fill, spruce border and lichen mark of a chosen chip. Answers are textareas with a character counter. A privacy block under the heavy spruce rule comes before anything the applicant answers.
 
-### Focus
-**The Ring Follows the Ground Rule.** Focus is a 3px solid outline at 2px offset: spruce on granite surfaces, lichen on spruce surfaces. Every interactive element inside the field, the attendee panel and the role card uses the lichen ring.
+### Staff review
+A "Before you decide" block under the heavy spruce rule, company-role tiles with counts (the chosen one with a spruce border), then the ranked table: rank, application code, overall score in display numerals, one 0–10 spruce bar per attribute (dashed outline when there is no evidence) and Invite / Waitlist / Decline chips. A labelled rule marks the event-slot cutoff. Expanded rows show each score with its rationale, the evidence quote underlined in lichen inside the full answer, and the company quotes behind the attribute. Below 900px the rows become stacked cards.
 
-### Night Sky (signature)
-A decorative SVG (`aria-hidden`) that fills the company field, the attendee side panel and the role card figure; the caption beside it carries the meaning in text. All parameters live in the sky's own settings object.
+### Follow-up (concept demo)
+A dashed "Concept demo · simulated data" label leads the page, since dashed means "not real yet". Headline estimate tiles with rough ranges, a horizontal funnel of spruce bars where only the "working at a picked company" bar is lichen and "no new job found" is dashed, a per-company table, the pipeline steps and the run log of parallel lookup workers.
 
-- **The sky:** 1600 noise stars (700 on the role card) in on-spruce on an 1800 × 2600 world, each with its own depth, size (base 0.35–1.75, scaled 1.35), opacity (0.25–0.85) and twinkle phase. Depth drives heavy parallax (1.4).
-- **The constellation:** nine stars in one closed figure per status, lines never crossing: an outlined arrow (Open now), a blunt-nosed arrow (Opening within 3 months), a linked ring (Talent pipeline). Each outline has one restrained internal connection. At review, a deterministic fingerprint of the active role answers varies proportions, tilt and offsets within ±30 units. The figure stays clean and repeatable for the same answers. With no status yet, the arrow figure stands in.
-- **Per completed step (0–8):** the camera zooms from 0.32 to 1.15 in eight uneven steps, pans from the sky's centre toward the constellation with a wander (±240) that shrinks as it nears, and swings its rotation (up to ±22°) back to level at the last step. The path is new each time a scene is built. Focus pulls: a softness of 3 falls linearly to 0 while depth-of-field (to 1.2) rises, so stars away from the focal plane stay soft; noise stars dim to 55%. One more constellation star is picked (step 2 picks two): it grows, takes a lichen dot over its core and a faint lichen halo (3.2× radius).
-- **Motion:** every value eases exponentially toward its target (time constant about 325ms). A slow idle drift, rotation sway and twinkle (0.15) keep the sky alive and quieten as the role comes into focus.
-- **Complete profile:** on the review and submitted screens, lichen lines (1.3px, round caps, 80% opacity) draw one after another along the figure, 140ms apart. Lines never appear before the profile is complete.
-- **Undecided:** a star whose step was answered "Not decided yet" is picked at 30% strength, with its lichen dot halved and no halo; every line touching it is dashed (3/5) and drawn at 55% of full opacity.
-- **Framing:** in a tall panel the constellation centres at 40% height, in the open sky above the caption. In a short band (under 500px tall: phones) it sits small at 72% across and 42% down, clear of the caption. Scale follows the panel (width/560, height/700, clamped 0.3–1.25).
-- **Role card and attendee panel:** the complete figure, all picked stars lit, lines drawn. The card is static: no drift, no twinkle.
-- **Reduced motion:** no animation loop. The sky snaps to each new state and is redrawn once; no drift, no twinkle, no line sequence.
-
-### Field caption
 Bottom-left on the field, in a polite live region: the status (Label, lichen, uppercase; "No status yet" before one is chosen), the role title (Display XL; when empty a generic placeholder at Display L in soft on-spruce), and a details line (Body L, soft on-spruce). In the 240px phone band: title at Display L compact, placeholder at Body L, details at Small, 16px insets.
 
 ### Copy and voice
-Interface copy is generic, practically built product text that holds for any company and any answer: "No answers yet", "Step 4 of 8", "Not decided yet", "Not answered". Labels, buttons, empty states, errors and status lines never comment on the user's particular choices. Summaries assembled from answers are plain templates with slots (the caption, ledger summaries, the role page, "Matches n of m requirements"). Frank, characterful language belongs where a team authors it once: step titles, sentence leads and help text. The one exception is the quick check's questions, which are AI-generated: they are always labelled as generated by AI wherever they appear (source tag for the employer, a note and a privacy statement for the attendee), and everything around them stays fixed copy. Copy describes the product on its own terms and never carries contrasts with alternatives or traces of how it was designed. Sample content is always labelled as sample.
+Interface copy is generic, practically built product text that holds for any company and any answer: "No answers yet", "Step 4 of 8", "Not decided yet", "Not answered". Labels, buttons, empty states, errors and status lines never comment on the user's particular choices. Summaries assembled from answers are plain templates with slots (the caption, ledger summaries, the role page, "Matches n of m requirements"). Frank, characterful language belongs where a team authors it once: step titles, sentence leads and help text. The exceptions are AI-drafted attributes, questions, scores and rationales: they are always labelled as AI-drafted wherever they appear (an outlined source tag for the company and staff, a note for the applicant), and everything around them stays fixed copy. Copy describes the product on its own terms and never carries contrasts with alternatives or traces of how it was designed. Sample content is always labelled as sample.
 
 ## Do's and Don'ts
 
@@ -382,7 +368,7 @@ Interface copy is generic, practically built product text that holds for any com
 - **Do** switch the focus ring to lichen on any spruce surface, spruce on granite.
 - **Do** reserve height for status, error and caption text so nothing jumps.
 - **Do** draw icons as filled inline SVG on the 16-unit grid.
-- **Do** label AI-generated content as generated by AI wherever it appears, and put a privacy note before anything attendees answer.
+- **Do** label AI-generated content as AI-drafted wherever it appears, show the evidence next to every score, and put a privacy note before anything applicants answer.
 - **Do** write labels, empty states and errors as generic templates; put characterful language in step titles, sentence leads and static help text.
 
 ### Don't:
@@ -393,4 +379,4 @@ Interface copy is generic, practically built product text that holds for any com
 - **Don't** add motion beyond short state transitions (120ms / 220ms); the night sky is the one authored moment.
 - **Don't** put invented uppercase kickers above headings; tracked labels carry section names or real values.
 - **Don't** write UI copy that reacts to the user's specific answers, or that explains what the product is not.
-- **Don't** present sample events or answers without a sample label, or show invented outcomes or match statistics; the attendee result counts only the attendee's own answers and is labelled a self-check.
+- **Don't** present sample events, applicants or answers without a sample label, or show invented outcomes as real; the follow-up page's figures are always labelled simulated.

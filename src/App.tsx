@@ -5,12 +5,12 @@ import { FieldView } from './form/fields'
 import { display, fieldsFor, goalOf, hasValue, isAnswered, missingOn, screenSummary } from './form/logic'
 import { RoleCard } from './form/RoleCard'
 import { RolePreview } from './form/RolePreview'
-import { ScreeningReview } from './screening/ScreeningReview'
+import { CompanyQuestions } from './event/CompanyQuestions'
+import { EVENT } from './event/store'
 import { ALL_FIELDS, FIELD_BY_ID, GOALS, SCREENS, type Value, type Values } from './form/schema'
 import { newSeed, roleFingerprint, skyStars } from './sky/input'
 import './App.css'
 
-const EVENT = { name: 'Espoo Matchmaking Day', date: '4 Mar 2027' }
 const STORAGE_KEY = 'plainly:role:v2'
 const REVIEW = SCREENS.length
 const SUBMITTED = SCREENS.length + 1
@@ -385,13 +385,9 @@ export default function App() {
             <a href="#form" aria-current="page">
               Role
             </a>
-            <a href="#/roles">Browse roles</a>
-            <span aria-disabled="true">
-              Events <small>soon</small>
-            </span>
-            <span aria-disabled="true">
-              Company page <small>soon</small>
-            </span>
+            <a href="#/apply">Apply to the event</a>
+            <a href="#/staff">Staff review</a>
+            <a href="#/outcomes">Follow-up</a>
           </nav>
           <div className="topbar__actions">
             <p className="event-chip">
@@ -433,7 +429,7 @@ export default function App() {
                 </button>
               </div>
             </div>
-            <ScreeningReview values={values} />
+            <CompanyQuestions values={values} seed={seed} />
           </section>
         ) : onReview ? (
           <section className="review" id="form" aria-labelledby="review-title">

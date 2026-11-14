@@ -87,3 +87,10 @@ p {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* Page frame for the applicant, staff and follow-up views. */
+.page {
+  min-height: 100dvh;
+  padding: var(--s-4) clamp(var(--s-3), 5vw, var(--s-9)) var(--s-7);
+  background: var(--granite);
+}
