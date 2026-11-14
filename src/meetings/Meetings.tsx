@@ -610,7 +610,7 @@ export function Meetings() {
               ))}
             </ul>
           ) : (
-            <p className="staff-empty">No meetings are booked for this role.</p>
+            <p className="staff-empty">No meetings to rate. Meetings you book appear here after the event.</p>
           )}
         </section>
       )}
