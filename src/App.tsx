@@ -1,10 +1,12 @@
 import { useRef, useState, type FormEvent } from 'react'
-import { Arrow, Emblem, IntentShape } from './components/IntentShape'
+import { Arrow } from './components/Arrow'
+import { Sky } from './components/Sky'
 import { FieldView } from './form/fields'
-import { goalOf, intentSentence, isAnswered, missingOn, screenSummary, specificity } from './form/logic'
+import { display, goalOf, hasValue, isAnswered, missingOn, screenSummary } from './form/logic'
 import { RoleCard } from './form/RoleCard'
 import { RolePreview } from './form/RolePreview'
-import { ALL_FIELDS, GOALS, SCREENS, type Goal, type Value, type Values } from './form/schema'
+import { ALL_FIELDS, FIELD_BY_ID, GOALS, SCREENS, type Value, type Values } from './form/schema'
+import { newSeed, skyStars } from './sky/input'
 import './App.css'
 
 const EVENT = { name: 'Espoo Matchmaking Day', date: '4 Mar 2027' }
@@ -12,7 +14,7 @@ const STORAGE_KEY = 'plainly:role:v2'
 const REVIEW = SCREENS.length
 const SUBMITTED = SCREENS.length + 1
 
-type Stored = { values: Values; savedAt: string }
+type Stored = { values: Values; savedAt: string; seed?: string }
 
 function loadStored(): Stored | null {
   try {
@@ -44,11 +46,11 @@ export default function App() {
   const [changed, setChanged] = useState<Set<string>>(new Set())
   const [savedAt, setSavedAt] = useState<string | null>(initial?.savedAt ?? null)
   const [submitError, setSubmitError] = useState(false)
+  // Each role has its own constellation; the seed is its identity.
+  const [seed, setSeed] = useState(() => initial?.seed ?? newSeed())
   const headingRef = useRef<HTMLHeadingElement>(null)
 
   const goal = goalOf(values)
-  const spec = goal ? specificity(values) : 0
-  const sentence = intentSentence(values)
   const onSubmitted = index === SUBMITTED && savedAt !== null
   const onReview = index >= REVIEW && !onSubmitted
   const screen = SCREENS[Math.min(index, REVIEW - 1)]
@@ -96,7 +98,7 @@ export default function App() {
   function submit() {
     const at = new Date().toISOString()
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ values, savedAt: at } satisfies Stored))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ values, savedAt: at, seed } satisfies Stored))
       setSubmitError(false)
       setSavedAt(at)
       setChanged(new Set())
@@ -116,6 +118,7 @@ export default function App() {
     const kept: Values = {}
     for (const f of ALL_FIELDS) if (f.company && values[f.id]) kept[f.id] = values[f.id]
     setValues(kept)
+    setSeed(newSeed())
     setVisited(new Set())
     setChanged(new Set())
     setSavedAt(null)
@@ -124,29 +127,34 @@ export default function App() {
   }
 
   const anyAnswer = ALL_FIELDS.some((f) => isAnswered(f, values[f.id]))
+  const stars = skyStars(values, isDone)
+  const title = hasValue(FIELD_BY_ID.title, values.title) ? values.title!.text!.trim() : null
+  const details = (['positions', 'type', 'start'] as const)
+    .filter((id) => hasValue(FIELD_BY_ID[id], values[id]))
+    .map((id) => (id === 'positions' ? `${values.positions!.number} ${values.positions!.number === 1 ? 'position' : 'positions'}` : display(id, values)))
+    .join(' · ')
 
   return (
     <div className="shell">
       <aside className="field" aria-label="Your role">
+        <Sky
+          className="field__sky"
+          seed={seed}
+          goal={goal}
+          step={doneCount}
+          lit={stars.lit}
+          undecided={stars.undecided}
+          complete={onReview || onSubmitted}
+        />
         <div className="field__brand">
           <span className="wordmark">Plainly</span>
           <span className="field__tagline">for Espoo recruitment events</span>
         </div>
-        <div className="field__figure">
-          <IntentShape goal={goal} specificity={spec} />
+        <div className="field__caption" aria-live="polite">
+          <p className="field__status">{goal ? GOALS[goal].name : 'No status yet'}</p>
+          <p className={`field__title${title ? '' : ' is-quiet'}`}>{title ?? 'Your role takes shape as you answer.'}</p>
+          {details && <p className="field__details">{details}</p>}
         </div>
-        <p className="intent" aria-live="polite">
-          {goal ? <em>{sentence.lead}</em> : sentence.lead}
-          <span className={goal ? undefined : 'intent__quiet'}>{goal ? sentence.rest : ` ${sentence.rest}`}</span>
-        </p>
-        <ul className="legend" aria-label="Role status">
-          {(Object.keys(GOALS) as Goal[]).map((g) => (
-            <li key={g} className={g === goal ? 'is-on' : undefined} aria-current={g === goal ? 'true' : undefined}>
-              <Emblem goal={g} />
-              {GOALS[g].name}
-            </li>
-          ))}
-        </ul>
       </aside>
 
       <main className="work">
@@ -185,7 +193,7 @@ export default function App() {
               {values.title?.text?.trim() || 'The role'} is submitted for {EVENT.name}, {formatTime(savedAt!)}.
             </p>
             <div className="submitted__body">
-              <RoleCard values={values} event={EVENT} />
+              <RoleCard values={values} seed={seed} event={EVENT} />
               <div className="submitted__next">
                 <h2>Next</h2>
                 <button type="button" className="btn" onClick={addAnotherRole}>

@@ -15,28 +15,34 @@
   background: var(--spruce);
 }
 
-/* ---------- Field ---------- */
+/* ---------- Field: the night sky ---------- */
 .field {
   position: sticky;
   z-index: 1;
   top: 0;
   height: 100dvh;
+  overflow: hidden;
   background: var(--spruce);
   color: var(--on-spruce);
-  padding: var(--s-4) var(--s-7) var(--s-6);
-  display: flex;
-  flex-direction: column;
 }
 
 .field :focus-visible {
   outline: var(--focus-on-spruce);
 }
 
+.field__sky {
+  position: absolute;
+  inset: 0;
+}
+
 .field__brand {
+  position: absolute;
+  top: var(--s-4);
+  left: var(--s-7);
+  right: var(--s-7);
   display: flex;
   align-items: baseline;
   gap: var(--s-3);
-  min-height: var(--s-6);
 }
 
 .wordmark {
@@ -53,66 +59,40 @@
   color: var(--on-spruce-soft);
 }
 
-.field__figure {
-  margin-top: auto;
-  max-width: 400px;
+.field__caption {
+  position: absolute;
+  left: var(--s-7);
+  right: var(--s-7);
+  bottom: var(--s-6);
 }
 
-.intent {
-  margin-top: var(--s-4);
-  max-width: 28ch;
+.field__status {
+  font-size: var(--type-label);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--lichen);
+}
+
+.field__title {
+  margin-top: var(--s-2);
   font-family: var(--font-display);
   font-weight: 700;
+  font-size: var(--type-display-xl);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+.field__title.is-quiet {
   font-size: var(--type-display-l);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  min-height: calc(3 * 1.1em);
-}
-
-.intent em {
-  font-style: normal;
-  color: var(--lichen);
-}
-
-.intent__quiet {
-  color: var(--on-spruce-soft);
-  font-weight: 500;
-}
-
-.legend {
-  list-style: none;
-  margin-top: auto;
-  padding-top: var(--s-3);
-  border-top: 1px solid rgb(238 240 236 / 0.18);
-  display: grid;
-  grid-template-columns: repeat(3, auto);
-  justify-content: space-between;
-  gap: var(--s-2);
-  font-size: var(--type-label);
   color: var(--on-spruce-soft);
 }
 
-.legend li {
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
-  transition: color var(--t-base) var(--ease-out);
-}
-
-.legend li .emblem {
-  color: var(--spruce-raised);
-  fill: var(--on-spruce-soft);
-  opacity: 0.6;
-}
-
-.legend li.is-on {
-  color: var(--lichen);
-  font-weight: 600;
-}
-
-.legend li.is-on .emblem {
-  fill: var(--lichen);
-  opacity: 1;
+.field__details {
+  margin-top: 12px;
+  font-size: var(--type-body-l);
+  color: var(--on-spruce-soft);
 }
 
 /* ---------- Work area ---------- */
@@ -444,8 +424,10 @@
     --field-width: 440px;
   }
 
-  .field {
-    padding-inline: var(--s-5);
+  .field__brand,
+  .field__caption {
+    left: var(--s-5);
+    right: var(--s-5);
   }
 
   .work {
@@ -471,37 +453,35 @@
   }
 
   .field {
-    position: static;
-    height: auto;
-    padding: var(--s-3) var(--s-3) var(--s-4);
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 128px;
-    grid-template-areas:
-      'brand brand'
-      'intent figure';
-    column-gap: var(--s-3);
-    align-items: end;
+    position: relative;
+    height: 240px;
   }
 
   .field__brand {
-    grid-area: brand;
-    margin-bottom: var(--s-3);
+    top: var(--s-3);
+    left: var(--s-3);
+    right: var(--s-3);
   }
 
-  .field__figure {
-    grid-area: figure;
-    margin-top: 0;
+  .field__caption {
+    left: var(--s-3);
+    right: var(--s-3);
+    bottom: var(--s-3);
   }
 
-  .intent {
-    grid-area: intent;
-    margin-top: 0;
-    min-height: 0;
+  .field__title {
+    margin-top: var(--s-1);
     font-size: var(--type-display-l-compact);
+    line-height: 1.1;
   }
 
-  .legend {
-    display: none;
+  .field__title.is-quiet {
+    font-size: var(--type-body-l);
+  }
+
+  .field__details {
+    margin-top: var(--s-1);
+    font-size: var(--type-small);
   }
 
   .work {

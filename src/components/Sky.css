@@ -1,0 +1,17 @@
+.sky {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sky__star {
+  fill: var(--on-spruce);
+}
+
+.sky__ink {
+  fill: var(--lichen);
+}
+
+.sky__line {
+  stroke: var(--lichen);
+}

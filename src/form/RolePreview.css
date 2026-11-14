@@ -33,11 +33,7 @@
   color: var(--spruce);
 }
 
-.preview__status .emblem {
-  fill: var(--spruce);
-  width: 16px;
-  height: 16px;
-}
+
 
 .preview__purpose {
   margin-top: var(--s-3);

@@ -1,4 +1,3 @@
-import { Emblem } from '../components/IntentShape'
 import { display, fitLists, goalOf, hasValue, UNDECIDED } from './logic'
 import { FIELD_BY_ID, GOALS, type Values } from './schema'
 import './RolePreview.css'
@@ -50,10 +49,7 @@ export function RolePreview({ values }: { values: Values }) {
         <h2 className="preview__title">{title}</h2>
         <p className="preview__byline">
           {goal && (
-            <span className="preview__status">
-              <Emblem goal={goal} />
-              {GOALS[goal].name}
-            </span>
+            <span className="preview__status">{GOALS[goal].name}</span>
           )}
           <span>
             {company}

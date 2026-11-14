@@ -1,15 +1,16 @@
-import { Emblem, IntentShape } from '../components/IntentShape'
-import { display, goalOf, hasValue, specificity, UNDECIDED } from './logic'
+import { Sky } from '../components/Sky'
+import { skyStars } from '../sky/input'
+import { display, goalOf, hasValue, UNDECIDED } from './logic'
 import { FIELD_BY_ID, GOALS, type Values } from './schema'
 import './RoleCard.css'
 
-type Props = { values: Values; event: { name: string; date: string } }
+type Props = { values: Values; seed: string; event: { name: string; date: string } }
 
 /**
  * The role card: the role's need on one poster-sized card, for the event
- * listing, the stand and sharing. A miniature of the field, so it is spruce.
+ * listing, the stand and sharing. A miniature of the night-sky field, so it is spruce.
  */
-export function RoleCard({ values, event }: Props) {
+export function RoleCard({ values, seed, event }: Props) {
   const goal = goalOf(values)
   const title = hasValue(FIELD_BY_ID.title, values.title) ? values.title!.text!.trim() : 'Untitled role'
   const company = hasValue(FIELD_BY_ID.company, values.company) ? values.company!.text!.trim() : null
@@ -30,15 +31,12 @@ export function RoleCard({ values, event }: Props) {
         </span>
       </p>
       <div className="role-card__figure">
-        <IntentShape goal={goal} specificity={goal ? specificity(values) : 0} />
+        <Sky thumb seed={seed} goal={goal} step={8} {...skyStars(values, () => true)} complete />
       </div>
       <h2 className="role-card__title">{title}</h2>
       <p className="role-card__by">
         {goal && (
-          <span className="role-card__status">
-            <Emblem goal={goal} />
-            {GOALS[goal].name}
-          </span>
+          <span className="role-card__status">{GOALS[goal].name}</span>
         )}
         {company && <span>{company}</span>}
       </p>

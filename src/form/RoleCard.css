@@ -22,7 +22,8 @@
 }
 
 .role-card__figure {
-  margin-top: var(--s-4);
+  margin: var(--s-3) calc(-1 * var(--s-4)) 0;
+  aspect-ratio: 4 / 3;
 }
 
 .role-card__title {
@@ -49,10 +50,6 @@
   align-items: center;
   gap: var(--s-2);
   color: var(--lichen);
-}
-
-.role-card__status .emblem {
-  fill: var(--lichen);
 }
 
 .role-card__facts {
