@@ -1,6 +1,9 @@
-import { useRef, useState, type FormEvent, type MouseEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react'
 import { Arrow } from './components/Arrow'
-import { NAV_LINKS } from './components/nav'
+import { RoleNav } from './components/SiteHeader'
+import { ViewingBand } from './components/ViewingBand'
+import { useRoute, useViewedCompany } from './components/viewing'
+import { CompanyRole } from './company/CompanyRole'
 import { Sky } from './components/Sky'
 import { FieldView } from './form/fields'
 import { display, fieldsFor, goalOf, hasValue, isAnswered, missingOn, screenSummary } from './form/logic'
@@ -92,11 +95,21 @@ export default function App() {
   const eventState = useEvent()
   const questionsPublished = eventState.listings.some((l) => l.id === `role-${seed}`)
   const headingRef = useRef<HTMLHeadingElement>(null)
+  const { view } = useRoute()
+  const viewed = useViewedCompany()
 
   const goal = goalOf(values)
   const onSubmitted = index === SUBMITTED && savedAt !== null
   const onReview = index >= REVIEW && !onSubmitted
   const screen = SCREENS[Math.min(index, REVIEW - 1)]
+  const wantsQuestions = view === 'questions'
+
+  // Application questions in the nav scrolls to the questions on the submitted page.
+  useEffect(() => {
+    if (viewed || !wantsQuestions || !onSubmitted) return
+    const panel = document.getElementById('application-questions')
+    panel?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })
+  }, [viewed, wantsQuestions, onSubmitted])
   const isDone = (i: number) => visited.has(SCREENS[i].id) && missingOn(SCREENS[i], values, goal).length === 0
   const doneCount = SCREENS.filter((_, i) => isDone(i)).length
   const lastToFill = SCREENS.every((_, i) => i === index || isDone(i))
@@ -341,6 +354,11 @@ export default function App() {
     goTo(0)
   }
 
+  const demoButton = (
+    <button type="button" className="demo-control" onClick={playSampleDemo} aria-pressed={demoRunning} title="Fills in the form with example answers, step by step. Click anywhere to take over.">
+      {demoRunning ? 'Stop walkthrough' : demoMode ? 'Replay walkthrough' : 'Play walkthrough'}
+    </button>
+  )
   const anyAnswer = ALL_FIELDS.some((f) => isAnswered(f, values[f.id]))
   const stars = skyStars(values, isDone)
   const fingerprint = onReview || onSubmitted ? roleFingerprint(values) : undefined
@@ -366,8 +384,15 @@ export default function App() {
     ? 'Describe a specific kind of work to discuss. Headcount and start timing can remain undecided.'
     : screen.hint
 
+  if (viewed) return <CompanyRole listing={viewed} view={wantsQuestions ? 'questions' : 'profile'} />
+
   return (
     <div className="shell">
+      <ViewingBand
+        area={wantsQuestions && onSubmitted ? 'questions' : 'profile'}
+        newCompanyName={hasValue(FIELD_BY_ID.company, values.company) ? values.company!.text!.trim() : null}
+        action={demoButton}
+      />
       <aside className="field" aria-label="Your role">
         <Sky
           className="field__sky"
@@ -392,13 +417,7 @@ export default function App() {
 
       <main className="work">
         <header className="topbar">
-          <nav aria-label="Main navigation" className="tabs">
-            {NAV_LINKS.map((l) => (
-              <a key={l.area} href={l.href} aria-current={l.area === 'company' ? 'page' : undefined}>
-                {l.label}
-              </a>
-            ))}
-          </nav>
+          <RoleNav area={wantsQuestions && onSubmitted ? 'questions' : 'profile'} className="tabs" />
           <div className="topbar__actions">
             <p className="event-chip">
               <b>{EVENT.name}</b> · {EVENT.date}
@@ -413,9 +432,6 @@ export default function App() {
             ))}
           </ol>
           <span>{onSubmitted ? 'Submitted' : onReview ? 'Review' : `Step ${index + 1} of ${SCREENS.length}`}</span>
-          <button type="button" className="btn-quiet demo-control" onClick={playSampleDemo} aria-pressed={demoRunning} title="Fills in the form with example answers, step by step. Click anywhere to take over.">
-            {demoRunning ? 'Stop walkthrough' : demoMode ? 'Replay walkthrough' : 'Play walkthrough'}
-          </button>
         </div>
 
         {onSubmitted ? (
@@ -429,12 +445,8 @@ export default function App() {
             <div className="submitted__body">
               <RoleCard values={values} seed={seed} fingerprint={roleFingerprint(values)} event={EVENT} />
               <div className="submitted__next">
-                <h2>Next</h2>
-                {questionsPublished ? (
-                  <a className="btn" href="#/apply">
-                    Open applicant view <Arrow />
-                  </a>
-                ) : (
+                <h2>{questionsPublished ? 'Your role' : 'Next'}</h2>
+                {!questionsPublished && (
                   <button type="button" className="btn" onClick={startQuestions}>
                     Draft application questions <Arrow />
                   </button>

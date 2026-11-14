@@ -24,7 +24,7 @@
   gap: var(--s-1) var(--s-4);
 }
 
-.site-header__nav a {
+.site-header__nav > * {
   padding: var(--s-1) 0 6px;
   color: var(--ink-soft);
   font-weight: 500;

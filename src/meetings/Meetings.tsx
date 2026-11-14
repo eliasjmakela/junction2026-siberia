@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from 'react'
-import { NextStep as NextStage } from '../components/NextStep'
+import { useViewedCompany } from '../components/viewing'
 import { SiteHeader } from '../components/SiteHeader'
 import { touchesForbidden } from '../event/core'
 import { compareRank } from '../event/sampleMeetings'
@@ -343,16 +343,14 @@ const STAGES: { id: Stage; hash: string }[] = [
 export function Meetings() {
   const state = useEvent()
   const stage = useStage()
-  const listings = state.allListings
-  const [chosen, setChosen] = useState<string | null>(null)
-  const listing = listings.find((l) => l.id === chosen) ?? state.listings[0] ?? listings[0]
+  const viewed = useViewedCompany()
+  // The viewed event company, else the company's own published role.
+  const listing = viewed ?? state.listings[0] ?? null
   const [open, setOpen] = useState<string | null>(null)
-  const [switching, setSwitching] = useState(false)
   const [gridError, setGridError] = useState('')
   const [message, setMessage] = useState('')
   const [refocus, setRefocus] = useState<{ id: string; n: number } | null>(null)
   const pageRef = useRef<HTMLElement>(null)
-  const switchRef = useRef<HTMLButtonElement>(null)
 
   const candidates = useMemo(() => (listing ? candidatesOf(state, listing) : []), [state, listing])
   const place = listing ? standOf(listing) : ''
@@ -436,36 +434,9 @@ export function Meetings() {
               <dd>{place}</dd>
             </div>
           </dl>
-          <button ref={switchRef} type="button" className="btn-quiet meet-switch" aria-expanded={switching} aria-controls="meet-switch-panel" onClick={() => setSwitching((v) => !v)}>
-            Switch company
-          </button>
-          {switching && (
-            <ul id="meet-switch-panel" className="staff-roles meet-roles">
-              {listings.map((l) => (
-                <li key={l.id}>
-                  <button
-                    type="button"
-                    className="staff-role"
-                    aria-pressed={l.id === listing.id}
-                    onClick={() => {
-                      setChosen(l.id)
-                      setOpen(null)
-                      setGridError('')
-                      setSwitching(false)
-                      setTimeout(() => switchRef.current?.focus())
-                    }}
-                  >
-                    <span className="staff-role__company">{l.company}</span>
-                    <span className="staff-role__title">{l.title}</span>
-                    {l.status && <span className="staff-role__status">{GOALS[l.status].name}</span>}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
         </section>
       ) : (
-        <p className="staff-empty">No company roles are published for this event yet.</p>
+        <p className="staff-empty">No company role is published for this event yet. Choose a company in the band above to see its meetings.</p>
       )}
 
       <div className="meet-rail" role="group" aria-label="Event stage">
@@ -614,7 +585,6 @@ export function Meetings() {
           )}
         </section>
       )}
-      <NextStage href="#/outcomes" label="Follow-up" detail="Three and six months later, LinkedIn shows who now works at a company they met." />
     </main>
   )
 }

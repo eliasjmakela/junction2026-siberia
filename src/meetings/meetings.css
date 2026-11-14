@@ -30,15 +30,6 @@
   font-size: var(--type-small);
 }
 
-.meet-switch {
-  min-height: 44px;
-  margin-top: var(--s-1);
-}
-
-.meet-roles {
-  margin-top: var(--s-2);
-}
-
 /* Stage rail: three joined steps */
 .meet-rail {
   display: grid;

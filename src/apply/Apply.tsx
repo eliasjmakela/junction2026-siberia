@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState, type FormEvent, type MouseEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react'
 import { Arrow } from '../components/Arrow'
 import { SiteHeader } from '../components/SiteHeader'
 import { Sky } from '../components/Sky'
 import { delay, demoCursor } from '../components/demoCursor'
-import { NextStep } from '../components/NextStep'
 import { ANSWER_MAX, MAX_PICKS } from '../event/core'
 import { deleteApplication, EVENT, newCode, newId, setKeyOf, submitApplication, useEvent, type Application, type Listing } from '../event/store'
 import { goalOf } from '../form/logic'
@@ -81,7 +80,7 @@ function ListingCard({ listing, checked, disabled, onToggle }: { listing: Listin
   )
 }
 
-function Progress({ current, total, detail, action }: { current: number; total: number; detail?: string; action?: ReactNode }) {
+function Progress({ current, total, detail }: { current: number; total: number; detail?: string }) {
   return (
     <div className="progress apply-progress" aria-label={`Step ${current} of ${total}`}>
       <ol className="progress__bars" aria-hidden="true">
@@ -93,12 +92,11 @@ function Progress({ current, total, detail, action }: { current: number; total: 
         Step {current} of {total}
         {detail && <> · {detail}</>}
       </span>
-      {action}
     </div>
   )
 }
 
-function Submitted({ app, listings, onDeleted, action }: { app: Application; listings: Listing[]; onDeleted: () => void; action?: ReactNode }) {
+function Submitted({ app, listings, onDeleted }: { app: Application; listings: Listing[]; onDeleted: () => void }) {
   const [confirming, setConfirming] = useState(false)
   const [status, setStatus] = useState('')
   const headingRef = useRef<HTMLHeadingElement>(null)
@@ -181,7 +179,6 @@ function Submitted({ app, listings, onDeleted, action }: { app: Application; lis
       <p className="status" role="status">
         {status}
       </p>
-      {action && <div className="actions apply-actions">{action}</div>}
     </section>
   )
 }
@@ -406,7 +403,7 @@ export function Apply() {
   }
 
   const demoButton = (
-    <button type="button" className="btn-quiet demo-control" onClick={playSampleDemo} aria-pressed={demoRunning} title="Fills in the form with example answers, step by step. Click anywhere to take over.">
+    <button type="button" className="demo-control" onClick={playSampleDemo} aria-pressed={demoRunning} title="Fills in the form with example answers, step by step. Click anywhere to take over.">
       {demoRunning ? 'Stop walkthrough' : demoMode ? 'Replay walkthrough' : 'Play walkthrough'}
     </button>
   )
@@ -421,9 +418,8 @@ export function Apply() {
   if (mine) {
     return (
       <main className="page apply">
-        <SiteHeader area="apply" />
-        <Submitted app={mine} listings={listings} onDeleted={onDeleted} action={demoButton} />
-        <NextStep href="#/staff" label="Staff review" detail="City of Espoo staff rank the applications per company and decide who is invited." />
+        <SiteHeader area="mine" action={demoButton} />
+        <Submitted app={mine} listings={listings} onDeleted={onDeleted} />
         {cursor}
       </main>
     )
@@ -431,13 +427,12 @@ export function Apply() {
 
   return (
     <main className="page apply">
-      <SiteHeader area="apply" />
+      <SiteHeader area="apply" action={demoButton} />
       {step.kind !== 'intro' && (
         <Progress
           current={current}
           total={total}
           detail={step.kind === 'answer' ? `Company ${step.index + 1} of ${picked.length}` : undefined}
-          action={demoButton}
         />
       )}
 
@@ -477,7 +472,6 @@ export function Apply() {
             <button type="button" className="btn" onClick={() => go({ kind: 'pick' })}>
               Start application <Arrow />
             </button>
-            {demoButton}
           </div>
           <p className="status" role="status">
             {status}

@@ -19,7 +19,7 @@ export function ProducerTag({ set }: { set: Pick<QuestionSet, 'source' | 'model'
         {set.model && <> · {set.model}</>}
       </span>
     )
-  if (set.source === 'sample') return <span className="cq-tag"><b>Sample questions</b></span>
+  if (set.source === 'sample') return null
   return <span className="cq-tag"><b>Drafted from your answers</b> · fixed templates</span>
 }
 
@@ -66,7 +66,7 @@ function QuestionList({ set, onRemove }: { set: QuestionSet; onRemove?: (id: str
   )
 }
 
-function SetView({ set, onRemove }: { set: QuestionSet; onRemove?: (id: string) => void }) {
+export function SetView({ set, onRemove }: { set: QuestionSet; onRemove?: (id: string) => void }) {
   return (
     <>
       <h3 className="cq-h3">What applicants are scored on</h3>
@@ -190,13 +190,7 @@ export function CompanyQuestions({ values, seed }: { values: Values; seed: strin
           )}
           <SetView set={published.set} />
           <div className="cq__actions">
-            <a className="btn" href="#/apply" data-cq-primary>
-              Open applicant view <Arrow />
-            </a>
-            <a className="btn-quiet" href="#/staff">
-              Staff review
-            </a>
-            <button type="button" className="btn-quiet" onClick={() => setDraft(published.set)}>
+            <button type="button" className="btn" data-cq-primary onClick={() => setDraft(published.set)}>
               Edit questions
             </button>
             <button type="button" className="btn-quiet" onClick={generate} disabled={busy}>

@@ -20,9 +20,9 @@ npm install
 npm run dev
 ```
 
-Open the printed URL. The company form is at `/`, applying at `#/apply`, staff review at `#/staff`, meeting booking and rating at `#/meetings` and the follow-up demo at `#/outcomes`. Five synthetic sample companies and their sample applicants are always present; everything you add is kept in this browser's storage and shared between its tabs.
+Open the printed URL. A band at the top shows who the event is viewed as: Company (the role form at `/`, its application questions and meetings at `#/meetings`), Job seeker (`#/apply`) or City of Espoo (applications at `#/staff`, follow-up at `#/outcomes`). Each role has its own navigation in timeline order, and the band's **Next** link walks through the five moments. Five synthetic sample companies and their sample applicants are always present; everything you add is kept in this browser's storage and shared between its tabs.
 
-Use **Play walkthrough** (next to the step counter) to watch a synthetic role fill through the questionnaire and arrive at its review page. The applicant flow at `#/apply` has the same walkthrough.
+Use **Play walkthrough** in the band to watch a synthetic role fill through the questionnaire and arrive at its review page. Viewing as Job seeker has the same walkthrough for a whole application. The company menu in the band switches to one of the five event companies (read-only role and questions, their meetings) and holds the item that clears event data in this browser.
 
 To have questions drafted and answers scored by Claude, copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` (default model `claude-opus-5-5`, override with `PLAINLY_AI_MODEL`). Without a key, questions come from fixed templates and scores are a labelled fixed-rule estimate.
 

@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from 'react'
-import { NextStep } from '../components/NextStep'
 import { SiteHeader } from '../components/SiteHeader'
 import { GOALS } from '../form/schema'
 import type { Attribute } from '../event/core'
@@ -8,7 +7,6 @@ import {
   EVENT,
   deleteApplication,
   pairKey,
-  resetEvent,
   setDecision,
   setSlots,
   slotsFor,
@@ -709,16 +707,9 @@ export function Staff() {
 
   const run = listing ? progress[listing.id] : undefined
 
-  function clearAll() {
-    if (window.confirm('Clear all event data in this browser? Published roles, applications, scores and decisions are removed. Built-in records are restored.')) {
-      resetEvent()
-      setChosen(null)
-    }
-  }
-
   return (
     <main className="page staff">
-      <SiteHeader area="staff" />
+      <SiteHeader area="staff" nextCompanyId={listing?.id ?? null} />
 
       <section className="staff-intro" aria-labelledby="staff-title">
         <h1 id="staff-title">Applications</h1>
@@ -807,20 +798,6 @@ export function Staff() {
 
       <Invitations state={state} />
 
-      <section className="staff-section" aria-labelledby="staff-data-title">
-        <h2 id="staff-data-title" className="staff-h2">
-          Data in this browser
-        </h2>
-        <p className="staff-lede">
-          Applications, scores and decisions are stored in this browser only. Delete a single application from its answers, or clear everything.
-        </p>
-        <div className="actions">
-          <button type="button" className="btn-quiet" onClick={clearAll}>
-            Clear event data in this browser
-          </button>
-        </div>
-      </section>
-      <NextStep href="#/meetings" label="Meetings" detail="Companies book event-day meetings with the candidates you invited." />
     </main>
   )
 }

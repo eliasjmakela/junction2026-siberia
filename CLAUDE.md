@@ -37,7 +37,7 @@ Design check after UI edits: `~/.claude/skills/impeccable/scripts/impeccable det
 | `src/sky/scene.ts` | The night-sky hero (camera, focus, constellations). Settings in `SKY` |
 | `src/sky/input.ts` | Which stars are lit or undecided, from the form state; deterministic role-answer fingerprint |
 | `src/components/Sky.tsx` | React wrapper for the sky (resize, animation loop, reduced motion) |
-| `src/Root.tsx` | Hash router: `#/apply`, `#/staff`, `#/outcomes`, `#/roles`; the company app is the default |
+| `src/Root.tsx` | Hash router: `#/apply`, `#/staff`, `#/meetings`, `#/outcomes`; the company app is the default (`#/roles` redirects to `#/`) |
 | `src/event/core.ts` | Shared by browser and server: types, the forbidden-topic filter, question-set and score validators (verbatim-quote checks), prompts, JSON schemas, fixed-rule fallbacks, `overallOf` |
 | `src/event/brief.ts` | Builds the company brief (the role's own texts) from the form; the only input to question drafting |
 | `src/event/store.ts` | Event state in localStorage (`plainly:event:v1`): listings, applications, assessments, decisions, slots; `useEvent()` hook, cross-tab sync |
@@ -50,7 +50,10 @@ Design check after UI edits: `~/.claude/skills/impeccable/scripts/impeccable det
 | `src/outcomes/` | Follow-up concept demo at `#/outcomes`: `data.ts` (four seeded events, 3/6-month checks, banding, summary text, CSV), `Outcomes.tsx`, `outcomes.css` (simulated data only) |
 | `src/components/SiteHeader.tsx` | Top bar for the applicant, staff and follow-up views; `NAV_LINKS` (in `src/components/nav.ts`) is the one main navigation, also rendered by the company page's top bar so labels and order match everywhere |
 | `server/event-ai.ts` | `POST /api/questions` and `POST /api/assess` (Vite plugin locally, called by `worker/index.ts` in production); holds the Anthropic key server-side |
-| `src/seeker/` | Sample role browser at `#/roles` (not in the main nav) |
+| `src/components/ViewingBand.*` | The viewing-as band above every page: role switch (Company / Job seeker / City of Espoo), company menu (New company plus the five event companies, and the quiet confirmed "Clear event data" item), the page's Play walkthrough action and the Next hand-off |
+| `src/components/nav.ts`, `viewing.ts` | `NAV` (each role's own nav in timeline order), `NEXT` (the hand-off per area), `roleOf(path)`, `useRoute()`, and the viewed company (`localStorage['plainly:viewing:company']`, `useViewedCompany()` / `setViewedCompany()`) |
+| `src/company/CompanyRole.*` | Read-only Role profile (flip role card) and Application questions of a viewed event company |
+| `src/seeker/sampleRoles.ts` | Synthetic role answers behind the five event companies |
 | `src/writing-assistant/` | Field-level writing-help client, input sanitizer, prompt, schema and demo suggestions |
 | `server/writing-assistant.ts` | Vite plugin for `POST /api/writing-assist`; holds the Gemini key server-side |
 | `src/styles/tokens.css`, `base.css` | Design tokens and browser-surface styling |

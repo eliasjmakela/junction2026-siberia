@@ -4,6 +4,8 @@
   min-height: 100dvh;
   display: grid;
   grid-template-columns: var(--field-width) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  --page-gutter: var(--s-7);
 }
 
 /* The field colour runs the full height of the page, even when the work area scrolls past it. */
@@ -19,8 +21,8 @@
 .field {
   position: sticky;
   z-index: 1;
-  top: 0;
-  height: 100dvh;
+  top: var(--s-6);
+  height: calc(100dvh - var(--s-6));
   overflow: hidden;
   background: var(--spruce);
   color: var(--on-spruce);
@@ -522,6 +524,7 @@
 
   .field {
     position: relative;
+    top: auto;
     height: 240px;
   }
 
