@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Flat Field</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--spruce:#173A30;--spruce-2:#21483C;--lichen:#E4CB3A;--granite:#D6D9D5;--granite-2:#C4C8C3;--ink:#121614;--ink-2:#4A4F4B;--rowan:#D1492E;--paper:#F0F2EF}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1440px;height:900px;overflow:hidden}
+body{font-family:"Schibsted Grotesk",system-ui,sans-serif;color:var(--ink);background:var(--granite);display:grid;grid-template-columns:560px 1fr}
+.field{background:var(--spruce);color:var(--paper);padding:24px 48px 40px;display:flex;flex-direction:column}
+.brand{display:flex;align-items:baseline;gap:12px;height:40px}
+.brand b{font-family:"Familjen Grotesk";font-weight:700;font-size:28px;letter-spacing:-.02em;color:var(--lichen)}
+.brand span{font-size:14px;opacity:.75}
+.cap{margin-top:56px;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--lichen)}
+.shape{margin:24px 0 0 -8px}
+.intent{font-family:"Familjen Grotesk";font-weight:700;font-size:34px;line-height:1.08;letter-spacing:-.02em;margin-top:24px;max-width:440px}
+.intent em{font-style:normal;color:var(--lichen)}
+.legend{margin-top:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:1px solid rgba(238,237,232,.2);padding-top:16px}
+.legend div{font-size:13px;display:flex;align-items:center;gap:8px;opacity:.6}
+.legend div.on{opacity:1;color:var(--lichen);font-weight:600}
+.legend svg{flex:none}
+.work{display:flex;flex-direction:column;padding:24px 64px 40px}
+.top{display:flex;align-items:center;justify-content:space-between;height:40px}
+nav{display:flex;gap:32px;font-size:15px;font-weight:500}
+nav a{color:var(--ink-2);text-decoration:none;padding-bottom:6px}
+nav a.on{color:var(--ink);border-bottom:3px solid var(--spruce)}
+.chip{font-size:13px;background:var(--paper);padding:8px 12px;border-radius:2px;color:var(--ink-2)}
+.chip b{color:var(--ink);font-weight:600}
+.step{margin-top:56px;display:flex;align-items:center;gap:16px;font-size:14px;color:var(--ink-2)}
+.bars{display:flex;gap:4px}.bars i{width:32px;height:6px;background:var(--granite-2)}.bars i.d{background:var(--spruce)}.bars i.c{background:var(--lichen)}
+h1{font-family:"Familjen Grotesk";font-weight:700;font-size:46px;line-height:1.05;letter-spacing:-.025em;margin-top:24px;max-width:760px}
+.hint{font-size:16px;color:var(--ink-2);margin-top:16px;max-width:620px;line-height:1.5}
+.opts{margin-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:800px}
+.opt{background:var(--paper);padding:16px 20px;font-size:17px;font-weight:500;display:flex;align-items:center;gap:14px;border:2px solid transparent}
+.opt i{width:20px;height:20px;border-radius:50%;border:2px solid var(--ink-2);flex:none}
+.opt.sel{border-color:var(--spruce);background:#fff}
+.opt.sel i{border:6px solid var(--spruce)}
+.own{margin-top:8px;max-width:800px;background:transparent;border:2px dashed var(--granite-2);padding:14px 20px;font-size:16px;color:var(--ink-2)}
+.act{display:flex;gap:16px;align-items:center;margin-top:24px}
+.btn{background:var(--spruce);color:var(--paper);font-weight:600;font-size:16px;padding:14px 24px;border-radius:2px}
+.btn span{color:var(--lichen)}
+.ghost{font-size:16px;font-weight:500;color:var(--ink-2);padding:14px 8px}
+.ledger{margin-top:auto;max-width:880px}
+.ledger h2{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-bottom:8px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td{padding:10px 8px;border-top:1px solid var(--granite-2);vertical-align:top}
+td:first-child{width:40px;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+td:nth-child(2){color:var(--ink-2);width:46%}
+td:nth-child(3){font-weight:600}
+td:last-child{text-align:right;color:var(--spruce);font-weight:600;width:60px}
+tr.chg td:nth-child(3)::after{content:"edited";margin-left:10px;font-size:12px;font-weight:600;background:var(--lichen);color:var(--ink);padding:2px 6px}
+</style></head><body>
+<section class="field">
+  <div class="brand"><b>Tarkka</b><span>for Espoo recruitment events</span></div>
+  <p class="cap">Your intent, so far</p>
+  <svg class="shape" width="400" height="320" viewBox="0 0 400 320" aria-hidden="true">
+    <rect x="8" y="8" width="384" height="304" fill="#21483C"/>
+    <path d="M8 160 L392 40 L392 280 Z" fill="#E4CB3A"/>
+    <circle cx="96" cy="160" r="40" fill="#173A30"/>
+    <rect x="8" y="8" width="384" height="304" fill="none" stroke="#E4CB3A" stroke-opacity=".25" stroke-dasharray="2 6"/>
+  </svg>
+  <p class="intent">Hire for a <em>specific need</em>: 2 roles, start within 3 months.</p>
+  <div class="legend">
+    <div><svg width="16" height="16"><circle cx="8" cy="8" r="7" fill="#E4CB3A"/></svg>Be seen</div>
+    <div class="on"><svg width="16" height="16"><path d="M1 8 L15 2 L15 14Z" fill="#E4CB3A"/></svg>Hire for a need</div>
+    <div><svg width="16" height="16"><rect x="1" y="5" width="14" height="6" fill="#E4CB3A"/></svg>Hire in general</div>
+  </div>
+</section>
+<main class="work">
+  <div class="top">
+    <nav><a class="on" href="#">Drill</a><a href="#">Events</a><a href="#">Company profile</a></nav>
+    <span class="chip">Sample event · <b>Espoo Matchmaking Day</b> · 4 Mar 2027</span>
+  </div>
+  <div class="step"><div class="bars"><i class="d"></i><i class="d"></i><i class="d"></i><i class="c"></i><i></i><i></i><i></i><i></i><i></i></div>Question 4 of 9</div>
+  <h1>If the right person walked up to your stand tomorrow, which role would you hire them for?</h1>
+  <p class="hint">Pick the one you would actually sign a contract for. "Anyone good" is allowed, but we will ask what good means.</p>
+  <div class="opts">
+    <div class="opt sel"><i></i>Backend developer, Kotlin</div>
+    <div class="opt"><i></i>Field service technician</div>
+    <div class="opt"><i></i>No single role, anyone strong</div>
+    <div class="opt"><i></i>We would not hire tomorrow</div>
+  </div>
+  <div class="own">Or say it in your own words…</div>
+  <div class="act"><span class="btn">Next question <span>→</span></span><span class="ghost">Back</span></div>
+  <div class="ledger">
+    <h2>Your answers</h2>
+    <table>
+      <tr><td>01</td><td>Why are you going to this event?</td><td>We have open roles now</td><td>Edit</td></tr>
+      <tr class="chg"><td>02</td><td>How many people could you hire in the next 6 months?</td><td>2, maybe 3</td><td>Edit</td></tr>
+      <tr><td>03</td><td>When would they need to start?</td><td>Within 3 months</td><td>Edit</td></tr>
+    </table>
+  </div>
+</main>
+</body></html>

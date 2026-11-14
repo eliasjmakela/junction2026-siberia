@@ -1,0 +1,397 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-14T13:00:00Z",
+  "title": "Design System: Plainly",
+  "extensions": {
+    "colorMeta": {
+      "spruce": {
+        "role": "primary",
+        "displayName": "Spruce Field",
+        "canonical": "#173a30",
+        "tonalRamp": [
+          "#08140f",
+          "#102a23",
+          "#173a30",
+          "#21483c",
+          "#3d6658",
+          "#6b8f82",
+          "#a7c0b6",
+          "#dfe9e4"
+        ]
+      },
+      "spruce-raised": {
+        "role": "primary",
+        "displayName": "Raised Spruce",
+        "canonical": "#21483c",
+        "tonalRamp": [
+          "#0b1a15",
+          "#14322a",
+          "#21483c",
+          "#2f5a4c",
+          "#4b7566",
+          "#789b8e",
+          "#adc6bc",
+          "#e1ebe6"
+        ]
+      },
+      "spruce-deep": {
+        "role": "primary",
+        "displayName": "Deep Spruce",
+        "canonical": "#102a23",
+        "tonalRamp": [
+          "#050e0b",
+          "#0b1e19",
+          "#102a23",
+          "#1c3f35",
+          "#38604f",
+          "#678a7d",
+          "#a3bcb2",
+          "#dde8e3"
+        ]
+      },
+      "lichen": {
+        "role": "secondary",
+        "displayName": "Sulphur Lichen",
+        "canonical": "#e4cb3a",
+        "tonalRamp": [
+          "#3a3108",
+          "#5e5010",
+          "#8a7618",
+          "#b59c22",
+          "#e4cb3a",
+          "#ecd86c",
+          "#f1e49a",
+          "#faf5d8"
+        ]
+      },
+      "rowan": {
+        "role": "tertiary",
+        "displayName": "Rowan",
+        "canonical": "#b8361f",
+        "tonalRamp": [
+          "#2e0c06",
+          "#55170c",
+          "#822413",
+          "#b8361f",
+          "#d65a42",
+          "#e88a76",
+          "#f3bcb0",
+          "#fbe8e4"
+        ]
+      },
+      "granite": {
+        "role": "neutral",
+        "displayName": "Granite",
+        "canonical": "#d6d9d5",
+        "tonalRamp": [
+          "#1f221f",
+          "#3b3f3b",
+          "#5c605c",
+          "#828682",
+          "#a8aca7",
+          "#c4c8c3",
+          "#d6d9d5",
+          "#f0f2ef"
+        ]
+      },
+      "granite-line": {
+        "role": "neutral",
+        "displayName": "Granite Line",
+        "canonical": "#c4c8c3",
+        "tonalRamp": [
+          "#1f221f",
+          "#3b3f3b",
+          "#5c605c",
+          "#828682",
+          "#a8aca7",
+          "#c4c8c3",
+          "#d6d9d5",
+          "#f0f2ef"
+        ]
+      },
+      "granite-light": {
+        "role": "neutral",
+        "displayName": "Light Granite",
+        "canonical": "#f0f2ef",
+        "tonalRamp": [
+          "#1f221f",
+          "#3b3f3b",
+          "#5c605c",
+          "#828682",
+          "#a8aca7",
+          "#c4c8c3",
+          "#d6d9d5",
+          "#f0f2ef"
+        ]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "canonical": "#ffffff"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#121614",
+        "tonalRamp": [
+          "#121614",
+          "#2a2f2c",
+          "#464b47",
+          "#646964",
+          "#868a86",
+          "#a9ada9",
+          "#cdd0cd",
+          "#eef0ec"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "#464b47",
+        "tonalRamp": [
+          "#121614",
+          "#2a2f2c",
+          "#464b47",
+          "#646964",
+          "#868a86",
+          "#a9ada9",
+          "#cdd0cd",
+          "#eef0ec"
+        ]
+      },
+      "on-spruce": {
+        "role": "neutral",
+        "displayName": "On Spruce",
+        "canonical": "#eef0ec"
+      },
+      "on-spruce-soft": {
+        "role": "neutral",
+        "displayName": "Soft On Spruce",
+        "canonical": "#b4c2bb"
+      }
+    },
+    "typographyMeta": {
+      "display-xl": {
+        "displayName": "Display XL",
+        "purpose": "The current question and the result heading; 30px / 1.1 at 900px and below."
+      },
+      "display-l": {
+        "displayName": "Display L",
+        "purpose": "The intent sentence on the spruce field, max 28ch, three-line reserved height; 22px in the mobile band."
+      },
+      "display-m": {
+        "displayName": "Display M",
+        "purpose": "The lichen wordmark."
+      },
+      "body-l": {
+        "displayName": "Body L",
+        "purpose": "Answer cell labels."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Hints (max 62ch), inputs, buttons at weight 600."
+      },
+      "small": {
+        "displayName": "Small",
+        "purpose": "Ledger, progress count (tabular numerals), status and error lines."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Tracked uppercase section headings (ledger title) and the 'soon' status on disabled tabs."
+      }
+    },
+    "shadows": [],
+    "focus": [
+      {
+        "name": "focus",
+        "value": "3px solid var(--spruce); outline-offset: 2px",
+        "purpose": "Focus ring on granite surfaces."
+      },
+      {
+        "name": "focus-on-spruce",
+        "value": "3px solid var(--lichen); outline-offset: 2px",
+        "purpose": "Focus ring on spruce surfaces (the field)."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Exponential ease-out for all transitions."
+      },
+      {
+        "name": "t-fast",
+        "value": "120ms",
+        "purpose": "Hover and border/background state changes on cells, inputs, buttons."
+      },
+      {
+        "name": "t-base",
+        "value": "220ms",
+        "purpose": "Progress segments, legend colour, arrow nudge, cut-guide fade."
+      },
+      {
+        "name": "t-shape",
+        "value": "700ms",
+        "purpose": "The intent shape morph (exponential ease-out, rAF interpolation of 48 points). Reduced motion jumps to the target."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "narrow-desktop",
+        "value": "1360px",
+        "purpose": "Field narrows to 440px."
+      },
+      {
+        "name": "compact-desktop",
+        "value": "1120px",
+        "purpose": "Event chip hidden."
+      },
+      {
+        "name": "band",
+        "value": "900px",
+        "purpose": "Field becomes a top band, single-column answers, ledger rows stack."
+      }
+    ],
+    "layout": {
+      "fieldWidth": "560px",
+      "questionMaxWidth": "800px",
+      "ledgerMaxWidth": "880px"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Spruce action with a filled lichen arrow; raised on hover, deep when pressed.",
+      "html": "<button class=\"ds-btn\">Next question <svg class=\"ds-arrow\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M1 7 H10 V3 L15 8 L10 13 V9 H1 Z\"/></svg></button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 24px; background: var(--spruce, #173a30); color: var(--on-spruce, #eef0ec); font-family: var(--font-ui, 'Schibsted Grotesk', system-ui, sans-serif); font-size: 1rem; font-weight: 600; border: 0; border-radius: 2px; cursor: pointer; transition: background-color 120ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn .ds-arrow { fill: var(--lichen, #e4cb3a); transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn:hover { background: var(--spruce-raised, #21483c); } .ds-btn:hover .ds-arrow { transform: translateX(3px); } .ds-btn:active { background: var(--spruce-deep, #102a23); } .ds-btn:focus-visible { outline: 3px solid var(--spruce, #173a30); outline-offset: 2px; }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Text-only secondary action (Back, Start over); underline fades in on hover.",
+      "html": "<button class=\"ds-btn-quiet\">Back</button>",
+      "css": ".ds-btn-quiet { min-height: 48px; padding: 0 8px; background: none; border: 0; font-family: var(--font-ui, 'Schibsted Grotesk', system-ui, sans-serif); font-size: 1rem; font-weight: 500; color: var(--ink-soft, #464b47); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.25em; cursor: pointer; transition: text-decoration-color 120ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-quiet:hover:not(:disabled) { color: var(--ink, #121614); text-decoration-color: currentColor; } .ds-btn-quiet:disabled { opacity: 0.45; cursor: not-allowed; } .ds-btn-quiet:focus-visible { outline: 3px solid var(--spruce, #173a30); outline-offset: 2px; }"
+    },
+    {
+      "name": "Answer Cell",
+      "kind": "custom",
+      "refersTo": "answer-cell",
+      "description": "Light granite answer slab; selected = white cell, spruce border, radio with spruce ring, white inset and lichen dot.",
+      "html": "<div class=\"ds-options\"><label class=\"ds-option\"><input type=\"radio\" name=\"ds-q\" checked> Software developer</label><label class=\"ds-option\"><input type=\"radio\" name=\"ds-q\"> Field service technician</label></div>",
+      "css": ".ds-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; background: var(--granite, #d6d9d5); padding: 16px; } .ds-option { display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 16px 20px; background: var(--granite-light, #f0f2ef); border: 2px solid transparent; border-radius: 2px; font-family: var(--font-ui, 'Schibsted Grotesk', system-ui, sans-serif); font-size: 1.0625rem; font-weight: 500; line-height: 1.3; color: var(--ink, #121614); cursor: pointer; transition: border-color 120ms cubic-bezier(0.16, 1, 0.3, 1), background-color 120ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-option:hover { border-color: var(--granite-line, #c4c8c3); background: #fff; } .ds-option input { appearance: none; flex: none; width: 20px; height: 20px; margin: 0; border: 2px solid var(--ink-soft, #464b47); border-radius: 50%; } .ds-option input:focus-visible { outline: none; } .ds-option:has(input:focus-visible) { outline: 3px solid var(--spruce, #173a30); outline-offset: 2px; } .ds-option:has(input:checked) { background: #fff; border-color: var(--spruce, #173a30); } .ds-option input:checked { border-color: var(--spruce, #173a30); background: var(--lichen, #e4cb3a); box-shadow: inset 0 0 0 3px #fff; }"
+    },
+    {
+      "name": "Own-words Field",
+      "kind": "input",
+      "refersTo": "own-words-input",
+      "description": "Dashed while empty; solid spruce and white once focused or filled.",
+      "html": "<input class=\"ds-own\" type=\"text\" placeholder=\"Or say it in your own words\">",
+      "css": ".ds-own { width: 100%; min-height: 48px; padding: 12px 18px; background: transparent; border: 2px dashed var(--granite-line, #c4c8c3); border-radius: 2px; font-family: var(--font-ui, 'Schibsted Grotesk', system-ui, sans-serif); font-size: 1rem; color: var(--ink, #121614); transition: border-color 120ms cubic-bezier(0.16, 1, 0.3, 1), background-color 120ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-own::placeholder { color: var(--ink-soft, #464b47); } .ds-own:hover { border-color: var(--ink-soft, #464b47); } .ds-own:focus, .ds-own:not(:placeholder-shown) { outline: none; border-style: solid; border-color: var(--spruce, #173a30); background: #fff; }"
+    },
+    {
+      "name": "Section Tabs",
+      "kind": "nav",
+      "description": "Soft-ink tabs; current tab in ink with a 3px spruce underline; unavailable tabs carry a tracked 'soon' label.",
+      "html": "<nav class=\"ds-tabs\"><a href=\"#\" aria-current=\"page\">Drill</a><span aria-disabled=\"true\">Events <small>soon</small></span><span aria-disabled=\"true\">Company profile <small>soon</small></span></nav>",
+      "css": ".ds-tabs { display: flex; gap: 32px; white-space: nowrap; font-family: var(--font-ui, 'Schibsted Grotesk', system-ui, sans-serif); font-size: 0.9375rem; font-weight: 500; } .ds-tabs > * { padding-block: 4px 6px; color: var(--ink-soft, #464b47); text-decoration: none; } .ds-tabs a[aria-current='page'] { color: var(--ink, #121614); box-shadow: inset 0 -3px 0 var(--spruce, #173a30); } .ds-tabs a:focus-visible { outline: 3px solid var(--spruce, #173a30); outline-offset: 2px; } .ds-tabs [aria-disabled='true'] { cursor: default; } .ds-tabs small { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-left: 4px; }"
+    },
+    {
+      "name": "Progress Segments",
+      "kind": "custom",
+      "description": "One segment per question: spruce done, lichen current, granite-line ahead.",
+      "html": "<div class=\"ds-progress\"><ol class=\"ds-bars\"><li class=\"is-done\"></li><li class=\"is-done\"></li><li class=\"is-current\"></li><li></li></ol><span>Question 3 of 4</span></div>",
+      "css": ".ds-progress { display: flex; align-items: center; gap: 16px; font-family: var(--font-ui, 'Schibsted Grotesk', system-ui, sans-serif); font-size: 0.875rem; color: var(--ink-soft, #464b47); font-variant-numeric: tabular-nums; } .ds-bars { list-style: none; display: flex; gap: 4px; margin: 0; padding: 0; } .ds-bars li { width: 32px; height: 6px; background: var(--granite-line, #c4c8c3); transition: background-color 220ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-bars li.is-done { background: var(--spruce, #173a30); } .ds-bars li.is-current { background: var(--lichen, #e4cb3a); }"
+    },
+    {
+      "name": "Event Chip",
+      "kind": "chip",
+      "refersTo": "event-chip",
+      "description": "Sample-event context chip in the top bar, always labelled as sample.",
+      "html": "<p class=\"ds-event-chip\">Sample event · <b>Espoo Matchmaking Day</b> · 4 Mar 2027</p>",
+      "css": ".ds-event-chip { display: inline-block; margin: 0; font-family: var(--font-ui, 'Schibsted Grotesk', system-ui, sans-serif); font-size: 0.8125rem; background: var(--granite-light, #f0f2ef); padding: 8px 12px; border-radius: 2px; color: var(--ink-soft, #464b47); white-space: nowrap; } .ds-event-chip b { color: var(--ink, #121614); font-weight: 600; }"
+    },
+    {
+      "name": "Ledger Row with Changed Tag",
+      "kind": "card",
+      "refersTo": "changed-tag",
+      "description": "Fixed-column answer ledger; an edited answer carries a lichen 'changed' tag.",
+      "html": "<table class=\"ds-ledger\"><tbody><tr><td class=\"ds-n\">2</td><td class=\"ds-q\">How many people could you hire in the next six months?</td><td class=\"ds-a\">Four to ten <span class=\"ds-tag\">changed</span></td><td class=\"ds-edit\"><button>Change</button></td></tr></tbody></table>",
+      "css": ".ds-ledger { width: 100%; border-collapse: collapse; font-family: var(--font-ui, 'Schibsted Grotesk', system-ui, sans-serif); font-size: 0.875rem; color: var(--ink, #121614); background: var(--granite, #d6d9d5); } .ds-ledger td { padding: 10px 8px; border-top: 1px solid var(--granite-line, #c4c8c3); vertical-align: baseline; } .ds-n { color: var(--ink-soft, #464b47); font-variant-numeric: tabular-nums; width: 40px; } .ds-q { color: var(--ink-soft, #464b47); } .ds-a { font-weight: 600; } .ds-edit { text-align: right; } .ds-edit button { background: none; border: 0; font: inherit; font-weight: 600; color: var(--spruce, #173a30); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.25em; padding: 2px 0; cursor: pointer; transition: text-decoration-color 120ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-edit button:hover { text-decoration-color: currentColor; } .ds-edit button:focus-visible { outline: 3px solid var(--spruce, #173a30); outline-offset: 2px; } .ds-tag { display: inline-block; margin-left: 10px; padding: 1px 6px; font-size: 0.75rem; font-weight: 600; background: var(--lichen, #e4cb3a); color: var(--ink, #121614); border-radius: 2px; vertical-align: 1px; }"
+    },
+    {
+      "name": "Intent Shape",
+      "kind": "custom",
+      "description": "Signature: a lichen polygon on spruce inside a dashed register frame, cut toward circle, wedge or band while a focus blur on the ink falls from 14 (no goal) to 0 (every answer in). Static snapshot of the finished, in-focus wedge with the legend; the live component morphs 48-point polygons and the blur together over 700ms.",
+      "html": "<div class=\"ds-field\"><svg class=\"ds-shape\" viewBox=\"0 0 400 320\" aria-hidden=\"true\"><rect class=\"ds-stock\" x=\"1\" y=\"1\" width=\"398\" height=\"318\"/><polygon class=\"ds-ink\" points=\"8,40 392,160 8,280\"/></svg><ul class=\"ds-legend\"><li><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\"><circle cx=\"8\" cy=\"8\" r=\"7\"/></svg>Be seen</li><li class=\"is-on\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\"><path d=\"M1 2 L15 8 L1 14 Z\"/></svg>Hire for a need</li><li><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\"><rect x=\"1\" y=\"5\" width=\"14\" height=\"6\"/></svg>Hire in general</li></ul></div>",
+      "css": ".ds-field { background: var(--spruce, #173a30); padding: 32px; max-width: 464px; font-family: var(--font-ui, 'Schibsted Grotesk', system-ui, sans-serif); } .ds-shape { display: block; width: 100%; height: auto; } .ds-stock { fill: none; stroke: var(--lichen, #e4cb3a); stroke-opacity: 0.4; stroke-width: 2; stroke-dasharray: 4 8; } .ds-ink { fill: var(--lichen, #e4cb3a); } .ds-legend { list-style: none; margin: 24px 0 0; padding: 16px 0 0; border-top: 1px solid rgb(238 240 236 / 0.18); display: flex; justify-content: space-between; gap: 8px; font-size: 0.8125rem; color: var(--on-spruce-soft, #b4c2bb); } .ds-legend li { display: flex; align-items: center; gap: 8px; } .ds-legend svg { fill: var(--on-spruce-soft, #b4c2bb); opacity: 0.6; } .ds-legend li.is-on { color: var(--lichen, #e4cb3a); font-weight: 600; } .ds-legend li.is-on svg { fill: var(--lichen, #e4cb3a); opacity: 1; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Cut Poster",
+    "overview": "Plainly is a 1960s–70s Finnish modernist poster inked in Espoo landscape colour. A deep spruce field owns one whole region of the shell and carries the brand, the intent shape and the intent sentence; the work happens on cool granite beside it. One bright ink, sulphur lichen, is reserved for the things that matter right now: the shape, the selected answer, what just changed. Everything else is ink on stone.\n\nThe world is flat ink. No gradients, no drop shadows, 2px corners, one 8px module for shape, type and layout. One display face appears at fixed steps, set bold and tight. Density is calm and operational: a question, a set of answer cells, a primary action, and a ledger of answers that restyles rows in place.\n\nThe signature is the intent shape: a single lichen polygon on spruce that starts out of focus and is cut, answer by answer, from a blunt stock toward one of three emblems, coming into sharp focus as the intent becomes plain. Motion is reserved for that moment; every other transition is a short state change.",
+    "keyCharacteristics": [
+      "Total palette commitment: spruce field, granite ground, lichen as the only bright ink, rowan for errors only.",
+      "Flat ink, 2px corners, no shadows or gradients.",
+      "One 8px module (4px half-step) for spacing, shape geometry and type rhythm.",
+      "One display face (Familjen Grotesk 700) at fixed steps; Schibsted Grotesk for the interface.",
+      "One authored motion moment: the intent shape morph and focus pull (700ms, exponential ease-out)."
+    ],
+    "rules": [
+      {
+        "name": "The One Bright Ink Rule",
+        "body": "Lichen marks the shape, the selection and the change, and nothing else. If an element is not one of those things, it is not lichen.",
+        "section": "colors"
+      },
+      {
+        "name": "The Rowan Is Alarm Rule",
+        "body": "Rowan appears only on error text. It never marks emphasis, a brand moment or a destructive-looking button.",
+        "section": "colors"
+      },
+      {
+        "name": "The Field Owns a Region Rule",
+        "body": "Spruce is applied as a whole region (the field, the primary button), never as a thin tint or a card background on granite.",
+        "section": "colors"
+      },
+      {
+        "name": "The Fixed Steps Rule",
+        "body": "Display type uses only the three named steps. No fluid clamp scaling; the steps change once, at the 900px breakpoint.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Display Face Rule",
+        "body": "Familjen Grotesk is the only display face. Emphasis inside display type is colour (lichen on spruce), never italic: emphasis elements are set upright.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Ink Rule",
+        "body": "Surfaces never lift. State is shown by changing ink (background, border colour, border style), never by shadow or blur. Inset strokes that draw a line in solid ink are allowed; cast shadows are not. The single exception is the intent shape's focus blur, which carries meaning (how vague the intent still is) and reaches zero when the drill is complete.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Ring Follows the Ground Rule",
+        "body": "Focus is a 3px solid outline at 2px offset: spruce on granite surfaces, lichen on spruce surfaces. Every interactive element inside the field uses the lichen ring.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do keep lichen to the shape, selection, changed state and focus on spruce (The One Bright Ink Rule).",
+      "Do use the 2px radius and the 8px module (4px half-step) for every new component.",
+      "Do show state through ink: white fill and spruce border for chosen, dashed edges for empty, solid edges once filled.",
+      "Do switch the focus ring to lichen on any spruce surface, spruce on granite.",
+      "Do reserve height for status, error and intent text so nothing jumps.",
+      "Do draw icons as filled inline SVG on the 16-unit emblem grid.",
+      "Do write labels, empty states and errors as generic templates; put characterful language in question wording and static help text."
+    ],
+    "donts": [
+      "Don't add drop shadows, glows, blur or gradients; depth is tonal only. The intent shape's focus blur is the one sanctioned blur (The Flat Ink Rule).",
+      "Don't use rowan for anything but errors.",
+      "Don't add a second display face, italic emphasis, or fluid display sizes between the fixed steps.",
+      "Don't add motion beyond short state transitions (120ms / 220ms); the shape morph is the one authored moment.",
+      "Don't write UI copy that reacts to the user's specific answers, or that explains what the product is not.",
+      "Don't present sample events or answers without a sample label, or show invented outcomes or match numbers."
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Category standard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1440px;height:900px;overflow:hidden}
+body{font-family:Inter,system-ui,sans-serif;background:#F8FAFC;color:#0F172A}
+header{height:64px;background:#fff;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;justify-content:space-between;padding:0 40px}
+.brand{font-weight:700;font-size:18px}.brand span{color:#2563EB}
+nav{display:flex;gap:24px;font-size:14px;color:#64748B}nav b{color:#0F172A;font-weight:600}
+.av{width:32px;height:32px;border-radius:50%;background:#E2E8F0}
+.wrap{max-width:760px;margin:48px auto 0}
+.stepper{display:flex;align-items:center;gap:8px;font-size:13px;color:#64748B}
+.stepper span{display:flex;align-items:center;gap:8px}
+.stepper i{width:24px;height:24px;border-radius:50%;background:#E2E8F0;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:600;color:#475569}
+.stepper .d i{background:#2563EB;color:#fff}.stepper .c i{background:#fff;border:2px solid #2563EB;color:#2563EB}.stepper .c{color:#0F172A;font-weight:600}
+.stepper hr{flex:1;border:0;border-top:2px solid #E2E8F0}.stepper hr.d{border-color:#2563EB}
+.card{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:40px;margin-top:32px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.card small{font-size:13px;color:#2563EB;font-weight:600}
+h1{font-size:28px;font-weight:700;letter-spacing:-.02em;margin-top:8px;line-height:1.25}
+.card p{color:#64748B;margin-top:8px;font-size:15px}
+.opts{margin-top:24px;display:flex;flex-direction:column;gap:10px}
+.opt{border:1px solid #E2E8F0;border-radius:8px;padding:14px 16px;display:flex;gap:12px;align-items:center;font-size:15px}
+.opt i{width:18px;height:18px;border-radius:50%;border:2px solid #CBD5E1}
+.opt.sel{border-color:#2563EB;background:#EFF6FF}.opt.sel i{border:5px solid #2563EB}
+.foot{display:flex;justify-content:space-between;margin-top:32px}
+.b1{padding:10px 18px;border:1px solid #E2E8F0;border-radius:8px;font-weight:500;font-size:14px;background:#fff}
+.b2{padding:10px 18px;border-radius:8px;font-weight:600;font-size:14px;background:#2563EB;color:#fff}
+</style></head><body>
+<header><span class="brand">Fair<span>Match</span></span><nav><b>Setup</b><span>Events</span><span>Settings</span></nav><span class="av"></span></header>
+<div class="wrap">
+  <div class="stepper"><span class="d"><i>1</i>Goals</span><hr class="d"><span class="d"><i>2</i>Capacity</span><hr class="d"><span class="c"><i>3</i>Roles</span><hr><span><i>4</i>Skills</span><hr><span><i>5</i>Review</span></div>
+  <div class="card">
+    <small>Step 3 of 5</small>
+    <h1>Which role would you hire for if the right person walked up tomorrow?</h1>
+    <p>Pick the one you would actually sign a contract for.</p>
+    <div class="opts">
+      <div class="opt sel"><i></i>Backend developer, Kotlin</div>
+      <div class="opt"><i></i>Field service technician</div>
+      <div class="opt"><i></i>No single role, anyone strong</div>
+      <div class="opt"><i></i>We would not hire tomorrow</div>
+    </div>
+    <div class="foot"><span class="b1">Back</span><span class="b2">Continue</span></div>
+  </div>
+</div>
+</body></html>

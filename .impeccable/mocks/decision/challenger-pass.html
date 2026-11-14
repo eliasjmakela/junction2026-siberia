@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Event Pass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;800&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F4F1;--panel:#FFFFFF;--ink:#101010;--mid:#696965;--line:#DADAD5;--alert:#FF5A1F}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1440px;height:900px;overflow:hidden}
+body{font-family:"Schibsted Grotesk",system-ui,sans-serif;background:var(--bg);color:var(--ink);padding:24px 40px;display:grid;grid-template-rows:40px 1fr 250px;gap:24px}
+header{display:flex;justify-content:space-between;align-items:center}
+.brand{font-weight:800;font-size:22px;letter-spacing:-.02em}
+nav{display:flex;gap:28px;font-size:15px;font-weight:500}nav a{color:var(--mid);text-decoration:none}nav a.on{color:var(--ink)}
+.mono{font-family:"Martian Mono",monospace}
+.row{display:grid;grid-template-columns:560px 1fr;gap:24px}
+.pass{background:var(--panel);display:grid;grid-template-columns:1fr 150px;border-radius:6px;overflow:hidden}
+.pmain{padding:28px;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:min-content;gap:20px 24px;border-right:2px dashed var(--line)}
+.seg small{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:6px}
+.seg b{font-size:22px;font-weight:700;letter-spacing:-.01em}
+.seg.wide{grid-column:span 2}
+.seg.big b{font-size:40px;letter-spacing:-.03em;line-height:1}
+.seg.empty b{display:block;height:28px;border:2px dashed var(--line);border-radius:3px}
+.seg.new b{color:var(--alert)}
+.pstub{padding:28px 20px;display:flex;flex-direction:column;justify-content:space-between}
+.code{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;opacity:.25}.code i{aspect-ratio:1;background:var(--ink)}.code i:nth-child(3n){background:transparent}.code i:nth-child(7n){background:transparent}
+.seq{font-size:13px}
+.q{background:var(--panel);border-radius:6px;padding:36px 48px}
+.step{font-size:12px;color:var(--mid);letter-spacing:.08em}
+h1{font-size:38px;line-height:1.1;letter-spacing:-.025em;font-weight:800;margin-top:16px;max-width:680px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:28px;max-width:720px}
+.opt{border:2px solid var(--line);border-radius:4px;padding:14px 16px;font-size:16px;font-weight:500}
+.opt.sel{border-color:var(--ink);background:var(--ink);color:#fff}
+.act{margin-top:24px;display:flex;gap:12px}.btn{background:var(--ink);color:#fff;padding:13px 22px;border-radius:4px;font-weight:700}.ghost{padding:13px 8px;color:var(--mid);font-weight:500}
+.board{background:var(--ink);color:#fff;border-radius:6px;padding:20px 28px}
+.board h2{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);display:flex;justify-content:space-between}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:15px}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);text-align:left;font-weight:500;padding:6px 0}
+td{padding:9px 0;border-top:1px solid #2A2A28}
+.board h2,.board th{color:#A3A39E}
+td.t{font-family:"Martian Mono";font-size:14px;width:110px}
+tr.up td{color:var(--alert)}
+.tag{font-size:12px;border:1px solid currentColor;padding:2px 6px;border-radius:3px;margin-left:8px}
+</style></head><body>
+<header><span class="brand">Passi</span><nav><a class="on" href="#">Your pass</a><a href="#">Events</a><a href="#">Company profile</a></nav><span class="mono" style="font-size:12px;color:var(--mid)">SAMPLE EVENT · ESPOO MATCHMAKING DAY · 04.03.2027</span></header>
+<div class="row">
+  <div class="pass">
+    <div class="pmain">
+      <div class="seg wide"><small>Company</small><b>Sample Oy</b></div>
+      <div class="seg big wide"><small>Goal</small><b>Hire for a need</b></div>
+      <div class="seg"><small>Headcount</small><b class="mono">2–3</b></div>
+      <div class="seg"><small>Start by</small><b class="mono">06/2027</b></div>
+      <div class="seg new wide"><small>Role</small><b>Backend developer, Kotlin</b></div>
+      <div class="seg empty"><small>Must-have</small><b></b></div>
+      <div class="seg empty"><small>Language</small><b></b></div>
+    </div>
+    <div class="pstub">
+      <div class="seg"><small>Seq</small><b class="mono">0042</b></div>
+      <div class="seg"><small>Stand</small><b class="mono">—</b></div>
+      <div class="code"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <span class="seq mono">5 of 9 filled</span>
+    </div>
+  </div>
+  <div class="q">
+    <span class="step mono">SEGMENT 6 · MUST-HAVE</span>
+    <h1>What is the one skill you would turn someone down for not having?</h1>
+    <div class="opts">
+      <div class="opt sel">Production Kotlin experience</div>
+      <div class="opt">Finnish language</div>
+      <div class="opt">Cloud infrastructure</div>
+      <div class="opt">Nothing, we can teach it</div>
+    </div>
+    <div class="act"><span class="btn">Add to pass</span><span class="ghost">Back</span></div>
+  </div>
+</div>
+<div class="board">
+  <h2><span>Matchmaking slots for your pass</span><span>Sample data</span></h2>
+  <table>
+    <tr><th>Time</th><th>Who</th><th>Why matched</th><th>Status</th></tr>
+    <tr class="up"><td class="t">10:20</td><td>Talent pool: backend, JVM</td><td>Role and headcount</td><td>Moved up<span class="tag">changed</span></td></tr>
+    <tr><td class="t">11:00</td><td>Aalto CS master's students</td><td>Start date fits</td><td>Open</td></tr>
+    <tr><td class="t">13:40</td><td>Career changers, Espoo programme</td><td>Willing to train</td><td>Open</td></tr>
+  </table>
+</div>
+</body></html>

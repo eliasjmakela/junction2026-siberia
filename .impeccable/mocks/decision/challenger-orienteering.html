@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Course and Controls</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--white:#FFFFFF;--purple:#A6268C;--brown:#C46A2B;--yellow:#FFC94C;--green:#3F8A3A;--ink:#111;--ink-2:#55524D;--line:#E6E1D8;--blue:#1E8FD6}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1440px;height:900px;overflow:hidden}
+body{font-family:Archivo,system-ui,sans-serif;color:var(--ink);background:var(--white);display:grid;grid-template-rows:64px 1fr}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 40px;border-bottom:2px solid var(--ink)}
+.brand{font-weight:700;font-size:22px;letter-spacing:-.01em}.brand span{color:var(--purple)}
+nav{display:flex;gap:28px;font-size:15px;font-weight:500}nav a{color:var(--ink-2);text-decoration:none}nav a.on{color:var(--ink);box-shadow:inset 0 -3px var(--purple);padding-bottom:20px;margin-bottom:-22px}
+.ev{font-size:13px;color:var(--ink-2)}.ev b{color:var(--ink)}
+.grid{display:grid;grid-template-columns:320px 1fr 400px}
+.course{position:relative;background:#FBF8F1;border-right:1px solid var(--line);overflow:hidden}
+.course svg{position:absolute;inset:0}
+.course .lbl{position:absolute;left:32px;bottom:28px;font-size:13px;color:var(--ink-2);max-width:240px;line-height:1.45}
+.q{padding:56px 64px}
+.leg{display:inline-flex;align-items:center;gap:10px;font-family:"Archivo Narrow";font-weight:700;font-size:15px;color:var(--purple);letter-spacing:.04em;text-transform:uppercase}
+.leg i{width:28px;height:28px;border:3px solid var(--purple);border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:13px}
+h1{font-size:42px;line-height:1.08;letter-spacing:-.02em;font-weight:700;margin-top:20px;max-width:640px}
+.hint{color:var(--ink-2);font-size:16px;line-height:1.5;margin-top:14px;max-width:580px}
+.opts{margin-top:32px;display:flex;flex-direction:column;gap:8px;max-width:620px}
+.opt{display:flex;align-items:center;gap:14px;padding:15px 18px;border:2px solid var(--line);font-size:17px;font-weight:500}
+.opt i{width:20px;height:20px;border:2px solid var(--ink-2);border-radius:50%}
+.opt.sel{border-color:var(--purple)}.opt.sel i{border:6px solid var(--purple)}
+.act{display:flex;gap:12px;margin-top:28px}
+.btn{background:var(--purple);color:#fff;font-weight:600;padding:14px 24px;font-size:16px}
+.sec{border:2px solid var(--ink);padding:12px 22px;font-weight:600;font-size:16px}
+.desc{border-left:1px solid var(--line);padding:40px 32px}
+.desc h2{font-family:"Archivo Narrow";font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase}
+.desc p{font-size:13px;color:var(--ink-2);margin-top:4px}
+table{width:100%;border-collapse:collapse;margin-top:20px;font-size:14px;border:2px solid var(--ink)}
+th{font-family:"Archivo Narrow";font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.06em;text-align:left;padding:8px;background:var(--ink);color:#fff}
+td{padding:10px 8px;border-top:1px solid var(--line);vertical-align:top}
+td.n{font-family:"Archivo Narrow";font-weight:700;color:var(--purple);font-size:16px;width:36px}
+td.p{width:40px}
+.punch{display:inline-grid;grid-template-columns:repeat(3,4px);gap:2px}.punch i{width:4px;height:4px;background:var(--ink);border-radius:50%}
+tr.cur td{background:#F6E9F3}
+.tot{margin-top:20px;display:flex;justify-content:space-between;font-size:14px;border-top:2px solid var(--ink);padding-top:12px}.tot b{font-family:"Archivo Narrow";font-size:18px}
+</style></head><body>
+<header>
+  <div class="brand">Rasti<span>.</span></div>
+  <nav><a class="on" href="#">Your course</a><a href="#">Events</a><a href="#">Company profile</a></nav>
+  <span class="ev">Sample event · <b>Espoo Matchmaking Day</b> · 4 Mar 2027</span>
+</header>
+<div class="grid">
+  <aside class="course">
+    <svg width="320" height="836" viewBox="0 0 320 836" aria-hidden="true">
+      <g fill="none" stroke="#C46A2B" stroke-width="1" opacity=".35">
+        <path d="M-20 120 C80 80 180 160 340 110"/><path d="M-20 160 C90 120 190 200 340 150"/>
+        <path d="M-20 420 C60 380 220 470 340 400"/><path d="M-20 460 C70 430 210 510 340 445"/>
+        <path d="M-20 700 C100 660 200 740 340 690"/>
+      </g>
+      <path d="M0 250 C60 230 120 300 200 280 L320 300 L320 360 C220 350 120 380 0 330Z" fill="#FFC94C" opacity=".45"/>
+      <path d="M150 560 C190 540 260 560 280 600 C260 640 190 650 160 620Z" fill="#1E8FD6" opacity=".25"/>
+      <g stroke="#A6268C" stroke-width="3" fill="none">
+        <path d="M150 70 L150 70"/>
+        <polygon points="150,52 168,84 132,84"/>
+        <line x1="154" y1="92" x2="96" y2="168"/><circle cx="88" cy="180" r="16"/>
+        <line x1="102" y1="190" x2="206" y2="262"/><circle cx="218" cy="272" r="16"/>
+        <line x1="210" y1="286" x2="120" y2="388"/><circle cx="110" cy="400" r="16"/>
+        <line x1="124" y1="410" x2="214" y2="488" stroke-dasharray="6 6"/><circle cx="226" cy="498" r="16" stroke-width="5"/>
+        <circle cx="140" cy="640" r="16" opacity=".4"/><circle cx="196" cy="740" r="16" opacity=".4"/>
+        <circle cx="160" cy="800" r="12" opacity=".4"/><circle cx="160" cy="800" r="18" opacity=".4"/>
+      </g>
+      <g font-family="Archivo Narrow" font-weight="700" font-size="18" fill="#A6268C">
+        <text x="58" y="168">1</text><text x="244" y="268">2</text><text x="80" y="396">3</text><text x="252" y="494">4</text>
+        <text x="110" y="636" opacity=".4">5</text><text x="222" y="736" opacity=".4">6</text>
+      </g>
+    </svg>
+    <p class="lbl">Four controls left. Skip one and the course routes around it; you can come back.</p>
+  </aside>
+  <main class="q">
+    <span class="leg"><i>4</i>Control 4 of 7 · The role</span>
+    <h1>If the right person walked up to your stand tomorrow, which role would you hire them for?</h1>
+    <p class="hint">Pick the one you would actually sign a contract for. "Anyone good" is allowed, but we will ask what good means.</p>
+    <div class="opts">
+      <div class="opt sel"><i></i>Backend developer, Kotlin</div>
+      <div class="opt"><i></i>Field service technician</div>
+      <div class="opt"><i></i>No single role, anyone strong</div>
+      <div class="opt"><i></i>We would not hire tomorrow</div>
+    </div>
+    <div class="act"><span class="btn">Punch and continue</span><span class="sec">Skip control</span></div>
+  </main>
+  <aside class="desc">
+    <h2>Control descriptions</h2>
+    <p>Your answers so far, in course order.</p>
+    <table>
+      <tr><th>#</th><th>Control</th><th>Answer</th><th></th></tr>
+      <tr><td class="n">1</td><td>Why go</td><td>Open roles now</td><td class="p"><span class="punch"><i></i><i></i><i></i><i></i><i></i><i></i></span></td></tr>
+      <tr><td class="n">2</td><td>Headcount</td><td>2, maybe 3</td><td class="p"><span class="punch"><i></i><i></i><i></i><i></i><i></i><i></i></span></td></tr>
+      <tr><td class="n">3</td><td>Start</td><td>Within 3 months</td><td class="p"><span class="punch"><i></i><i></i><i></i><i></i><i></i><i></i></span></td></tr>
+      <tr class="cur"><td class="n">4</td><td>Role</td><td>…</td><td></td></tr>
+    </table>
+    <div class="tot"><span>Your goal is taking shape</span><b>Hire for a need</b></div>
+  </aside>
+</div>
+</body></html>
