@@ -15,7 +15,10 @@ npm run dev        # Vite dev server, also serves POST /api/questions, /api/asse
 npm run build      # tsc -b && vite build
 npm run lint       # oxlint
 npm run capture    # screenshots of every main state into .impeccable/review/ (needs the dev server; see scripts/capture.mjs)
+npm run deploy     # build and deploy to Cloudflare (Worker `plainly`, https://plainly.eliasmakela.fi)
 ```
+
+Hosting: a Cloudflare Worker with static assets (`wrangler.jsonc`, `worker/index.ts`). The Worker serves `dist/` and runs first only for `/api/*`, reusing the functions in `server/`. Production deploys from the `event-shortlist` branch through Workers Builds (build `npm run build`, deploy `npx wrangler deploy`). API keys are Worker secrets (`npx wrangler secret put ANTHROPIC_API_KEY`, `GEMINI_API_KEY`); without them the routes return the fallbacks.
 
 Optional: copy `.env.example` to `.env`. `ANTHROPIC_API_KEY` enables Claude application questions and scoring (default `claude-opus-5-5`, override `PLAINLY_AI_MODEL`); `GEMINI_API_KEY` enables Gemini writing help in text fields. Without keys, questions come from fixed templates, scores are a labelled fixed-rule estimate and writing help shows labelled demo suggestions. Gemini model override: `PLAINLY_WRITING_MODEL`.
 
@@ -45,7 +48,7 @@ Design check after UI edits: `~/.claude/skills/impeccable/scripts/impeccable det
 | `src/staff/` | Staff review at `#/staff`: per-company ranking (top 10 shown, plus anything unscored or decided; "Show all" for the rest), per-score evidence strip, decisions, invitations |
 | `src/outcomes/` | Follow-up concept demo at `#/outcomes`: `data.ts` (four seeded events, 3/6-month checks, banding, summary text, CSV), `Outcomes.tsx`, `outcomes.css` (simulated data only) |
 | `src/components/SiteHeader.tsx` | Top bar for the applicant, staff and follow-up views; `NAV_LINKS` (in `src/components/nav.ts`) is the one main navigation, also rendered by the company page's top bar so labels and order match everywhere |
-| `server/event-ai.ts` | Vite plugin for `POST /api/questions` and `POST /api/assess`; holds the Anthropic key server-side |
+| `server/event-ai.ts` | `POST /api/questions` and `POST /api/assess` (Vite plugin locally, called by `worker/index.ts` in production); holds the Anthropic key server-side |
 | `src/seeker/` | Sample role browser at `#/roles` (not in the main nav) |
 | `src/writing-assistant/` | Field-level writing-help client, input sanitizer, prompt, schema and demo suggestions |
 | `server/writing-assistant.ts` | Vite plugin for `POST /api/writing-assist`; holds the Gemini key server-side |
@@ -78,7 +81,7 @@ The **Play walkthrough** action (at the end of the progress row) fills the compa
 
 ## Known gaps
 
-- Persistence beyond one browser: event data is in localStorage, so the company, applicant and staff views share data only within one browser. The AI endpoints exist only in `vite dev`/`vite preview` (a static deploy falls back to fixed rules in the browser).
+- Persistence beyond one browser: event data is in localStorage, so the company, applicant and staff views share data only within one browser. The AI endpoints run in `vite dev`/`vite preview` and in the Cloudflare Worker; a plain static deploy would fall back to fixed rules in the browser. The deployed API routes have no rate limiting yet.
 - Invitations are recorded, not sent; there is no staff authentication.
 - Finnish and Swedish copy.
 - The keyword-based topic filter is deliberately broad and can drop a legitimate question or evidence quote.

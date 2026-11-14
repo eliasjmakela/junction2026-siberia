@@ -28,7 +28,7 @@ To have questions drafted and answers scored by Claude, copy `.env.example` to `
 
 The company form also offers field-level writing help. Without `GEMINI_API_KEY`, it shows labelled demo suggestions; with a key, Gemini drafts a concise rewrite and role-focused follow-up questions. Suggested wording is applied only when the company chooses it.
 
-Other scripts: `npm run build`, `npm run lint`, `npm run capture` (screenshots of every main state; see `scripts/capture.mjs`).
+Live at https://plainly.eliasmakela.fi (Cloudflare Worker; `npm run deploy` builds and deploys). Other scripts: `npm run build`, `npm run lint`, `npm run capture` (screenshots of every main state; see `scripts/capture.mjs`).
 
 ## Project docs
 
