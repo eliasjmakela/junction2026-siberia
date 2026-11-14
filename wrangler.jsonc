@@ -4,6 +4,8 @@
   "main": "worker/index.ts",
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat"],
+  // Build the app first so ./dist exists, whatever the dashboard build command is.
+  "build": { "command": "npm run build" },
   // The built Vite app; the Worker runs first only for the API routes.
   "assets": {
     "directory": "./dist",
