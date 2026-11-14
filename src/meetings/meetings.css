@@ -1,0 +1,311 @@
+/* ---------- Meetings (#/meetings): flat cards, lichen only on selection ---------- */
+.meet-stage {
+  margin-top: var(--s-4);
+}
+
+.meet-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-1) var(--s-4);
+}
+
+.meet-head__meta {
+  color: var(--ink-soft);
+  font-size: var(--type-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.meet-cards {
+  list-style: none;
+  display: grid;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+
+.meet-card {
+  padding: var(--s-3);
+  background: var(--granite-light);
+  border-radius: var(--radius);
+}
+
+.meet-card__top {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--s-1) var(--s-4);
+}
+
+.meet-code {
+  font-family: var(--font-display);
+  font-size: var(--type-display-l-compact);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.meet-overall {
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.meet-overall b {
+  color: var(--ink);
+  font-size: var(--type-body-l);
+}
+
+.meet-booking {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--s-1) var(--s-3);
+  text-align: right;
+}
+
+.meet-when {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.meet-when span {
+  color: var(--ink-soft);
+}
+
+.meet-notbooked {
+  padding: 2px var(--s-1);
+  border: 1px dashed var(--ink-soft);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  font-size: var(--type-small);
+}
+
+.meet-card__top > .meet-notbooked {
+  justify-self: start;
+}
+
+.meet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1) var(--s-3);
+}
+
+.meet-booking .btn-quiet,
+.meet-actions .btn-quiet {
+  min-height: 44px;
+}
+
+.meet-book {
+  min-height: 44px;
+}
+
+/* Scores: attribute name, bar and value on one line; the quote beneath. */
+.meet-scores {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--s-2) var(--s-4);
+  margin-top: var(--s-3);
+}
+
+.meet-scores li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-1) var(--s-2);
+}
+
+.meet-score__name {
+  font-size: var(--type-small);
+  font-weight: 600;
+}
+
+.meet-scores .staff-bar__track {
+  flex: 0 0 72px;
+  min-width: 72px;
+}
+
+.meet-score__quote {
+  grid-column: 1 / -1;
+  color: var(--ink-soft);
+  font-size: var(--type-small);
+  quotes: '\201C' '\201D';
+}
+
+.meet-answers {
+  margin-top: var(--s-2);
+}
+
+.meet-answers > summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--spruce);
+  font-size: var(--type-small);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.meet-answers > summary:focus-visible {
+  outline: var(--focus);
+  outline-offset: 2px;
+}
+
+/* Slot grid */
+.meet-grid {
+  margin-top: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: var(--rule);
+}
+
+.meet-slots {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--s-2) var(--s-3);
+  margin-top: var(--s-2);
+}
+
+.meet-slots__part {
+  padding-top: 12px;
+  color: var(--ink-soft);
+  font-size: var(--type-small);
+}
+
+.meet-slots__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: var(--s-1);
+}
+
+.meet-slot {
+  min-height: 44px;
+  background: var(--white);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    background-color var(--t-fast) var(--ease-out);
+}
+
+.meet-slot:hover:not(:disabled) {
+  border-color: var(--granite-line);
+}
+
+.meet-slot[aria-checked='true'] {
+  background: var(--lichen);
+  border-color: var(--spruce);
+  font-weight: 600;
+}
+
+.meet-slot:focus-visible {
+  outline: var(--focus);
+  outline-offset: 2px;
+}
+
+.meet-slot:disabled {
+  color: var(--ink-soft);
+  text-decoration: line-through;
+  cursor: default;
+  background: transparent;
+}
+
+.meet-grid .error {
+  min-height: 0;
+}
+
+/* Rating */
+.meet-rate,
+.meet-rated {
+  margin-top: var(--s-3);
+}
+
+.meet-field {
+  margin-top: var(--s-3);
+  border: 0;
+  min-width: 0;
+}
+
+.meet-field legend,
+.meet-field > label {
+  display: block;
+  margin-bottom: var(--s-1);
+}
+
+.meet-chip--num {
+  min-width: 56px;
+  justify-content: center;
+  padding: 0 var(--s-2);
+}
+
+.meet-hint {
+  margin-top: var(--s-1);
+  color: var(--ink-soft);
+  font-size: var(--type-small);
+}
+
+.meet-rated__line {
+  font-size: var(--type-body-l);
+  font-variant-numeric: tabular-nums;
+}
+
+.meet-rated__note {
+  margin-top: var(--s-1);
+  max-width: 62ch;
+}
+
+.meet-rate .error {
+  min-height: 0;
+}
+
+.meet-schedule {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--s-1) var(--s-4);
+  margin-top: var(--s-3);
+}
+
+.meet-schedule li {
+  padding: var(--s-1) 0;
+  border-top: var(--rule);
+}
+
+.meet-schedule span {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-right: var(--s-2);
+}
+
+@media (max-width: 640px) {
+  .meet-card__top {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .meet-booking {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .meet-scores {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .meet-slots {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .meet-slots__part {
+    padding: var(--s-1) 0;
+  }
+
+  .meet-slots__row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

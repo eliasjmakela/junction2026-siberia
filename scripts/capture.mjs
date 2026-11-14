@@ -89,6 +89,8 @@ for (const [sfx, vp] of [['desktop', D], ['mobile', M]]) {
   await run(`08-apply-${sfx}`, vp, async (p) => { await questions(p); await p.getByRole('button', { name: /Publish to the event/ }).click(); await view('#/apply')(p) })
   await run(`09-staff-${sfx}`, vp, async (p) => { await view('#/staff')(p); await p.waitForTimeout(1500); await p.locator('.staff-score').first().click() })
   await run(`10-follow-up-${sfx}`, vp, view('#/outcomes'))
+  await run(`11-meetings-${sfx}`, vp, view('#/meetings'))
+  await run(`12-meetings-after-${sfx}`, vp, view('#/meetings?view=after'))
 }
 await browser.close()
 console.log(`Saved to ${out}/`)

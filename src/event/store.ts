@@ -2,7 +2,9 @@ import { useSyncExternalStore } from 'react'
 import type { Values } from '../form/schema'
 import { DEFAULT_SLOTS, overallOf, type CompanyBrief, type Producer, type QuestionSet, type Score, type Status } from './core'
 import { SAMPLE_APPLICATIONS, SAMPLE_BULK_SCORES, SAMPLE_LISTINGS } from './sample'
+import { takenFor } from '../meetings/slots'
 import { SAMPLE_SCORES } from './sampleAssessments'
+import { seedMeetings } from './sampleMeetings'
 
 /**
  * Event state for the shortlisting flow, kept in this browser's localStorage
@@ -61,23 +63,35 @@ export type Assessment = {
 export type Decision = 'invite' | 'waitlist' | 'decline'
 export type DecisionRecord = { decision: Decision; at: string }
 
+/** A 20-minute meeting at the company's stand on event day. */
+export type Booking = { applicationId: string; listingId: string; start: string; place: string; at: string }
+export type NextStep = 'interview' | 'keep' | 'none'
+/** The company's rating of a candidate it met, kept in this browser only. */
+export type Rating = { applicationId: string; listingId: string; score: 1 | 2 | 3 | 4 | 5; next: NextStep; note: string; at: string }
+
+/** Stored maps hold null as a tombstone: the record was cleared, so the built-in one stays cleared. */
 type Stored = {
   listings: Listing[]
   applications: Application[]
   assessments: Assessment[]
-  decisions: Record<string, DecisionRecord>
+  decisions: Record<string, DecisionRecord | null>
+  bookings: Record<string, Booking | null>
+  ratings: Record<string, Rating | null>
   slots: Record<string, number>
   /** Sample records the staff removed from this browser. */
   hiddenSamples: string[]
 }
 
-export type EventState = Stored & {
+export type EventState = Omit<Stored, 'decisions' | 'bookings' | 'ratings'> & {
+  decisions: Record<string, DecisionRecord>
+  bookings: Record<string, Booking>
+  ratings: Record<string, Rating>
   /** Every listing: company-published first, then samples. */
   allListings: Listing[]
   allApplications: Application[]
 }
 
-const empty = (): Stored => ({ listings: [], applications: [], assessments: [], decisions: {}, slots: {}, hiddenSamples: [] })
+const empty = (): Stored => ({ listings: [], applications: [], assessments: [], decisions: {}, bookings: {}, ratings: {}, slots: {}, hiddenSamples: [] })
 
 function read(): Stored {
   try {
@@ -104,16 +118,39 @@ const SAMPLE_ASSESSMENTS: Assessment[] = Object.entries({ ...SAMPLE_SCORES, ...S
   return [{ applicationId, listingId, scores, overall: overallOf(scores), source: 'sample' as const, assessedAt: app.submittedAt, setKey: setKeyOf(listing.set) }]
 })
 
+const SEEDS = seedMeetings(SAMPLE_LISTINGS, SAMPLE_APPLICATIONS, SAMPLE_ASSESSMENTS)
+
+/** Built-in records under the stored ones, without tombstones or records of removed applications and roles. */
+function merged<T>(seed: Record<string, T>, stored: Record<string, T | null>, keep: (key: string) => boolean): Record<string, T> {
+  const out: Record<string, T> = {}
+  for (const [k, v] of Object.entries({ ...seed, ...stored })) if (v && keep(k)) out[k] = v
+  return out
+}
+
 function derive(s: Stored): EventState {
   const hidden = new Set(s.hiddenSamples)
   // A published role with the same company and title replaces its sample.
   const published = new Set(s.listings.map(roleKey))
   const stored = new Set(s.assessments.map((a) => pairKey(a.applicationId, a.listingId)))
+  const allListings = [...s.listings, ...SAMPLE_LISTINGS.filter((l) => !hidden.has(l.id) && !published.has(roleKey(l)))]
+  const allApplications = [...s.applications, ...SAMPLE_APPLICATIONS.filter((a) => !hidden.has(a.id))]
+  const listingIds = new Set(allListings.map((l) => l.id))
+  const appIds = new Set(allApplications.map((a) => a.id))
+  const present = (key: string) => {
+    const [a, l] = key.split(':')
+    return appIds.has(a) && listingIds.has(l)
+  }
+  const decisions = merged(SEEDS.decisions, s.decisions, present)
+  const bookings = merged(SEEDS.bookings, s.bookings, (k) => present(k) && decisions[k]?.decision === 'invite')
+  const ratings = merged(SEEDS.ratings, s.ratings, (k) => k in bookings)
   return {
     ...s,
+    decisions,
+    bookings,
+    ratings,
     assessments: [...s.assessments, ...SAMPLE_ASSESSMENTS.filter((a) => !hidden.has(a.applicationId) && !stored.has(pairKey(a.applicationId, a.listingId)))],
-    allListings: [...s.listings, ...SAMPLE_LISTINGS.filter((l) => !hidden.has(l.id) && !published.has(roleKey(l)))],
-    allApplications: [...s.applications, ...SAMPLE_APPLICATIONS.filter((a) => !hidden.has(a.id))],
+    allListings,
+    allApplications,
   }
 }
 
@@ -201,10 +238,41 @@ export function answeredEarlier(app: Application, listing: Listing) {
 
 export function setDecision(applicationId: string, listingId: string, decision: Decision | null) {
   return update((s) => {
-    const decisions = { ...s.decisions }
-    if (decision) decisions[pairKey(applicationId, listingId)] = { decision, at: new Date().toISOString() }
-    else delete decisions[pairKey(applicationId, listingId)]
-    return { ...s, decisions }
+    const key = pairKey(applicationId, listingId)
+    const decisions = { ...s.decisions, [key]: decision ? { decision, at: new Date().toISOString() } : null }
+    if (decision === 'invite') return { ...s, decisions }
+    // Withdrawing an invitation also clears the meeting and its rating.
+    return { ...s, decisions, bookings: { ...s.bookings, [key]: null }, ratings: { ...s.ratings, [key]: null } }
+  })
+}
+
+/** Books or moves a meeting. 'taken' when the time is no longer free. */
+export function bookMeeting(applicationId: string, listingId: string, start: string, place: string): 'ok' | 'taken' | 'storage' {
+  let taken = false
+  const ok = update((s) => {
+    const state = derive(s)
+    const listing = state.allListings.find((l) => l.id === listingId)
+    if (!listing || state.decisions[pairKey(applicationId, listingId)]?.decision !== 'invite' || takenFor(state, listing, applicationId).has(start)) {
+      taken = true
+      return s
+    }
+    return { ...s, bookings: { ...s.bookings, [pairKey(applicationId, listingId)]: { applicationId, listingId, start, place, at: new Date().toISOString() } } }
+  })
+  return !ok ? 'storage' : taken ? 'taken' : 'ok'
+}
+
+/** Cancels a meeting; its rating goes with it. */
+export function cancelMeeting(applicationId: string, listingId: string) {
+  const key = pairKey(applicationId, listingId)
+  return update((s) => ({ ...s, bookings: { ...s.bookings, [key]: null }, ratings: { ...s.ratings, [key]: null } }))
+}
+
+/** Saves the rating of a meeting that is booked. */
+export function rateMeeting(r: Omit<Rating, 'at'>) {
+  const key = pairKey(r.applicationId, r.listingId)
+  return update((s) => {
+    if (!derive(s).bookings[key]) return s
+    return { ...s, ratings: { ...s.ratings, [key]: { ...r, at: new Date().toISOString() } } }
   })
 }
 
@@ -219,6 +287,8 @@ export function deleteApplication(id: string) {
     applications: s.applications.filter((a) => a.id !== id),
     assessments: s.assessments.filter((a) => a.applicationId !== id),
     decisions: Object.fromEntries(Object.entries(s.decisions).filter(([k]) => !k.startsWith(`${id}:`))),
+    bookings: Object.fromEntries(Object.entries(s.bookings).filter(([k]) => !k.startsWith(`${id}:`))),
+    ratings: Object.fromEntries(Object.entries(s.ratings).filter(([k]) => !k.startsWith(`${id}:`))),
     hiddenSamples: SAMPLE_APPLICATIONS.some((a) => a.id === id) ? [...new Set([...s.hiddenSamples, id])] : s.hiddenSamples,
   }))
 }

@@ -1,5 +1,6 @@
 import { useSyncExternalStore, type ReactNode } from 'react'
 import { Apply } from './apply/Apply'
+import { Meetings } from './meetings/Meetings'
 import { Outcomes } from './outcomes/Outcomes'
 import { Browse } from './seeker/Browse'
 import { Staff } from './staff/Staff'
@@ -17,6 +18,7 @@ export function Root({ children }: { children: ReactNode }) {
   const path = hash.split('?')[0]
   if (path === '#/apply') return <Apply />
   if (path === '#/staff') return <Staff />
+  if (path === '#/meetings') return <Meetings />
   if (path === '#/outcomes') return <Outcomes />
   if (path === '#/roles') return <Browse />
   return <>{children}</>
