@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero Mock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@700&family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--spruce:#173a30;--spruce-raised:#21483c;--lichen:#e4cb3a;--granite:#d6d9d5;--granite-light:#f0f2ef;--line:#c4c8c3;--ink:#121614;--ink-soft:#464b47;--on:#eef0ec;--on-soft:#b4c2bb;--ease:cubic-bezier(.16,1,.3,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:"Schibsted Grotesk",system-ui,sans-serif;background:var(--granite);color:var(--ink)}
+.bar{position:fixed;right:16px;bottom:16px;z-index:5;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#fff;padding:8px 10px;border-radius:2px;box-shadow:0 2px 12px rgb(18 22 20 / .18);font-size:12px;max-width:560px}
+.bar b{font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-right:4px}
+.bar button{font:inherit;font-weight:500;padding:5px 8px;background:var(--granite-light);border:2px solid transparent;border-radius:2px;cursor:pointer}
+.bar button[aria-pressed=true]{border-color:var(--spruce);background:#fff}
+.shell{display:grid;grid-template-columns:560px minmax(0,1fr);min-height:100vh}
+.field{position:sticky;top:0;height:100vh;background:var(--spruce);color:var(--on);overflow:hidden}
+.field svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.brand{position:absolute;top:24px;left:48px;display:flex;gap:16px;align-items:baseline}
+.brand b{font-family:"Familjen Grotesk";font-size:28px;letter-spacing:-.02em;color:var(--lichen)}
+.brand span{font-size:14px;color:var(--on-soft)}
+.caption{position:absolute;left:48px;right:48px;bottom:40px}
+.status{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--lichen);min-height:20px;transition:opacity .5s var(--ease)}
+.title{font-family:"Familjen Grotesk";font-weight:700;font-size:46px;line-height:1.02;letter-spacing:-.025em;margin-top:8px;min-height:47px;transition:opacity .6s var(--ease),transform .9s var(--ease)}
+.title.is-quiet{color:var(--on-soft);font-weight:700}
+.details{margin-top:12px;font-size:17px;color:var(--on-soft);min-height:26px}
+.work{padding:24px 64px 48px;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;align-items:center;min-height:40px}
+.tabs{display:flex;gap:32px;font-weight:500}
+.tabs span{color:var(--ink-soft)}.tabs span:first-child{color:var(--ink);box-shadow:inset 0 -3px var(--spruce);padding-bottom:6px}
+.tabs small{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-left:4px}
+.chip-ev{font-size:13px;background:var(--granite-light);padding:8px 12px;border-radius:2px;color:var(--ink-soft)}.chip-ev b{color:var(--ink);font-weight:600}
+.progress{margin-top:56px;display:flex;gap:16px;align-items:center;font-size:14px;color:var(--ink-soft)}
+.bars{display:flex;gap:4px;list-style:none}.bars li{width:32px;height:6px;background:var(--line)}.bars li.d{background:var(--spruce)}.bars li.c{background:var(--lichen)}
+h1{font-family:"Familjen Grotesk";font-size:46px;line-height:1.06;letter-spacing:-.025em;margin-top:24px;max-width:19em}
+.q{margin-top:28px;max-width:760px}
+.q + .q{margin-top:24px}
+.q label{display:block;font-size:17px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chips span{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 16px 0 14px;background:var(--granite-light);border:2px solid transparent;border-radius:2px;font-weight:500}
+.chips span::before{content:'';width:14px;height:14px;border:2px solid var(--ink-soft);border-radius:50%}
+.chips span.on{background:#fff;border-color:var(--spruce)}.chips span.on::before{border-color:var(--spruce);background:var(--lichen)}
+.text{margin-top:12px;background:var(--granite-light);border-radius:2px;padding:12px 16px;min-height:48px;color:var(--ink)}
+.actions{display:flex;gap:16px;align-items:center;margin-top:40px}
+.btn{font:inherit;font-weight:600;background:var(--spruce);color:var(--on);border:0;border-radius:2px;min-height:48px;padding:0 24px;cursor:pointer;display:inline-flex;gap:10px;align-items:center}
+.btn svg{fill:var(--lichen)}
+.btn:hover{background:var(--spruce-raised)}
+.quiet{font:inherit;font-weight:500;background:none;border:0;color:var(--ink-soft);min-height:48px;padding:0 8px;cursor:pointer}
+.quiet:disabled{opacity:.45;cursor:default}
+.card{margin-top:32px;width:400px;background:var(--spruce);color:var(--on);border-radius:2px;overflow:hidden}
+.card svg{display:block;width:100%;height:auto}
+.card .in{padding:4px 24px 28px}
+.card .st{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--lichen)}
+.card h2{font-family:"Familjen Grotesk";font-size:34px;line-height:1.06;letter-spacing:-.02em;margin-top:6px}
+.card p{margin-top:8px;color:var(--on-soft);font-size:14px}
+.hint{color:var(--ink-soft);margin-top:12px;max-width:62ch}
+</style>
+</head>
+<body>
+<div class="bar" aria-label="Mock controls">
+  <b>Mock</b>
+  <span id="roles"></span>
+  <button type="button" id="und" aria-pressed="false">2 undecided</button>
+  <button type="button" id="replay">New camera path</button>
+</div>
+
+<div class="shell">
+  <aside class="field" aria-label="Your role">
+    <svg id="sky" aria-hidden="true"></svg>
+    <div class="brand"><b>Plainly</b><span>for Espoo recruitment events</span></div>
+    <div class="caption" aria-live="polite">
+      <p class="status" id="status"></p>
+      <p class="title" id="title"></p>
+      <p class="details" id="details"></p>
+    </div>
+  </aside>
+  <main class="work">
+    <header class="top">
+      <nav class="tabs"><span>Role</span><span>Events <small>soon</small></span><span>Company page <small>soon</small></span></nav>
+      <p class="chip-ev">Sample event · <b>Espoo Matchmaking Day</b> · 4 Mar 2027</p>
+    </header>
+    <div class="progress"><ol class="bars" id="bars"></ol><span id="steptext"></span></div>
+    <div id="screen"></div>
+  </main>
+</div>
+
+<script>
+const NS='http://www.w3.org/2000/svg'
+const el=(t,a={},p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e}
+function hash(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19}return h>>>0}
+function rng(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const lerp=(a,b,t)=>a+(b-a)*t
+const ARROW='<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 7 H10 V3 L15 8 L10 13 V9 H1 Z"/></svg>'
+
+/* The settings chosen in the lab. */
+const S={z0:.32,z1:1.15,parallax:1.4,rotMax:22,wander:240,blur0:3,dof:1.2,stars:1600,starSize:1.35,dim:.55,twinkle:.15,cSize:1.3,glow:.5,vary:45,speed:1300}
+const W=1800,H=2600
+
+/* Synthetic sample roles. */
+const ROLES={
+  backend:{title:'Backend developer',status:'now',details:['2 positions','Full-time','Within 3 months']},
+  tech:{title:'Field service technician',status:'now',details:['4 positions','Full-time','As soon as possible']},
+  trainee:{title:'Summer trainee',status:'soon',details:['6 positions','Summer job','From 2 June 2027']},
+}
+const STATUS_NAME={now:'Open now',soon:'Opening soon',pipeline:'Talent pipeline'}
+const SCREENS=[
+  {t:'Is this a real open vacancy, or are you building a talent pipeline?',q:[['Status of the role',['Open now','Opening soon','Talent pipeline']]]},
+  {t:'What is the role?',q:[['Role title','text'],['This role exists so that …','text'],['Type',['Full-time','Part-time','Internship','Summer job']]]},
+  {t:'What does the work look like?',q:[['In the first month, this person will …','text'],['A recent problem this person would help solve:','text'],['Working hours',['Fixed','Flexible','Shift work']]]},
+  {t:'Who will they work with?',q:[['Works most with',['Customers','Engineers','Suppliers','Management']],['Team size',['1–3 people','4–10 people','11–30 people']]]},
+  {t:'What skills does the role need?',q:[['Skills','text'],['Education',['Required','Preferred','Not important']]]},
+  {t:'Which languages are used at work?',q:[['Working language',['Finnish','English','Swedish']],['Finnish required?',['No','Basic','Fluent','Learnable in the role']]]},
+  {t:'Where is the work done?',q:[['Work mode',['On-site','Hybrid','Remote']],['Visa support',['Yes','No','Depends']]]},
+  {t:'About the company',q:[['Company name','text'],['People who thrive here tend to …','text']]},
+]
+const TEXTS={'Role title':r=>r.title,'This role exists so that …':()=>'our field technicians get the right job details before every visit.','In the first month, this person will …':()=>'pair with our lead developer and ship a first fix.','A recent problem this person would help solve:':()=>'our scheduling service went down twice during the spring rush.','Skills':()=>'Kotlin · SQL (must-have) · Kubernetes (we teach)','Company name':()=>'Sample Oy','People who thrive here tend to …':()=>'ask a lot of questions.'}
+
+function constellation(roleKey,status){
+  const r=rng(hash(roleKey+status)),j=a=>(r()-.5)*a
+  const cx=1000+j(400),cy=1150+j(500)
+  let pts,lines
+  if(status==='now'){pts=[[150,0],[60,-30],[-30,-62],[-120,-96],[60,30],[-30,62],[-120,96],[-40,0],[-130,4]];lines=[[0,1],[1,2],[2,3],[0,4],[4,5],[5,6],[0,7],[7,8]]}
+  else if(status==='soon'){pts=[[140,-30],[50,-48],[-40,-70],[-130,-96],[140,30],[50,52],[-40,74],[-130,98],[-60,0]];lines=[[1,0],[1,2],[2,3],[5,4],[5,6],[6,7],[8,2],[8,6]]}
+  else{pts=Array.from({length:9},(_,i)=>[-170+i*42,Math.sin(i*1.3)*34]);lines=[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8]]}
+  const a=(r()-.5)*S.vary*.012,ca=Math.cos(a),sa=Math.sin(a),sx=1+(r()-.5)*S.vary*.008,sy=1+(r()-.5)*S.vary*.01
+  pts=pts.map(([x,y])=>{x*=sx;y*=sy;return[cx+x*ca-y*sa+j(S.vary),cy+x*sa+y*ca+j(S.vary)]})
+  return {pts,lines,mags:pts.map((_,i)=>i===0?1:.55+r()*.4),cx,cy}
+}
+const LIGHT_AT=[1,2,2,3,4,5,6,7,8]
+
+/* Camera keyframes: uneven zoom steps, a wandering pan and rotation that swings and settles. New each session. */
+function cameraPath(con){
+  const R=Math.random
+  const inc=Array.from({length:8},()=>.5+R()*1),tot=inc.reduce((a,b)=>a+b,0)
+  let acc=0;const c=[0,...inc.map(v=>(acc+=v)/tot)]
+  return c.map((ck,k)=>{
+    const fall=1-ck
+    return {lz:lerp(Math.log(S.z0),Math.log(S.z1),ck),
+      tx:lerp(W/2,con.cx,ck)+(R()-.5)*2*S.wander*fall,ty:lerp(H/2,con.cy,ck)+(R()-.5)*2*S.wander*fall,
+      rot:(k===8?0:(R()<.5?-1:1)*(.35+R()*.65)*S.rotMax*Math.pow(fall,.8))*Math.PI/180}
+  })
+}
+
+class Scene{
+  constructor(svg,roleKey,{thumb=false,und=0}={}){
+    this.svg=svg;this.thumb=thumb;this.und=und;svg.innerHTML=''
+    const role=ROLES[roleKey];this.con=constellation(roleKey,role.status);this.path=cameraPath(this.con)
+    const r=rng(hash(roleKey+'sky'))
+    const gStars=el('g',{},svg);this.stars=[]
+    for(let i=0;i<S.stars;i++){const d=r();this.stars.push({x:r()*W,y:r()*H,d,r:.35+r()*r()*1.4,o:.25+r()*.6,ph:r()*6.28,sp:.5+r()*1.2,n:el('circle',{fill:'#eef0ec'},gStars)})}
+    const gL=el('g',{},svg);this.lines=this.con.lines.map(([a,b])=>({a,b,n:el('line',{stroke:'#e4cb3a','stroke-linecap':'round'},gL)}))
+    const gC=el('g',{},svg);this.cs=this.con.pts.map((p,i)=>({p,m:this.con.mags[i],halo:el('circle',{fill:'#e4cb3a'},gC),core:el('circle',{fill:'#eef0ec'},gC),lit:el('circle',{fill:'#e4cb3a'},gC)}))
+    this.cur=null
+  }
+  target(step){
+    const k=this.path[step],p=step/8
+    const lit=this.con.pts.map((_,i)=>step>=LIGHT_AT[i]?1:0)
+    const order=this.con.pts.map((_,i)=>i).filter(i=>lit[i]&&i!==0).sort((a,b)=>LIGHT_AT[b]-LIGHT_AT[a]||b-a)
+    const und=new Set(order.slice(0,this.und))
+    return {...k,blur:S.blur0*(1-p),dof:S.dof*p,dim:lerp(1,S.dim,p),p,
+      lit:lit.map((v,i)=>und.has(i)?v*.3:v),u:this.con.pts.map((_,i)=>und.has(i)?1:0),
+      drawn:this.con.lines.map(([a,b])=>lit[a]&&lit[b]?1:0),dash:this.con.lines.map(([a,b])=>und.has(a)||und.has(b)?1:0)}
+  }
+  set(step,snap){const t=this.target(step);if(snap||!this.cur)this.cur=structuredClone(t);this.goal=t}
+  tick(dt){const k=1-Math.exp(-dt/(S.speed/4)),c=this.cur,g=this.goal
+    for(const key of ['lz','tx','ty','rot','blur','dof','dim','p'])c[key]+=(g[key]-c[key])*k
+    for(const key of ['lit','u','drawn','dash'])c[key]=c[key].map((v,i)=>v+(g[key][i]-v)*k*(key==='drawn'?.75:1))}
+  draw(time){
+    const box=this.svg.viewBox.baseVal,VW=box.width,VH=box.height,fx=VW/2,fy=this.thumb?VH/2:VH*.4
+    const c=this.cur,z=Math.exp(c.lz)*(this.thumb?.55:1)
+    // a slow idle drift keeps the sky alive between answers
+    const live=this.thumb?0:1,drx=Math.sin(time/7000)*10*live*(1-.6*c.p),dry=Math.cos(time/9000)*8*live*(1-.6*c.p),drr=Math.sin(time/11000)*.012*live*(1-.5*c.p)
+    const rot=c.rot+drr,cos=Math.cos(rot),sin=Math.sin(rot)
+    const proj=(x,y,kd=1)=>{const dx=(x-c.tx)*z*kd,dy=(y-c.ty)*z*kd;return[fx+drx*kd+dx*cos-dy*sin,fy+dry*kd+dx*sin+dy*cos]}
+    const tw=this.thumb?0:S.twinkle
+    for(const s of this.stars){
+      const kd=1+S.parallax*(s.d-.5),[x,y]=proj(s.x,s.y,kd)
+      if(x<-20||x>VW+20||y<-20||y>VH+20){s.n.setAttribute('r',0);continue}
+      const b=c.blur+c.dof*Math.abs(s.d-.5)*2,r0=s.r*S.starSize*(.75+.25*Math.min(z,2))*(.7+s.d*.6),re=r0+b*.55
+      const o=s.o*c.dim*(r0/re)*(1-tw*.5*(1+Math.sin(time*.001*s.sp+s.ph)))
+      s.n.setAttribute('cx',x.toFixed(1));s.n.setAttribute('cy',y.toFixed(1));s.n.setAttribute('r',re.toFixed(2));s.n.setAttribute('opacity',Math.max(.02,o).toFixed(3))
+    }
+    const P=this.cs.map(s=>proj(...s.p))
+    this.cs.forEach((s,i)=>{const l=c.lit[i],[x,y]=P[i],r0=(1+l*2.4*s.m)*S.cSize*(this.thumb?.8:1),re=r0+c.blur*.55,f=(r0*r0)/(re*re)
+      for(const n of [s.halo,s.core,s.lit]){n.setAttribute('cx',x.toFixed(1));n.setAttribute('cy',y.toFixed(1))}
+      s.core.setAttribute('r',re.toFixed(2));s.core.setAttribute('opacity',((.35+.3*l)*f).toFixed(3))
+      s.lit.setAttribute('r',re.toFixed(2));s.lit.setAttribute('opacity',(l*f*(1-.5*c.u[i])).toFixed(3))
+      s.halo.setAttribute('r',(re*3.2).toFixed(2));s.halo.setAttribute('opacity',(l*S.glow*.16*(1-c.u[i])).toFixed(3))})
+    this.lines.forEach((L,i)=>{const d=c.drawn[i],a=P[L.a],b=P[L.b]
+      L.n.setAttribute('x1',a[0]);L.n.setAttribute('y1',a[1]);L.n.setAttribute('x2',lerp(a[0],b[0],d));L.n.setAttribute('y2',lerp(a[1],b[1],d))
+      L.n.setAttribute('stroke-width',(1.3+c.blur*.5).toFixed(2));L.n.setAttribute('opacity',(d*.75/(1+c.blur*.35)*(1-.45*c.dash[i])).toFixed(3))
+      L.n.setAttribute('stroke-dasharray',c.dash[i]>.5?'3 5':'')})
+  }
+}
+
+/* ---- mock app ---- */
+const sky=document.getElementById('sky')
+let role='backend',und=0,screen=0,view='form',scene=null,last=performance.now()
+function fit(){const r=sky.getBoundingClientRect();sky.setAttribute('viewBox',`0 0 ${Math.round(r.width)} ${Math.round(r.height)}`)}
+new ResizeObserver(fit).observe(sky)
+function heroStep(){return view==='form'?screen:8}
+function newScene(){fit();scene=new Scene(sky,role,{und});scene.set(heroStep(),true)}
+function loop(t){const dt=Math.min(64,t-last);last=t;if(scene){scene.tick(dt);scene.draw(t)}requestAnimationFrame(loop)}
+requestAnimationFrame(loop)
+
+function caption(){
+  const r=ROLES[role],st=heroStep()
+  document.getElementById('status').textContent=st>=1?STATUS_NAME[r.status]:'No status yet'
+  const t=document.getElementById('title');t.textContent=st>=2?r.title:'Your role takes shape as you answer.';t.classList.toggle('is-quiet',st<2)
+  document.getElementById('details').textContent=st>=2?r.details.slice(0,st>=3?3:2).join(' · '):''
+}
+function render(){
+  const bars=document.getElementById('bars');bars.innerHTML=''
+  for(let i=0;i<8;i++){const li=document.createElement('li');if(view!=='form'||i<screen)li.className='d';else if(i===screen)li.className='c';bars.appendChild(li)}
+  document.getElementById('steptext').textContent=view==='form'?`Step ${screen+1} of 8`:view==='review'?'Review':'Submitted'
+  const box=document.getElementById('screen'),r=ROLES[role]
+  if(view==='form'){
+    const s=SCREENS[screen]
+    box.innerHTML=`<h1>${s.t}</h1>`+s.q.map(([label,opts])=>`<div class="q"><label>${label}</label>${opts==='text'?`<div class="text">${TEXTS[label]?TEXTS[label](r):''}</div>`:`<div class="chips">${opts.map((o,i)=>`<span class="${(label==='Status of the role'?o===STATUS_NAME[r.status]:i===1)?'on':''}">${o}</span>`).join('')}</div>`}</div>`).join('')+
+      `<div class="actions"><button class="btn" id="next">${screen===7?'Review role page':'Next'} ${ARROW}</button><button class="quiet" id="back" ${screen===0?'disabled':''}>Back</button></div>`
+    document.getElementById('next').onclick=()=>{if(screen<7){screen++}else{view='review'}scene.set(heroStep(),false);render()}
+    document.getElementById('back').onclick=()=>{screen=Math.max(0,screen-1);scene.set(heroStep(),false);render()}
+  }else if(view==='review'){
+    box.innerHTML=`<h1>Review your role page</h1><p class="hint">This is where the attendee-facing role page preview sits in the app.</p><div class="actions"><button class="btn" id="submit">Submit role ${ARROW}</button><button class="quiet" id="back">Back</button></div>`
+    document.getElementById('submit').onclick=()=>{view='submitted';render()}
+    document.getElementById('back').onclick=()=>{view='form';screen=7;scene.set(heroStep(),false);render()}
+  }else{
+    box.innerHTML=`<h1>Role submitted</h1><p class="hint">${r.title} is submitted for Espoo Matchmaking Day.</p><article class="card"><svg id="cardsky" viewBox="0 0 400 300"></svg><div class="in"><p class="st">${STATUS_NAME[r.status]}</p><h2>${r.title}</h2><p>Sample Oy · ${r.details.join(' · ')}</p></div></article><div class="actions"><button class="btn" id="again">Submit another role ${ARROW}</button></div>`
+    const cs=new Scene(document.getElementById('cardsky'),role,{thumb:true,und});cs.set(8,true);cs.draw(0)
+    document.getElementById('again').onclick=()=>{view='form';screen=0;newScene();render()}
+  }
+  caption()
+}
+const rolesBox=document.getElementById('roles')
+for(const [k,v] of Object.entries(ROLES)){const b=document.createElement('button');b.type='button';b.textContent=v.title;b.setAttribute('aria-pressed',k===role);b.onclick=()=>{role=k;[...rolesBox.children].forEach(x=>x.setAttribute('aria-pressed',x===b));newScene();render()};rolesBox.appendChild(b)}
+const undBtn=document.getElementById('und');undBtn.onclick=()=>{und=und?0:2;undBtn.setAttribute('aria-pressed',!!und);newScene();render()}
+document.getElementById('replay').onclick=()=>{newScene();render()}
+newScene();render()
+</script>
+</body>
+</html>
