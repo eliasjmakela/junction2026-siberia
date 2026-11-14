@@ -165,7 +165,7 @@
 
 .tabs {
   display: flex;
-  gap: var(--s-5);
+  gap: var(--s-4);
   white-space: nowrap;
   font-size: var(--type-body);
   font-weight: 500;
@@ -488,7 +488,8 @@
 
 }
 
-@media (max-width: 1120px) {
+/* Beside the field the work column is narrow: the navigation keeps its row, the event chip yields. */
+@media (max-width: 1599px) {
   .event-chip {
     display: none;
   }

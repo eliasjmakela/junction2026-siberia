@@ -40,11 +40,11 @@ Design check after UI edits: `~/.claude/skills/impeccable/scripts/impeccable det
 | `src/event/store.ts` | Event state in localStorage (`plainly:event:v1`): listings, applications, assessments, decisions, slots; `useEvent()` hook, cross-tab sync |
 | `src/event/api.ts` | Browser client for the AI endpoints with rules fallback and re-validation |
 | `src/event/CompanyQuestions.tsx` | Company side: draft, review and publish application questions (submitted page) |
-| `src/event/sample.ts`, `sampleApplicants.ts`, `sampleAssessments.ts` | Synthetic sample companies (from `src/seeker/sampleRoles.ts`) with hand-written question sets, sample applicants, and hand-written sample assessments (used until a pair is scored again) |
+| `src/event/sample.ts`, `sampleApplicants.ts`, `sampleAssessments.ts`, `sampleBulk.ts` | Synthetic sample companies (from `src/seeker/sampleRoles.ts`) with hand-written question sets; 14 hand-written applicants with hand-written assessments; and 160 seeded, mostly weak generated applicants with low scores (`sampleBulk.ts`), so each role has 50–80 applicants and the good ones have to float to the top. Sample assessments are used until a pair is scored again |
 | `src/apply/` | Applicant flow at `#/apply`, with its sample demo answers in `demoAnswers.ts` |
-| `src/staff/` | Staff review at `#/staff`: per-company ranking, evidence, decisions, invitations |
+| `src/staff/` | Staff review at `#/staff`: per-company ranking (top 10 shown, plus anything unscored or decided; "Show all" for the rest), per-score evidence strip, decisions, invitations |
 | `src/outcomes/` | Follow-up concept demo at `#/outcomes`: `data.ts` (four seeded events, 3/6-month checks, banding, summary text, CSV), `Outcomes.tsx`, `outcomes.css` (simulated data only) |
-| `src/components/SiteHeader.tsx` | Top bar for the applicant, staff and follow-up views |
+| `src/components/SiteHeader.tsx` | Top bar for the applicant, staff and follow-up views; `NAV_LINKS` is the one main navigation, also rendered by the company page's top bar so labels and order match everywhere |
 | `server/event-ai.ts` | Vite plugin for `POST /api/questions` and `POST /api/assess`; holds the Anthropic key server-side |
 | `src/seeker/` | Sample role browser at `#/roles` (not in the main nav) |
 | `src/writing-assistant/` | Field-level writing-help client, input sanitizer, prompt, schema and demo suggestions |

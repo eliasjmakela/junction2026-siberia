@@ -2,7 +2,8 @@ import { SAMPLE_ROLES } from '../seeker/sampleRoles'
 import { briefFrom } from './brief'
 import { validateQuestionSet, type QuestionSet } from './core'
 import type { Listing } from './store'
-export { SAMPLE_APPLICATIONS } from './sampleApplicants'
+import { SAMPLE_APPLICATIONS as HAND_WRITTEN } from './sampleApplicants'
+import { bulkApplicants } from './sampleBulk'
 
 type DraftSet = {
   attributes: { id: string; name: string; looks_like: string; sources: { field: string; quote: string }[] }[]
@@ -109,3 +110,10 @@ export const SAMPLE_LISTINGS: Listing[] = SAMPLE_ROLES.flatMap((role) => {
     },
   ]
 })
+
+const bulk = bulkApplicants(SAMPLE_LISTINGS, new Set(HAND_WRITTEN.map((a) => a.code)))
+
+/** Every sample applicant: the hand-written ones, then the generated long tail. */
+export const SAMPLE_APPLICATIONS = [...HAND_WRITTEN, ...bulk.applications]
+/** Scores for the generated applicants, keyed `${applicationId}:${listingId}`. */
+export const SAMPLE_BULK_SCORES = bulk.scores

@@ -4,7 +4,8 @@ import './SiteHeader.css'
 
 export type Area = 'company' | 'apply' | 'staff' | 'outcomes'
 
-const LINKS: { area: Area; href: string; label: string }[] = [
+/** The main navigation, the same on every page. */
+export const NAV_LINKS: { area: Area; href: string; label: string }[] = [
   { area: 'company', href: '#/', label: 'For companies' },
   { area: 'apply', href: '#/apply', label: 'Apply to the event' },
   { area: 'staff', href: '#/staff', label: 'Staff review' },
@@ -27,7 +28,7 @@ export function SiteHeader({
         Plainly
       </a>
       <nav className="site-header__nav" aria-label="Main navigation">
-        {LINKS.map((l) => (
+        {NAV_LINKS.map((l) => (
           <a key={l.area} href={l.href} aria-current={l.area === area ? 'page' : undefined}>
             {l.label}
           </a>

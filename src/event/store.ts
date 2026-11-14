@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react'
 import type { Values } from '../form/schema'
 import { DEFAULT_SLOTS, overallOf, type CompanyBrief, type Producer, type QuestionSet, type Score, type Status } from './core'
-import { SAMPLE_APPLICATIONS, SAMPLE_LISTINGS } from './sample'
+import { SAMPLE_APPLICATIONS, SAMPLE_BULK_SCORES, SAMPLE_LISTINGS } from './sample'
 import { SAMPLE_SCORES } from './sampleAssessments'
 
 /**
@@ -96,7 +96,7 @@ const listeners = new Set<() => void>()
 const roleKey = (l: Pick<Listing, 'company' | 'title'>) => `${l.company}|${l.title}`.toLowerCase().replace(/\s+/g, ' ').trim()
 
 /** Hand-written assessments for the sample applicants, used until a pair is scored again. */
-const SAMPLE_ASSESSMENTS: Assessment[] = Object.entries(SAMPLE_SCORES).flatMap(([key, scores]) => {
+const SAMPLE_ASSESSMENTS: Assessment[] = Object.entries({ ...SAMPLE_SCORES, ...SAMPLE_BULK_SCORES }).flatMap(([key, scores]) => {
   const [applicationId, listingId] = key.split(':')
   const listing = SAMPLE_LISTINGS.find((l) => l.id === listingId)
   const app = SAMPLE_APPLICATIONS.find((a) => a.id === applicationId)

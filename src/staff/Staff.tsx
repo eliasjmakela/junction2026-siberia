@@ -343,13 +343,17 @@ function SlotStepper({ listingId, slots }: { listingId: string; slots: number })
 
 type Open = { app: string; view: string; at?: string; last?: string }
 
+/** How many ranked applicants show before "Show all". */
+const TOP = 10
+
 function Ranking({ state, listing, scoring }: { state: EventState; listing: Listing; scoring: boolean }) {
   const [openRaw, setOpen] = useState<Open | null>(null)
+  const [showAll, setShowAll] = useState(false)
   const narrow = useMediaQuery(QUERY_NARROW)
   const tableRef = useRef<HTMLTableElement>(null)
   const pending = useRef<string | null>(null)
   const slots = slotsFor(state, listing.id)
-  const rows: Row[] = useMemo(() => {
+  const ranked: Row[] = useMemo(() => {
     const all = applicantsOf(state, listing.id).map((app) => {
       const a = assessmentOf(state, app.id, listing.id)
       return { app, assessment: isCurrent(a, listing) ? a : undefined }
@@ -360,7 +364,13 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
       return oy - ox || x.app.code.localeCompare(y.app.code)
     })
   }, [state, listing])
-  const scored = rows.filter((r) => r.assessment).length
+  // The top of the ranking, plus anything not yet scored or already decided, so nothing waiting for a person is hidden.
+  const rows: Row[] = useMemo(
+    () => (showAll ? ranked : ranked.filter((r, i) => i < TOP || !r.assessment || decisionOf(state, r.app.id, listing.id))),
+    [ranked, showAll, state, listing.id],
+  )
+  const hidden = ranked.length - rows.length
+  const scored = ranked.filter((r) => r.assessment).length
   const invites = invitesFor(state, listing.id)
   const attrs = listing.set.attributes
   const cols = 4 + attrs.length
@@ -389,7 +399,7 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
     el?.scrollIntoView({ block: 'nearest' })
   }, [openKey, narrow])
 
-  if (!rows.length) return <p className="staff-empty">No applications for this role yet.</p>
+  if (!ranked.length) return <p className="staff-empty">No applications for this role yet.</p>
 
   const openAt = (i: number, view: string): Open => ({ app: rows[i].app.id, view, at: rows[i].assessment?.assessedAt })
   const cellSelector = (i: number, j: number) => `.staff-score[data-row="${i}"][data-col="${j}"]`
@@ -460,7 +470,7 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
       <div className="staff-toolbar">
         <SlotStepper listingId={listing.id} slots={slots} />
         <p className="staff-toolbar__count">
-          {invites > slots ? <strong>{invites} invited · {slots} slots</strong> : `${invites} of ${slots} invited`} · {scored} of {rows.length} scored
+          {invites > slots ? <strong>{invites} invited · {slots} slots</strong> : `${invites} of ${slots} invited`} · {scored} of {ranked.length} scored
         </p>
       </div>
       <div className="staff-table-wrap">
@@ -592,6 +602,18 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
           </tbody>
         </table>
       </div>
+      {ranked.length > TOP && (
+        <div className="staff-more">
+          <p>
+            {showAll
+              ? `All ${ranked.length} applicants, ranked by overall score.`
+              : `Top ${TOP} of ${ranked.length} applicants, ranked by overall score. ${hidden} more ${hidden === 1 ? 'is' : 'are'} below.`}
+          </p>
+          <button type="button" className="btn-quiet" aria-expanded={showAll} onClick={() => setShowAll((v) => !v)}>
+            {showAll ? `Show top ${TOP}` : `Show all ${ranked.length}`}
+          </button>
+        </div>
+      )}
     </>
   )
 }

@@ -25,7 +25,7 @@
 }
 
 .site-header__nav a {
-  padding: 6px 0;
+  padding: var(--s-1) 0 6px;
   color: var(--ink-soft);
   font-weight: 500;
   text-decoration: none;
