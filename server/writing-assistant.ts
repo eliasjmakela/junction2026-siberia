@@ -34,7 +34,7 @@ async function generateWithGemini(input: NonNullable<ReturnType<typeof sanitizeW
   return { ...parsed, source: 'gemini', model }
 }
 
-async function suggest(raw: unknown, opts: Options): Promise<WritingSuggestion | null> {
+export async function suggest(raw: unknown, opts: Options): Promise<WritingSuggestion | null> {
   const input = sanitizeWritingInput(raw)
   if (!input) return null
   if (!opts.apiKey) return demoSuggestion(input)

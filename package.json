@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "capture": "node scripts/capture.mjs"
+    "capture": "node scripts/capture.mjs",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",
@@ -25,6 +26,7 @@
     "oxlint": "^1.90.0",
     "playwright-core": "^1.65.1",
     "typescript": "~7.0.2",
-    "vite": "^8.3.6"
+    "vite": "^8.3.6",
+    "wrangler": "^4.162.0"
   }
 }

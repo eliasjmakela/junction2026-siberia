@@ -16,6 +16,8 @@ dist-ssr
 .vscode/*
 !.vscode/extensions.json
 .idea
+.cursor/
+.wrangler/
 .DS_Store
 *.suo
 *.ntvs*
@@ -29,5 +31,6 @@ dist-ssr
 
 # Local secrets
 .env
+.dev.vars
 .env.*
 !.env.example

@@ -63,36 +63,6 @@ function ShareCell({ s }: { s: Summary }) {
   )
 }
 
-function Lane({ a, max, running }: { a: { id: number; assigned: number; done: number; matched: number }; max: number; running: boolean }) {
-  const open = a.assigned - a.done
-  return (
-    <li className="out-lane">
-      <span className="out-lane__n">Agent {a.id}</span>
-      <span className="out-lane__track" style={{ width: `${(a.assigned / max) * 100}%` }}>
-        <span className="out-lane__done" style={{ flexGrow: a.done }} />
-        {open > 0 && <span className="out-lane__open" style={{ flexGrow: open }} />}
-      </span>
-      <span className="out-lane__count">{running ? `${a.done} of ${a.assigned} profiles` : `${a.done} profiles`}</span>
-      <span className="out-lane__count">
-        {a.matched} matched · {a.done - a.matched} not matched
-      </span>
-    </li>
-  )
-}
-
-function PagesLane({ done, total }: { done: number; total: number }) {
-  return (
-    <li className="out-lane">
-      <span className="out-lane__n">Company pages</span>
-      <span className="out-lane__track" style={{ width: '100%' }}>
-        <span className="out-lane__done" style={{ flexGrow: done }} />
-        {total > done && <span className="out-lane__open" style={{ flexGrow: total - done }} />}
-      </span>
-      <span className="out-lane__count">{done} of {total} pages</span>
-    </li>
-  )
-}
-
 function HiresOther({ c, k, s }: { c: CompanyRow; k: Checkpoint; s: Summary }) {
   const st = s.event.checks[k]
   const h = c.hires[k]
@@ -210,7 +180,6 @@ export function Outcomes() {
   const a = s.attendance
   const rows = sortedCompanies(s)
   const live = s.state !== 'scheduled'
-  const maxAssigned = Math.max(...s.agents.map((x) => x.assigned), 1)
   const sh = s.shown
   const segs: { key: string; label: string; n: number; shown: string }[] = [
     { key: 'picked', label: 'At a company they applied to meet', n: o.picked, shown: sh.picked },
@@ -361,7 +330,7 @@ export function Outcomes() {
         <h2 id="out-h-check" className="out-h2">
           LinkedIn profile check <Provisional s={s} />
         </h2>
-        <p className="out-sub">What the check found at this checkpoint.</p>
+        <p className="out-sub">Public LinkedIn profiles of the attendees and companies, matched against the companies each attendee applied to meet.</p>
         {!live ? (
           <p className="out-pending">No check yet.</p>
         ) : (
@@ -375,16 +344,10 @@ export function Outcomes() {
                 </li>
               ))}
             </ol>
-            <p className="out-label out-label--gap" id="out-agents">Agents</p>
-            <ol className="out-lanes" aria-labelledby="out-agents">
-              {s.agents.map((x) => (
-                <Lane key={x.id} a={x} max={maxAssigned} running={s.state === 'running'} />
-              ))}
-              <PagesLane done={s.pages.done} total={s.pages.total} />
-            </ol>
             <p className="out-sub">
-              6 agents in parallel · {s.total} attendee profiles and {COMPANIES.length} company pages ·{' '}
-              {s.state === 'running' ? `started ${s.checkDate}, ${RUNNING_START} · ${RUNNING_LEFT}` : `${s.minutes} min`}
+              {s.state === 'running'
+                ? `Running since ${s.checkDate}, ${RUNNING_START} · ${RUNNING_LEFT}`
+                : `${s.total} attendee profiles and ${COMPANIES.length} company pages checked in ${s.minutes} min`}
             </p>
             <p className="out-label out-label--gap">Cross-checks</p>
             <p className="out-cross">

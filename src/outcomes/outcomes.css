@@ -343,48 +343,6 @@
   font-weight: 600;
 }
 
-.out-lanes {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--s-2) var(--s-3);
-  margin-top: var(--s-2);
-  list-style: none;
-}
-
-.out-lane {
-  display: grid;
-  gap: var(--s-1);
-  font-size: var(--type-small);
-  font-variant-numeric: tabular-nums;
-}
-
-.out-lane__n {
-  font-weight: 600;
-}
-
-.out-lane__track {
-  display: flex;
-  gap: 2px;
-  height: 16px;
-}
-
-.out-lane__done {
-  flex-basis: 0;
-  min-width: 2px;
-  background: var(--spruce);
-  border-radius: var(--radius);
-}
-
-.out-lane__open {
-  flex-basis: 0;
-  border: 2px dashed var(--ink-soft);
-  border-radius: var(--radius);
-}
-
-.out-lane__count {
-  color: var(--ink-soft);
-}
-
 .out-cross {
   display: flex;
   flex-wrap: wrap;
@@ -630,10 +588,6 @@
   }
 
   .out-steps {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .out-lanes {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
