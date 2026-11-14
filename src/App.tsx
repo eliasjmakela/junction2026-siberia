@@ -5,6 +5,7 @@ import { FieldView } from './form/fields'
 import { display, goalOf, hasValue, isAnswered, missingOn, screenSummary } from './form/logic'
 import { RoleCard } from './form/RoleCard'
 import { RolePreview } from './form/RolePreview'
+import { ScreeningReview } from './screening/ScreeningReview'
 import { ALL_FIELDS, FIELD_BY_ID, GOALS, SCREENS, type Value, type Values } from './form/schema'
 import { newSeed, skyStars } from './sky/input'
 import './App.css'
@@ -205,6 +206,7 @@ export default function App() {
                 </button>
               </div>
             </div>
+            <ScreeningReview values={values} />
           </section>
         ) : onReview ? (
           <section className="review" id="form" aria-labelledby="review-title">

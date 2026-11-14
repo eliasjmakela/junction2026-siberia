@@ -1,0 +1,568 @@
+/* ---------- Company: quick check review ---------- */
+.qc {
+  max-width: 880px;
+  padding-top: var(--s-3);
+  border-top: var(--rule);
+}
+
+.qc__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--type-display-l-compact);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.qc__lede {
+  margin-top: var(--s-2);
+  max-width: 62ch;
+  color: var(--ink-soft);
+}
+
+.qc__panel {
+  margin-top: var(--s-4);
+  padding: var(--s-4);
+  background: var(--granite-light);
+  border-radius: var(--radius);
+}
+
+.qc__panel:focus {
+  outline: none;
+}
+
+.qc__panel:focus-visible {
+  outline: var(--focus);
+  outline-offset: 2px;
+}
+
+.qc__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1) var(--s-3);
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+.qc-source b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* AI output is marked so the employer reads it as a draft to check. */
+.qc-source--ai {
+  padding: 0 6px;
+  border: 1px solid var(--spruce);
+  border-radius: var(--radius);
+}
+
+.qc-source--live b {
+  color: var(--spruce);
+}
+
+.qc__notice {
+  margin-top: var(--s-3);
+  padding: var(--s-2) 12px;
+  border: 1px dashed var(--ink-soft);
+  border-radius: var(--radius);
+  font-size: var(--type-small);
+  max-width: 62ch;
+}
+
+.qc-list {
+  list-style: none;
+  margin-top: var(--s-3);
+}
+
+.qc-item {
+  display: grid;
+  grid-template-columns: var(--s-5) minmax(0, 1fr) auto;
+  gap: var(--s-2);
+  align-items: start;
+  padding: 12px 0;
+  border-top: var(--rule);
+}
+
+.qc-item__n {
+  font-size: var(--type-small);
+  font-weight: 600;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.6;
+}
+
+.qc-item__q {
+  font-size: var(--type-body-l);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.qc-item__meta {
+  margin-top: var(--s-1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px var(--s-3);
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+.qc-item__remove {
+  min-height: 32px;
+  padding: 0 var(--s-2);
+  font-size: var(--type-small);
+  font-weight: 600;
+  color: var(--spruce);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color var(--t-fast) var(--ease-out);
+}
+
+.qc-item__remove:hover {
+  text-decoration-color: currentColor;
+}
+
+.qc__empty {
+  margin-top: var(--s-3);
+  color: var(--ink-soft);
+}
+
+.qc__actions {
+  margin-top: var(--s-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+}
+
+.qc__actions a.btn {
+  text-decoration: none;
+}
+
+.qc__privacy {
+  margin-top: var(--s-2);
+  max-width: 68ch;
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+/* ---------- Attendee: the quick check page ---------- */
+.seeker {
+  --seeker-field: 440px;
+  position: relative;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: var(--seeker-field) minmax(0, 1fr);
+}
+
+/* The field colour runs the full page height while the work area scrolls. */
+.seeker::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--seeker-field);
+  background: var(--spruce);
+}
+
+.seeker__field {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--s-4) var(--s-5) var(--s-6);
+  background: var(--spruce);
+  color: var(--on-spruce);
+  overflow: hidden;
+}
+
+.seeker__sky {
+  position: absolute;
+  inset: 0;
+}
+
+.seeker__field > :not(.seeker__sky) {
+  position: relative;
+}
+
+.seeker__field :focus-visible {
+  outline: var(--focus-on-spruce);
+}
+
+.seeker__brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  min-height: var(--s-6);
+}
+
+.seeker__brand .wordmark {
+  text-decoration: none;
+}
+
+.seeker__tag {
+  font-size: var(--type-small);
+  color: var(--on-spruce-soft);
+}
+
+.seeker__role {
+  margin-top: auto;
+}
+
+.seeker__company {
+  font-size: var(--type-label);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--on-spruce-soft);
+}
+
+.seeker__title {
+  margin-top: var(--s-2);
+  max-width: 16ch;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--type-display-l);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.seeker__foot {
+  margin-top: var(--s-5);
+  padding-top: var(--s-3);
+  border-top: 1px solid rgb(238 240 236 / 0.18);
+  font-size: var(--type-label);
+  color: var(--on-spruce-soft);
+}
+
+.seeker__work {
+  min-width: 0;
+  max-width: 880px;
+  padding: var(--s-9) var(--s-9) var(--s-6);
+}
+
+.seeker__h1 {
+  max-width: 19em;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--type-display-xl);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+}
+
+.seeker__h1--small {
+  font-size: var(--type-display-m);
+  line-height: 1.1;
+}
+
+.seeker__h1:focus {
+  outline: none;
+}
+
+.seeker__actions {
+  margin-top: var(--s-5);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+}
+
+.seeker__actions a.btn {
+  text-decoration: none;
+}
+
+.seeker__note {
+  margin-top: var(--s-4);
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+/* Privacy note: a ruled block, read before starting. */
+.privacy {
+  margin-top: var(--s-5);
+  max-width: 62ch;
+  padding-top: var(--s-3);
+  border-top: 4px solid var(--spruce);
+}
+
+.privacy h2 {
+  font-size: var(--type-label);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.privacy ul {
+  margin-top: 12px;
+  list-style: none;
+  display: grid;
+  gap: var(--s-2);
+}
+
+.privacy li {
+  position: relative;
+  padding-left: 20px;
+  line-height: 1.45;
+}
+
+.privacy li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 8px;
+  height: 8px;
+  background: var(--spruce);
+}
+
+/* Time budget: one segment per question, sized by its estimated seconds. */
+.budget {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin-top: var(--s-3);
+  padding: 12px 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  background: var(--granite);
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.budget__bar {
+  list-style: none;
+  flex: 0 1 360px;
+  display: flex;
+  gap: var(--s-1);
+}
+
+.budget__bar li {
+  height: 6px;
+  flex-basis: 0;
+  background: var(--granite-line);
+  transition: background-color var(--t-base) var(--ease-out);
+}
+
+.budget__bar li.is-done {
+  background: var(--spruce);
+}
+
+.sq-list {
+  list-style: none;
+  margin-top: var(--s-3);
+  display: grid;
+  gap: var(--s-4);
+}
+
+.sq-list > li {
+  padding-top: var(--s-3);
+  border-top: var(--rule);
+}
+
+.sq {
+  border: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.sq__text {
+  display: flex;
+  gap: 12px;
+  padding: 0;
+  font-size: var(--type-body-l);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.sq__n {
+  flex: none;
+  min-width: var(--s-3);
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.sq__yesno {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 160px));
+  gap: var(--s-2);
+}
+
+.sq__chip {
+  min-height: var(--s-8);
+  font-size: var(--type-body-l);
+}
+
+.sq__number {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sq__number .stepper {
+  height: var(--s-8);
+}
+
+.sq__number .stepper button {
+  width: var(--s-8);
+}
+
+.sq__number .stepper input {
+  width: 64px;
+}
+
+.sq__unit {
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+/* Result: same marks as the role page's fit lists. */
+.result-list {
+  list-style: none;
+  margin-top: var(--s-5);
+  max-width: 720px;
+}
+
+.result-item {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  padding: 12px 0;
+  border-top: var(--rule);
+}
+
+.result-item__mark {
+  margin-top: 0.4em;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--ink-soft);
+}
+
+.result-item.is-match .result-item__mark {
+  background: var(--lichen);
+  border-color: var(--spruce);
+}
+
+.result-item.is-open .result-item__mark {
+  border-style: dashed;
+}
+
+.result-item__req {
+  font-weight: 600;
+  font-size: var(--type-body-l);
+  line-height: 1.35;
+}
+
+.result-item__meta {
+  margin-top: 2px;
+  font-size: var(--type-small);
+  color: var(--ink-soft);
+}
+
+.result-item__state {
+  font-size: var(--type-small);
+  font-weight: 600;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.result-item.is-match .result-item__state {
+  color: var(--spruce);
+}
+
+@media (max-width: 1120px) {
+  .seeker {
+    --seeker-field: 360px;
+  }
+
+  .seeker__work {
+    padding-inline: var(--s-6);
+  }
+}
+
+@media (max-width: 900px) {
+  .seeker {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .seeker::before {
+    display: none;
+  }
+
+  .seeker__field {
+    position: relative;
+    height: auto;
+    min-height: 200px;
+    padding: var(--s-3) var(--s-3) var(--s-4);
+  }
+
+  .seeker__role {
+    margin-top: var(--s-4);
+  }
+
+  .seeker__title {
+    max-width: none;
+    font-size: var(--type-display-l-compact);
+  }
+
+  .seeker__foot {
+    display: none;
+  }
+
+  .seeker__work {
+    padding: var(--s-5) var(--s-3) var(--s-6);
+  }
+
+  .seeker__h1 {
+    font-size: var(--type-display-xl-compact);
+    line-height: 1.1;
+  }
+
+  .seeker__h1--small {
+    font-size: var(--type-display-l-compact);
+  }
+
+  .seeker__actions .btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+
+  .budget__bar {
+    flex-basis: 100%;
+  }
+
+  .sq__yesno {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .qc__panel {
+    padding: var(--s-3);
+  }
+
+  .qc-item {
+    grid-template-columns: var(--s-4) minmax(0, 1fr);
+  }
+
+  .qc-item__remove {
+    grid-column: 2;
+    justify-self: start;
+    margin-left: calc(-1 * var(--s-2));
+  }
+
+  .result-item {
+    grid-template-columns: 20px minmax(0, 1fr);
+  }
+
+  .result-item__state {
+    grid-column: 2;
+  }
+}

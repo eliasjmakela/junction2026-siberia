@@ -26,3 +26,8 @@ dist-ssr
 # Impeccable local state
 .impeccable/review/
 .impeccable/hook.cache.json
+
+# Local secrets
+.env
+.env.*
+!.env.example

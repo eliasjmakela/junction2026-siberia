@@ -36,6 +36,9 @@ Most recruitment tools optimize the candidate side or automate screening. This o
 - The form's first question sets the role status: open now, opening soon, or talent pipeline.
 - Every required question can be answered "Not decided yet"; the role page shows these as honest gaps instead of filler.
 - Output: a role page generated from the answers by one template, including "You'd fit if" and "Probably not for you if" lists assembled by fixed rules (no LLM).
+- Role card: the submitted role as one spruce card with its constellation, title, status and key facts.
+- Quick check for attendees (LLM-powered): from the submitted role, AI drafts a 60-second questionnaire of yes/no and number questions about the role's requirements. The company reviews, removes and publishes the questions; attendees answer them at #/check as a self-check. Without an API key, or if the model call fails, the questions come from fixed rules.
+- GDPR and non-discrimination (binding for anything attendees see): only job-relevant requirements; never special-category data, age, gender, family status, nationality or other protected grounds; no names or contact details; attendee answers stay in the attendee's browser, are never stored or sent, and the result is a self-check, never an automated decision. The model sees only the role profile.
 - Planned next: an event page listing all companies with filters (skills, language, remote, relocation); optionally, pasting a job ad to have an LLM draft answers for the company to correct.
 - Hard limit: a company finishes one role in 10 minutes at most. Question count and question types are chosen for that budget.
 - Stack: React 19 + TypeScript + Vite (already scaffolded).
