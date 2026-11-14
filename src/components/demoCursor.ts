@@ -71,7 +71,7 @@ export function demoCursor(cursor: HTMLElement | null, alive: () => boolean): De
         if (!alive()) return false
         setValue?.call(target, text.slice(0, end))
         target.dispatchEvent(new Event('input', { bubbles: true }))
-        await delay(by === 'word' ? 68 : text[end - 1] === ' ' ? 100 : 64)
+        await delay(by === 'word' ? 62 : text[end - 1] === ' ' ? 91 : 58)
       }
       await delay(220)
       return alive()

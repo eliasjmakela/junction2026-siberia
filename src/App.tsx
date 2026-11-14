@@ -217,7 +217,7 @@ export default function App() {
         setter?.call(target, text.slice(0, i + 1))
         target.dispatchEvent(new Event('input', { bubbles: true }))
         demoInteraction.current = false
-        await delay(text[i] === ' ' ? 100 : 64)
+        await delay(text[i] === ' ' ? 91 : 58)
       }
       await delay(220)
       return demoRun.current === run
