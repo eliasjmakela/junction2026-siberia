@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from 'react'
+import { NextStep as NextStage } from '../components/NextStep'
 import { SiteHeader } from '../components/SiteHeader'
 import { touchesForbidden } from '../event/core'
 import { compareRank } from '../event/sampleMeetings'
@@ -550,6 +551,7 @@ export function Meetings() {
           )}
         </section>
       )}
+      <NextStage href="#/outcomes" label="Follow-up" detail="Three and six months later, LinkedIn shows who now works at a company they met." />
     </main>
   )
 }

@@ -384,8 +384,8 @@ export default function App() {
           <span className="field__tagline">for Espoo recruitment events</span>
         </div>
         <div className="field__caption" aria-live="polite">
-          <p className="field__status">{goal ? GOALS[goal].name : 'No status yet'}</p>
-          <p className={`field__title${title ? '' : ' is-quiet'}`}>{title ?? 'Your role takes shape as you answer.'}</p>
+          {goal && <p className="field__status">{GOALS[goal].name}</p>}
+          <p className={`field__title${title ? '' : ' is-quiet'}`}>{title ?? 'Say plainly what the role needs. Applicants answer with real examples, and City of Espoo invites on evidence.'}</p>
           {details && <p className="field__details">{details}</p>}
         </div>
       </aside>

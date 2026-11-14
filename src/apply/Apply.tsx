@@ -3,6 +3,7 @@ import { Arrow } from '../components/Arrow'
 import { SiteHeader } from '../components/SiteHeader'
 import { Sky } from '../components/Sky'
 import { delay, demoCursor } from '../components/demoCursor'
+import { NextStep } from '../components/NextStep'
 import { ANSWER_MAX, MAX_PICKS } from '../event/core'
 import { deleteApplication, EVENT, newCode, newId, setKeyOf, submitApplication, useEvent, type Application, type Listing } from '../event/store'
 import { goalOf } from '../form/logic'
@@ -422,6 +423,7 @@ export function Apply() {
       <main className="page apply">
         <SiteHeader area="apply" />
         <Submitted app={mine} listings={listings} onDeleted={onDeleted} action={demoButton} />
+        <NextStep href="#/staff" label="Staff review" detail="City of Espoo staff rank the applications per company and decide who is invited." />
         {cursor}
       </main>
     )

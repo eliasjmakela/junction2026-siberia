@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from 'react'
+import { NextStep } from '../components/NextStep'
 import { SiteHeader } from '../components/SiteHeader'
 import { GOALS } from '../form/schema'
 import type { Attribute } from '../event/core'
@@ -819,6 +820,7 @@ export function Staff() {
           </button>
         </div>
       </section>
+      <NextStep href="#/meetings" label="Meetings" detail="Companies book event-day meetings with the candidates you invited." />
     </main>
   )
 }
