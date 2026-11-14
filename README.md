@@ -20,7 +20,7 @@ npm install
 npm run dev
 ```
 
-Open the printed URL. The company form is at `/`, applying at `#/apply`, staff review at `#/staff` and the follow-up demo at `#/outcomes`. Five synthetic sample companies and their sample applicants are always present; everything you add is kept in this browser's storage and shared between its tabs.
+Open the printed URL. The company form is at `/`, applying at `#/apply`, staff review at `#/staff`, meeting booking and rating at `#/meetings` and the follow-up demo at `#/outcomes`. Five synthetic sample companies and their sample applicants are always present; everything you add is kept in this browser's storage and shared between its tabs.
 
 Use **Play walkthrough** (next to the step counter) to watch a synthetic role fill through the questionnaire and arrive at its review page. The applicant flow at `#/apply` has the same walkthrough.
 

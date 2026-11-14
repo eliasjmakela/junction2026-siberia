@@ -18,6 +18,7 @@ import {
   type EventState,
   type Listing,
 } from '../event/store'
+import { compareRank } from '../event/sampleMeetings'
 import { isCurrent, isScoring, useScoring } from './scoring'
 import '../App.css'
 import '../form/fields.css'
@@ -365,11 +366,7 @@ function Ranking({ state, listing, scoring }: { state: EventState; listing: List
       const a = assessmentOf(state, app.id, listing.id)
       return { app, assessment: isCurrent(a, listing) ? a : undefined }
     })
-    return all.sort((x, y) => {
-      const ox = x.assessment?.overall ?? -1
-      const oy = y.assessment?.overall ?? -1
-      return oy - ox || x.app.code.localeCompare(y.app.code)
-    })
+    return all.sort((x, y) => compareRank({ code: x.app.code, overall: x.assessment?.overall }, { code: y.app.code, overall: y.assessment?.overall }))
   }, [state, listing])
   // The top of the ranking, plus anything not yet scored or already decided, so nothing waiting for a person is hidden.
   const rows: Row[] = useMemo(
